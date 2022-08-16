@@ -34,6 +34,7 @@ model JornadaSubscription {
 
 model Answer {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  aulaId         Int
   question       Int
   answers        Int[]
   AulaProgress   AulaProgress? @relation(fields: [aulaProgressId], references: [id])
@@ -51,8 +52,8 @@ model AulaProgress {
   trilhaId              Int
   aulaId                Int
   isFinished            Boolean             @default(false)
-  activityId            Int
+  activityId            Int?
   answers               Answer[]
-  totalQuestions        Int
-  totalCorrect          Int
+  totalQuestions        Int?
+  totalCorrect          Int?
 }

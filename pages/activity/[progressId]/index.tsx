@@ -75,26 +75,13 @@ export default function Page({
   progressId
 }: IProps) {
   const router = useRouter();
-  const toast = useToast();
   const [selectedQuestionIndex, setSelectionQuestionIndex] = useState(0);
   const form = useForm({
     defaultValues: {
       answers: {
-
       }
     }
   });
-
-  // const onFinished = useCallback(async () => {
-  //   const response = await axios.post('/api/progress/update', {
-  //     isFinished: true,
-  //     progressId,
-  //   })
-  //   toast({
-  //     title: 'Aula finalizada',
-  //     description: 'Hora de fazer as atividades'
-  //   })
-  // }, [progressId, toast])
 
   const questions = useMemo(() => {
     return aula.data.attributes.atividade?.data.attributes.questions as Question[]
@@ -111,16 +98,21 @@ export default function Page({
     if (result) setSelectionQuestionIndex(state => state + 1)
   }, [form, selectedQuestion.id]);
 
-  const handleSubmit = useCallback((values: {
+  const handleSubmit = useCallback(async (values: {
     answers: {
       [key: number]: {
-        answer: string;
+        question: string
+        answers: string | string[];
       }
     }
   }) => {
-    const answers = Object.entries(values.answers);
-
-  }, []);
+    const answers = Object.values(values.answers);
+    const response = await axios.post(`/api/activity/answer/${progressId}`, {
+      progressId,
+      answers,
+    })
+    router.replace(`/activity/${progressId}/result`)
+  }, [progressId, router]);
 
   return <Flex
     direction="column"
@@ -194,9 +186,16 @@ export default function Page({
                 {selectedQuestion?.text}
               </Heading>
               <Text>Respostas {selectedQuestion.correctAnswers && selectedQuestion.correctAnswers > 1 ? `(Selecione ${selectedQuestion.correctAnswers})` : ''}</Text>
+              <input type={"hidden"} value={selectedQuestion.id} {...form.register(`answers.${selectedQuestion.id}.question` as any, {
+                setValueAs: v => v ? Number(v) : v
+              })} />
+              <input type={"hidden"} value={progressId} {...form.register(`answers.${selectedQuestion.id}.aulaProgressId` as any)} />
+              <input type={"hidden"} value={aula.data.id} {...form.register(`answers.${selectedQuestion.id}.aulaId` as any, {
+                setValueAs: v => v ? Number(v) : v
+              })} />
               {
                 selectedQuestion.correctAnswers === 1 && <Controller
-                  name={`answers.${selectedQuestion.id}.answer`}
+                  name={`answers.${selectedQuestion.id}.answers`}
                   rules={{
                     required: 'Selecione uma resposta'
                   }}
@@ -208,7 +207,7 @@ export default function Page({
                       return <>
                         <RadioGroup
                           defaultValue={value}
-                          onChange={onChange}
+                          onChange={v => onChange([Number(v)])}
                           border={error ? '1px' : undefined}
                           borderColor={error ? 'yellow.brand' : undefined}
                           p={4}
@@ -231,7 +230,7 @@ export default function Page({
               }
               {
                 selectedQuestion.correctAnswers === 2 && <Controller
-                  name={`answers.${selectedQuestion.id}.answer`}
+                  name={`answers.${selectedQuestion.id}.answers`}
                   rules={{
                     required: 'Selecione uma resposta'
                   }}
@@ -248,7 +247,7 @@ export default function Page({
                         >
                           <CheckboxGroup
                             defaultValue={value}
-                            onChange={onChange}
+                            onChange={v => onChange(v.map(x => Number(x)))}
                           >
                             <Stack>
                               {

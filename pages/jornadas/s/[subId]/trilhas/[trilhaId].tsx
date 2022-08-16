@@ -64,7 +64,7 @@ export default function TrilhaPage({
 }: IProps) {
   const router = useRouter();
 
-  const finished = useCallback(async ({
+  const createProgress = useCallback(async ({
     aulaId,
   }: {
     aulaId: number;
@@ -151,7 +151,7 @@ export default function TrilhaPage({
                     bg: 'gray.400',
                     color: 'gray.brand'
                   }}
-                  onClick={() => finished({
+                  onClick={() => createProgress({
                     aulaId: aula.id
                   })}
                 />

@@ -122,7 +122,7 @@ export default function TrilhaPage({
         {isWindowAvailable && isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4}>
           <Heading>Aula finalizada</Heading>
           {
-            aula.data.attributes.atividade &&
+            aula.data.attributes.atividade?.data &&
             <Link href={`/activity/${progressId}`}><Button colorScheme={"yellow"}>Ir para atividades</Button></Link>
           }
         </Center>}

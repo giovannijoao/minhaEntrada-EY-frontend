@@ -5,16 +5,19 @@ export const getAllProgresses = async ({
   userId,
   jornadaSubscriptionId,
   trilhaId,
+  isFinished
 }: {
   userId: string;
   jornadaSubscriptionId: string;
   trilhaId: number;
+  isFinished?: boolean;
 }) => {
   return prisma.aulaProgress.findMany({
     where: {
       userId,
       jornadaSubscriptionId,
       trilhaId,
+      ...(isFinished ? { isFinished } : {})
     },
   });
 };
@@ -55,6 +58,23 @@ export const updateAulaProgressFinished = async ({
     data: {
       isFinished
     }
+  });
+  return aulaProgress;
+};
+
+export const updateAulaProgress = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: AulaProgress;
+}) => {
+  const { id: _, ...rest }= data;
+  const aulaProgress = await prisma.aulaProgress.update({
+    where: {
+      id,
+    },
+    data: rest,
   });
   return aulaProgress;
 };
