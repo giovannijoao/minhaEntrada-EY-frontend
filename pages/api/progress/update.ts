@@ -1,7 +1,7 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sessionOptions } from "../../../lib/session";
-import { updateAulaProgress } from "../../../prisma/aulaProgress";
+import { updateAulaProgressFinished } from "../../../prisma/aulaProgress";
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!req.session.user || !req.session.user.isLoggedIn) {
@@ -9,7 +9,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const progress = await updateAulaProgress({
+    const progress = await updateAulaProgressFinished({
       id: req.body.progressId,
       isFinished: req.body.isFinished
     });

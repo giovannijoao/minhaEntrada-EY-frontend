@@ -1,12 +1,13 @@
 export type Answer = {
   id: number;
   text: string;
-  isCorrect: number;
+  isCorrect: number | null;
 }
 
 export type Question = {
   id: number;
   text: string;
+  correctAnswers?: number;
   answers?: Answer[]
 }
 

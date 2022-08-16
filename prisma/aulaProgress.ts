@@ -41,7 +41,7 @@ export const createAulaProgress = async (data: Omit<AulaProgress, 'id'>) => {
   return aulaProgress;
 };
 
-export const updateAulaProgress = async ({
+export const updateAulaProgressFinished = async ({
   id,
   isFinished,
 }: {
