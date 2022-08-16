@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Center, Flex, Heading, IconButton, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, IconButton, Link, Textarea, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
@@ -50,7 +50,9 @@ export const getServerSideProps = withIronSessionSsr(async ({
 
   const [responseAula] = await Promise.all([
     cmsClient.get<IAulaFindOne>(`aulas/${progress?.aulaId}`, {
-      params: {}
+      params: {
+        populate: 'atividade'
+      }
     }),
   ])
   return {
@@ -81,6 +83,7 @@ export default function TrilhaPage({
     })
   }, [progressId, toast])
 
+  const isWindowAvailable = typeof window !== 'undefined';
   return <Flex
     direction="column"
     h="100vh"
@@ -115,9 +118,13 @@ export default function TrilhaPage({
         <Textarea flex={1} />
       </Flex>
       <Flex>
-        {typeof window !== 'undefined' && !isEnded && <ReactPlayer url={aula.data.attributes.url} onEnded={onFinished} />}
-        {isEnded && <Center bg="green.500" p={36} borderRadius="lg">
-          <Heading>Aula finalizadda</Heading>
+        {isWindowAvailable && !isEnded && <ReactPlayer url={aula.data.attributes.url} onEnded={onFinished} />}
+        {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4}>
+          <Heading>Aula finalizada</Heading>
+          {
+            aula.data.attributes.atividade &&
+            <Link href={`/activity/${progressId}`}><Button colorScheme={"yellow"}>Ir para atividades</Button></Link>
+          }
         </Center>}
       </Flex>
     </Flex>

@@ -1,3 +1,4 @@
+import { IAtividadeFindOne } from "./Atividade";
 
 export type IAula = {
   id: number;
@@ -6,6 +7,7 @@ export type IAula = {
     description: string;
     duration: string;
     url: string;
+    atividade?: IAtividadeFindOne
   };
 };
 
