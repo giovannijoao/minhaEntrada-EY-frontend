@@ -1,15 +1,28 @@
 import { Box, Center, Flex, Heading, Image, Link } from "@chakra-ui/react";
-import { mediaUrl } from "../../config";
-import cmsClient from "../../services/cmsClient";
-import { IJornadaFindOne, IJornadasAll } from "../../types/Jornada";
-import { ITrilhasAll } from "../../types/Trilha";
+import { JornadaSubscription } from "@prisma/client";
+import { withIronSessionSsr } from "iron-session/next";
+import { mediaUrl } from "../../../config";
+import { sessionOptions } from "../../../lib/session";
+import { getJornadaSubscription } from "../../../prisma/jornadasSubscription";
+import cmsClient from "../../../services/cmsClient";
+import { IJornadaFindOne, IJornadasAll } from "../../../types/Jornada";
+import { ITrilhasAll } from "../../../types/Trilha";
 
-export async function getServerSideProps({
-  params: {
-    id,
+export const getServerSideProps = withIronSessionSsr(async ({
+  req,
+  res,
+  params,
+}) => {
+  if (!req.session.user || !req.session.user.isLoggedIn){
+    return {
+      redirect: {
+        statusCode: 302,
+        destination: '/login'
+      }
+    }
   }
-}: any) {
-  const [responseJornadas, responseTrilhas] = await Promise.all([
+  const id = params?.jornadaId;
+  const [responseJornadas, responseTrilhas, subscription] = await Promise.all([
     cmsClient.get<IJornadaFindOne>(`jornadas/${id}`, {
       params: {
         populate: 'image'
@@ -19,22 +32,29 @@ export async function getServerSideProps({
       params: {
         'filters[jornadas][id][$eq]': id
       }
+    }),
+    getJornadaSubscription({
+      jornadaId: Number(id),
+      userId: req.session.user.id,
     })
   ])
   return {
     props: {
       jornada: responseJornadas.data,
-      trilhas: responseTrilhas.data
+      trilhas: responseTrilhas.data,
+      subscription,
     },
   };
-}
+}, sessionOptions)
 
 export default function StartPage({
   jornada,
   trilhas,
+  subscription,
 }: {
   jornada: IJornadaFindOne,
-  trilhas: ITrilhasAll
+  trilhas: ITrilhasAll,
+  subscription: JornadaSubscription
 }) {
   return <Flex
     direction="column"
@@ -79,7 +99,7 @@ export default function StartPage({
               color="gray.brand"
               p={8}
             >
-              <Link href={`/trilhas/${trilha.id}`}>
+              <Link href={`/jornadas/${subscription.id}/trilhas/${trilha.id}`}>
                 <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
               </Link>
             </Center>

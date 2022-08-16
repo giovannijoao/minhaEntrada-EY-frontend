@@ -13,6 +13,21 @@ export const getAllJornadaSubscriptionsForUser = async ({
   })
 }
 
+export const getJornadaSubscription = async ({
+  userId,
+  jornadaId,
+}: {
+  userId: string;
+  jornadaId: number;
+}) => {
+  return prisma.jornadaSubscription.findFirst({
+    where: {
+      userId,
+      jornadaId,
+    },
+  });
+};
+
 // CREATE
 export const createJornadaSubscription = async (data: Omit<JornadaSubscription, 'id' | 'AulaProgress'>) => {
   const jornadaSubscription = await prisma.jornadaSubscription.create({
