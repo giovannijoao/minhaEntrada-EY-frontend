@@ -3,7 +3,7 @@ import { Button, Center, Flex, Heading, IconButton, Link, Textarea, useToast } f
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { sessionOptions } from "../../lib/session";
 import { getAulaProgress } from "../../prisma/aulaProgress";
@@ -69,6 +69,7 @@ export default function TrilhaPage({
 }: IProps) {
   const router = useRouter();
   const toast = useToast();
+  const [ready, setIsReady] = useState(false);
   const [isEnded, setEnded] = useState(false);
 
   const onFinished = useCallback(async () => {
@@ -77,11 +78,17 @@ export default function TrilhaPage({
       isFinished: true,
       progressId,
     })
-    toast({
+    if (aula.data.attributes.atividade?.data) toast({
       title: 'Aula finalizada',
       description: 'Hora de fazer as atividades'
     })
-  }, [progressId, toast])
+  }, [aula.data.attributes.atividade?.data, progressId, toast])
+
+  useEffect(() => {
+    if (window) {
+      setIsReady(true);
+    }
+  }, [])
 
   const isWindowAvailable = typeof window !== 'undefined';
   return <Flex
@@ -109,7 +116,10 @@ export default function TrilhaPage({
       </Heading>
     </Flex>
     <Flex
-      direction="row"
+      flexFlow={{
+        base: 'column-reverse',
+        md: 'row'
+      }}
       p={8}
       gap={16}
     >
@@ -118,8 +128,8 @@ export default function TrilhaPage({
         <Textarea flex={1} />
       </Flex>
       <Flex>
-        {isWindowAvailable && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url} onEnded={onFinished} />}
-        {isWindowAvailable && isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4}>
+        {ready && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url} onEnded={onFinished} />}
+        {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4} m="auto">
           <Heading>Aula finalizada</Heading>
           {
             aula.data.attributes.atividade?.data &&
