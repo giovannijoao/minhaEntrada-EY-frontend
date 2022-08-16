@@ -29,7 +29,7 @@ export const getJornadaSubscription = async ({
 };
 
 // CREATE
-export const createJornadaSubscription = async (data: Omit<JornadaSubscription, 'id' | 'AulaProgress'>) => {
+export const createJornadaSubscription = async (data: Omit<JornadaSubscription, 'id' | 'AulaProgress' | 'created_at' | 'updated_at'>) => {
   const jornadaSubscription = await prisma.jornadaSubscription.create({
     data,
   });

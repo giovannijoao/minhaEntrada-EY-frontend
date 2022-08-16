@@ -39,10 +39,11 @@ export const getServerSideProps = withIronSessionSsr(async ({
 
   const jornadasSubscription = subscriptions.map(x => x.jornadaId);
 
-  const parsedSubscription: ISubscriptionWithJornada[] = subscriptions.map(subscription => {
+  const parsedSubscription = subscriptions.map(subscription => {
+    const { created_at, updated_at, ...restSub } = subscription;
     const jornada = responseJornadas.data.data.find(x => x.id === subscription.jornadaId) as IJornada;
     return {
-      ...subscription,
+      ...restSub,
       jornada,
     }
   })

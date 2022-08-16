@@ -46,6 +46,14 @@ export const getServerSideProps = withIronSessionSsr(async ({
       userId: req.session.user.id,
       jornadaSubscriptionId,
       trilhaId: Number(trilhaId),
+    }).then(res => {
+      return res.map(x => {
+        return {
+          ...x,
+          created_at: null,
+          updated_at: null
+        }
+      })
     })
   ])
   return {

@@ -37,7 +37,7 @@ export const getAulaProgress = async ({
 };
 
 // CREATE
-export const createAulaProgress = async (data: Omit<AulaProgress, 'id'>) => {
+export const createAulaProgress = async (data: Omit<AulaProgress, 'id' | 'created_at' | 'updated_at'>) => {
   const aulaProgress = await prisma.aulaProgress.create({
     data,
   });

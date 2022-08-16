@@ -38,11 +38,13 @@ export const getServerSideProps = withIronSessionSsr(async ({
       userId: req.session.user.id,
     })
   ])
+
+  const { created_at, updated_at, ...restSubscription } = subscription || {};
   return {
     props: {
       jornada: responseJornadas.data,
       trilhas: responseTrilhas.data,
-      subscription,
+      subscription: restSubscription,
     },
   };
 }, sessionOptions)
