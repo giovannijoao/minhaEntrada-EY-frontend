@@ -64,7 +64,7 @@ export default function StartPage({
       p={8}
       gap={4}
     >
-      <Heading>Todas as trilhas</Heading>
+      <Heading>Suas trilhas para desenvolvimento</Heading>
       <Flex
         gap={4}
         wrap={"wrap"}

@@ -1,26 +1,79 @@
-import { Box, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { JornadaSubscription } from "@prisma/client";
+import axios from "axios";
+import { withIronSessionSsr } from "iron-session/next";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
 import { mediaUrl } from "../../config";
+import { sessionOptions } from "../../lib/session";
+import { getAllJornadaSubscriptionsForUser } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
-import { IJornadasAll } from "../../types/Jornada";
+import { IJornada, IJornadasAll } from "../../types/Jornada";
 
-export async function getStaticProps() {
-  const response = await cmsClient.get<IJornadasAll>('jornadas', {
-    params: {
-      populate: 'image'
-    }
-  })
-  return {
-    props: {
-      data: response.data,
-    },
-  };
+type ISubscriptionWithJornada = JornadaSubscription & {
+  jornada: IJornada;
 }
 
+export const getServerSideProps = withIronSessionSsr(async ({
+  req,
+  res,
+}) => {
+  if (!req.session.user || !req.session.user.isLoggedIn) {
+    return {
+      redirect: {
+        destination: '/login',
+        statusCode: 302,
+      }
+    }
+  }
+  const [responseJornadas, subscriptions] = await Promise.all([
+    cmsClient.get<IJornadasAll>('jornadas', {
+      params: {
+        populate: 'image'
+      }
+    }),
+    getAllJornadaSubscriptionsForUser({
+      userId: req.session.user.id
+    })
+  ])
+
+  const jornadasSubscription = subscriptions.map(x => x.jornadaId);
+
+  const parsedSubscription: ISubscriptionWithJornada[] = subscriptions.map(subscription => {
+    const jornada = responseJornadas.data.data.find(x => x.id === subscription.jornadaId) as IJornada;
+    return {
+      ...subscription,
+      jornada,
+    }
+  })
+
+  responseJornadas.data.data = responseJornadas.data.data.filter(x => !jornadasSubscription.includes(x.id))
+
+  return {
+    props: {
+      jornadas: responseJornadas.data,
+      subscriptions: parsedSubscription,
+    },
+  };
+}, sessionOptions)
+
 export default function StartPage({
-  data,
+  jornadas,
+  subscriptions,
 }: {
-  data: IJornadasAll
+  jornadas: IJornadasAll,
+  subscriptions: ISubscriptionWithJornada[]
 }) {
+
+  const router = useRouter()
+
+  const handleIngressar = useCallback(async (jornadaId: number) => {
+    await axios.post('/api/jornadas/ingress',{
+      jornadaId
+    });
+    router.reload()
+  }, [router])
+
   return <Flex
     direction="column"
     h="100vh"
@@ -42,7 +95,40 @@ export default function StartPage({
       <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
       <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
     </Flex>
-    <Flex
+    {subscriptions.length > 0 && <Flex
+      direction="column"
+      p={8}
+      gap={4}
+    >
+      <Heading>Jornadas em Desenvolvimento</Heading>
+      <Flex
+        gap={4}
+        wrap={"wrap"}
+      >
+        {
+          subscriptions.map(subscription => {
+            return <Box
+              w="2xs"
+              key={subscription.id.toString().concat('-sub')}
+              borderRadius="md"
+              bgColor="gray.300"
+              p={4}
+              color="gray.brand"
+            >
+              <Image
+                w={"100%"}
+                h={36}
+                src={mediaUrl?.concat(subscription.jornada.attributes.image.data.attributes.formats.small.url)}
+                fit={"cover"}
+                borderRadius="md"
+                aria-label={subscription.jornada.attributes.image.data.attributes.caption} />
+              <Link href={`/jornadas/${subscription.jornada.id}`}><Heading mt={2} fontSize="xl">{subscription.jornada.attributes.name}</Heading></Link>
+            </Box>
+          })
+        }
+      </Flex>
+    </Flex>}
+    {jornadas.data.length > 0 && <Flex
       direction="column"
       p={8}
       gap={4}
@@ -51,30 +137,32 @@ export default function StartPage({
       <Flex
         gap={4}
         wrap={"wrap"}
-        justifyContent="space-evenly"
       >
         {
-          data.data.map(jornada => {
+          jornadas.data.map(jornada => {
             return <Box
-                w="2xs"
-                key={jornada.id.toString().concat('-jornada')}
+              w="2xs"
+              key={jornada.id.toString().concat('-jornada')}
+              borderRadius="md"
+              bgColor="gray.300"
+              p={4}
+              color="gray.brand"
+            >
+              <Image
+                w={"100%"}
+                h={36}
+                src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
+                fit={"cover"}
                 borderRadius="md"
-                bgColor="gray.300"
-                p={4}
-                color="gray.brand"
-              >
-                <Image
-                  w={"100%"}
-                  h={36}
-                  src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
-                  fit={"cover"}
-                  borderRadius="md"
-                  aria-label={jornada.attributes.image.data.attributes.caption} />
+                aria-label={jornada.attributes.image.data.attributes.caption} />
+              <Flex direction={"column"} gap={2}>
                 <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
-              </Box>
+                <Button size="xs" bg="yellow.brand" onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
+              </Flex>
+            </Box>
           })
         }
       </Flex>
-    </Flex>
+    </Flex>}
   </Flex>
 }
