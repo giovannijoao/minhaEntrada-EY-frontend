@@ -3,17 +3,17 @@ import prisma from './prisma'
 
 export const getAllProgresses = async ({
   userId,
-  jornadaSubcriptionId,
+  jornadaSubscriptionId,
   trilhaId,
 }: {
   userId: string;
-  jornadaSubcriptionId: string;
+  jornadaSubscriptionId: string;
   trilhaId: number;
 }) => {
   return prisma.aulaProgress.findMany({
     where: {
       userId,
-      jornadaSubcriptionId,
+      jornadaSubscriptionId,
       trilhaId,
     },
   });

@@ -1,6 +1,7 @@
 import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@chakra-ui/icons";
 import { Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
+import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
 import { sessionOptions } from "../../../../lib/session";
@@ -10,7 +11,8 @@ import { ITrilhaFindOne } from "../../../../types/Trilha";
 
 type IProps = {
   trilha: ITrilhaFindOne,
-  progress: AulaProgress[]
+  progress: AulaProgress[],
+  jornadaSubscriptionId: string,
 }
 
 export const getServerSideProps = withIronSessionSsr(async ({
@@ -29,7 +31,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
   }
 
   const {
-    jornadaId,
+    jornadaSubscriptionId,
     trilhaId,
   } = params as any;
 
@@ -41,14 +43,15 @@ export const getServerSideProps = withIronSessionSsr(async ({
     }),
     getAllProgresses({
       userId: req.session.user.id,
-      jornadaSubcriptionId: jornadaId,
-      trilhaId,
+      jornadaSubscriptionId,
+      trilhaId: Number(trilhaId),
     })
   ])
   return {
     props: {
       trilha: responseTrilha.data,
       progress,
+      jornadaSubscriptionId,
     },
   };
 }, sessionOptions)
@@ -56,9 +59,18 @@ export const getServerSideProps = withIronSessionSsr(async ({
 export default function TrilhaPage({
   trilha,
   progress,
+  jornadaSubscriptionId,
 }: IProps) {
   const router = useRouter();
 
+  const finished = ({
+    aulaId,
+  }: any) => axios.post('/api/progress/create', {
+    aulaId,
+    isFinished: true,
+    jornadaSubscriptionId,
+    trilhaId: trilha.data.id,
+  })
   return <Flex
     direction="column"
     h="100vh"
@@ -132,6 +144,9 @@ export default function TrilhaPage({
                     bg: 'gray.400',
                     color: 'gray.brand'
                   }}
+                  onClick={() => finished({
+                    aulaId: aula.id
+                  })}
                  />
               </Flex>
             })
