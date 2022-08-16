@@ -1,9 +1,9 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Flex, Heading, IconButton, useToast } from "@chakra-ui/react";
+import { Center, Flex, Heading, IconButton, Textarea, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import ReactPlayer from "react-player";
 import { sessionOptions } from "../../lib/session";
 import { getAulaProgress } from "../../prisma/aulaProgress";
@@ -67,8 +67,10 @@ export default function TrilhaPage({
 }: IProps) {
   const router = useRouter();
   const toast = useToast();
+  const [isEnded, setEnded] = useState(false);
 
   const onFinished = useCallback(async () => {
+    setEnded(true);
     const response = await axios.post('/api/progress/update', {
       isFinished: true,
       progressId,
@@ -107,13 +109,16 @@ export default function TrilhaPage({
       direction="row"
       p={8}
       gap={16}
-      alignItems="flex-start"
     >
-      <Flex flex={1}>
-
+      <Flex flex={1} direction="column" gap={4}>
+        <Heading fontSize="lg">Minhas anotações</Heading>
+        <Textarea flex={1} />
       </Flex>
       <Flex>
-        {typeof window !== 'undefined' && <ReactPlayer url={aula.data.attributes.url} onEnded={onFinished} />}
+        {typeof window !== 'undefined' && !isEnded && <ReactPlayer url={aula.data.attributes.url} onEnded={onFinished} />}
+        {isEnded && <Center bg="green.500" p={36} borderRadius="lg">
+          <Heading>Aula finalizadda</Heading>
+        </Center>}
       </Flex>
     </Flex>
   </Flex>
