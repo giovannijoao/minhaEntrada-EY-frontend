@@ -7,7 +7,7 @@ import { User } from "../user";
 import { createJornadaSubscription } from "../../../prisma/jornadasSubscription";
 import { createAulaProgress } from "../../../prisma/aulaProgress";
 
-async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
+async function progressCreate(req: NextApiRequest, res: NextApiResponse) {
   if (!req.session.user || !req.session.user.isLoggedIn) {
     return res.redirect("/login");
   }
@@ -19,6 +19,9 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
       jornadaSubscriptionId: req.body.jornadaSubscriptionId,
       trilhaId: req.body.trilhaId,
       userId: req.session.user.id,
+      activityId: null,
+      totalCorrect: null,
+      totalQuestions: null
     });
     res.json(progress);
   } catch (error) {
@@ -26,4 +29,4 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withIronSessionApiRoute(loginRoute, sessionOptions);
+export default withIronSessionApiRoute(progressCreate, sessionOptions);
