@@ -118,8 +118,8 @@ export default function TrilhaPage({
         <Textarea flex={1} />
       </Flex>
       <Flex>
-        {isWindowAvailable && !isEnded && <ReactPlayer url={aula.data.attributes.url} onEnded={onFinished} />}
-        {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4}>
+        {isWindowAvailable && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url} onEnded={onFinished} />}
+        {isWindowAvailable && isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4}>
           <Heading>Aula finalizada</Heading>
           {
             aula.data.attributes.atividade &&
