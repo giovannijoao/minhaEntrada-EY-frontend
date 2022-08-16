@@ -147,7 +147,7 @@ export default function Page({
       >
         <Heading
           fontSize="4xl"
-        >{Math.round(progress.totalQuestions / progress.totalCorrect) * 10}</Heading>
+        >{Math.round((progress.totalQuestions as number) / (progress.totalCorrect as number)) * 10}</Heading>
       </Center>
     </Center>
     <Center
