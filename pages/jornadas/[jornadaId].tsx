@@ -1,12 +1,12 @@
 import { Box, Center, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import { withIronSessionSsr } from "iron-session/next";
-import { mediaUrl } from "../../../config";
-import { sessionOptions } from "../../../lib/session";
-import { getJornadaSubscription } from "../../../prisma/jornadasSubscription";
-import cmsClient from "../../../services/cmsClient";
-import { IJornadaFindOne, IJornadasAll } from "../../../types/Jornada";
-import { ITrilhasAll } from "../../../types/Trilha";
+import { mediaUrl } from "../../config";
+import { sessionOptions } from "../../lib/session";
+import { getJornadaSubscription } from "../../prisma/jornadasSubscription";
+import cmsClient from "../../services/cmsClient";
+import { IJornadaFindOne, IJornadasAll } from "../../types/Jornada";
+import { ITrilhasAll } from "../../types/Trilha";
 
 export const getServerSideProps = withIronSessionSsr(async ({
   req,
@@ -99,7 +99,7 @@ export default function StartPage({
               color="gray.brand"
               p={8}
             >
-              <Link href={`/jornadas/${subscription.id}/trilhas/${trilha.id}`}>
+              <Link href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}>
                 <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
               </Link>
             </Center>

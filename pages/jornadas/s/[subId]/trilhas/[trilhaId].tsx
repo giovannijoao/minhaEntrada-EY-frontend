@@ -4,10 +4,11 @@ import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
-import { sessionOptions } from "../../../../lib/session";
-import { getAllProgresses } from "../../../../prisma/aulaProgress";
-import cmsClient from "../../../../services/cmsClient";
-import { ITrilhaFindOne } from "../../../../types/Trilha";
+import { useCallback } from "react";
+import { sessionOptions } from "../../../../../lib/session";
+import { getAllProgresses } from "../../../../../prisma/aulaProgress";
+import cmsClient from "../../../../../services/cmsClient";
+import { ITrilhaFindOne } from "../../../../../types/Trilha";
 
 type IProps = {
   trilha: ITrilhaFindOne,
@@ -31,7 +32,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
   }
 
   const {
-    jornadaSubscriptionId,
+    subId: jornadaSubscriptionId,
     trilhaId,
   } = params as any;
 
@@ -63,14 +64,20 @@ export default function TrilhaPage({
 }: IProps) {
   const router = useRouter();
 
-  const finished = ({
+  const finished = useCallback(async ({
     aulaId,
-  }: any) => axios.post('/api/progress/create', {
-    aulaId,
-    isFinished: true,
-    jornadaSubscriptionId,
-    trilhaId: trilha.data.id,
-  })
+  }: {
+    aulaId: number;
+  }) => {
+    const response = await axios.post('/api/progress/create', {
+      aulaId,
+      isFinished: false,
+      jornadaSubscriptionId,
+      trilhaId: trilha.data.id,
+    })
+    router.push(`/aula/${response.data.id}`)
+  }, [jornadaSubscriptionId, router, trilha.data.id])
+
   return <Flex
     direction="column"
     h="100vh"
@@ -147,7 +154,7 @@ export default function TrilhaPage({
                   onClick={() => finished({
                     aulaId: aula.id
                   })}
-                 />
+                />
               </Flex>
             })
           }

@@ -1,11 +1,7 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sessionOptions } from "../../../lib/session";
-import { getUserByEmail } from "../../../prisma/user";
-import bcrypt from "bcryptjs";
-import { User } from "../user";
-import { createJornadaSubscription } from "../../../prisma/jornadasSubscription";
-import { createAulaProgress } from "../../../prisma/aulaProgress";
+import { updateAulaProgress } from "../../../prisma/aulaProgress";
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!req.session.user || !req.session.user.isLoggedIn) {
@@ -13,12 +9,9 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const progress = await createAulaProgress({
-      aulaId: req.body.aulaId,
-      isFinished: req.body.isFinished,
-      jornadaSubscriptionId: req.body.jornadaSubscriptionId,
-      trilhaId: req.body.trilhaId,
-      userId: req.session.user.id,
+    const progress = await updateAulaProgress({
+      id: req.body.progressId,
+      isFinished: req.body.isFinished
     });
     res.json(progress);
   } catch (error) {

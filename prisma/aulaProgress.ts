@@ -19,10 +19,42 @@ export const getAllProgresses = async ({
   });
 };
 
+export const getAulaProgress = async ({
+  progressId,
+  userId,
+}: {
+  userId: string;
+  progressId: string
+}) => {
+  return prisma.aulaProgress.findUnique({
+    where: {
+      id: progressId,
+    },
+  });
+};
+
 // CREATE
-export const createAulaProggress = async (data: Omit<AulaProgress, 'id'>) => {
+export const createAulaProgress = async (data: Omit<AulaProgress, 'id'>) => {
   const aulaProgress = await prisma.aulaProgress.create({
     data,
+  });
+  return aulaProgress;
+};
+
+export const updateAulaProgress = async ({
+  id,
+  isFinished,
+}: {
+  id: string;
+  isFinished: boolean;
+}) => {
+  const aulaProgress = await prisma.aulaProgress.update({
+    where: {
+      id
+    },
+    data: {
+      isFinished
+    }
   });
   return aulaProgress;
 };
