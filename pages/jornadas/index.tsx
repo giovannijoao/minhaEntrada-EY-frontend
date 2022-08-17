@@ -1,11 +1,11 @@
 import { Box, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
-import { withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { mediaUrl } from "../../config";
-import { sessionOptions } from "../../lib/session";
+import { withAuthSsr } from "../../lib/withAuth";
 import { getAllJornadaSubscriptionsForUser } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
 import { IJornada, IJornadasAll } from "../../types/CMS/Jornada";
@@ -14,18 +14,8 @@ type ISubscriptionWithJornada = JornadaSubscription & {
   jornada: IJornada;
 }
 
-export const getServerSideProps = withIronSessionSsr(async ({
-  req,
-  res,
-}) => {
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return {
-      redirect: {
-        destination: '/login',
-        statusCode: 302,
-      }
-    }
-  }
+export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
+  const { req } = context;
   const [responseJornadas, subscriptions] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
@@ -56,7 +46,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       subscriptions: parsedSubscription,
     },
   };
-}, sessionOptions)
+})
 
 export default function StartPage({
   jornadas,

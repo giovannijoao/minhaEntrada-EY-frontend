@@ -1,15 +1,13 @@
 import { ArrowForwardIcon, ChevronLeftIcon } from "@chakra-ui/icons";
-import { Box, Button, Center, Checkbox, CheckboxGroup, Flex, Heading, IconButton, Link, Radio, RadioGroup, Stack, Text, useToast } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, IconButton, Text, useToast } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
-import { withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { sessionOptions } from "../../../lib/session";
+import { useCallback } from "react";
+import { withAuthSsr } from "../../../lib/withAuth";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
 import cmsClient from "../../../services/cmsClient";
-import { Question } from "../../../types/CMS/Atividade";
 import { IAulaFindOne, IAulasAll } from "../../../types/CMS/Aula";
 
 type IProps = {
@@ -18,11 +16,11 @@ type IProps = {
   nextClasses: IAulasAll | null
 }
 
-export const getServerSideProps = withIronSessionSsr(async ({
+export const getServerSideProps = withAuthSsr(async ({
   req,
   res,
   params
-}) => {
+}: GetServerSidePropsContext) => {
 
   if (!req.session.user || !req.session.user.isLoggedIn) {
     return {
@@ -80,7 +78,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       progress: progressRest,
     },
   };
-}, sessionOptions)
+})
 
 export default function Page({
   aula,

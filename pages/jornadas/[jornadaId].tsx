@@ -1,15 +1,15 @@
-import { Box, Button, Center, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
-import { withIronSessionSsr } from "iron-session/next";
-import { sessionOptions } from "../../lib/session";
+import axios from "axios";
+import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
+import { withAuthSsr } from "../../lib/withAuth";
 import { getJornadaSubscription } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
-import { IVagasAll } from "../../types/CMS/Vaga";
 import { IJornadaFindOne } from "../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../types/CMS/Trilha";
-import { useRouter } from "next/router";
-import axios from "axios";
-import { useCallback } from "react";
+import { IVagasAll } from "../../types/CMS/Vaga";
 
 type IProps = {
   jornada: IJornadaFindOne,
@@ -18,19 +18,11 @@ type IProps = {
   vagas: IVagasAll
 }
 
-export const getServerSideProps = withIronSessionSsr(async ({
+export const getServerSideProps = withAuthSsr(async ({
   req,
   res,
   params,
-}) => {
-  if (!req.session.user || !req.session.user.isLoggedIn){
-    return {
-      redirect: {
-        statusCode: 302,
-        destination: '/login'
-      }
-    }
-  }
+}: GetServerSidePropsContext) => {
   const id = params?.jornadaId;
   const [responseJornadas, responseTrilhas, subscription, vagas] = await Promise.all([
     cmsClient.get<IJornadaFindOne>(`jornadas/${id}`, {
@@ -63,7 +55,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       vagas: vagas.data
     },
   };
-}, sessionOptions)
+});
 
 export default function StartPage({
   jornada,

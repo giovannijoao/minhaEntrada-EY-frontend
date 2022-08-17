@@ -2,10 +2,10 @@ import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@c
 import { Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
-import { withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
-import { sessionOptions } from "../../../../../lib/session";
+import { withAuthSsr } from "../../../../../lib/withAuth";
 import { getAllProgresses } from "../../../../../prisma/aulaProgress";
 import cmsClient from "../../../../../services/cmsClient";
 import { ITrilhaFindOne } from "../../../../../types/CMS/Trilha";
@@ -16,20 +16,11 @@ type IProps = {
   jornadaSubscriptionId: string,
 }
 
-export const getServerSideProps = withIronSessionSsr(async ({
+export const getServerSideProps = withAuthSsr(async ({
   req,
   res,
   params
-}) => {
-
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return {
-      redirect: {
-        statusCode: 302,
-        destination: '/login'
-      }
-    }
-  }
+}: GetServerSidePropsContext) => {
 
   const {
     subId: jornadaSubscriptionId,
@@ -63,7 +54,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       jornadaSubscriptionId,
     },
   };
-}, sessionOptions)
+})
 
 export default function TrilhaPage({
   trilha,

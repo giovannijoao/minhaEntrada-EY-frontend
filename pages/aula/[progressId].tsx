@@ -1,12 +1,11 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Button, Center, Flex, Heading, IconButton, Link, Text, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, IconButton, Link, Text, useToast } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
-import axios from "axios";
-import { withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import ReactPlayer from "react-player";
-import { sessionOptions } from "../../lib/session";
+import { withAuthSsr } from "../../lib/withAuth";
 import { getAulaProgress } from "../../prisma/aulaProgress";
 import cmsClient from "../../services/cmsClient";
 import { IAulaFindOne } from "../../types/CMS/Aula";
@@ -17,21 +16,11 @@ type IProps = {
   progressId: string
 }
 
-export const getServerSideProps = withIronSessionSsr(async ({
+export const getServerSideProps = withAuthSsr(async ({
   req,
   res,
   params
-}) => {
-
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return {
-      redirect: {
-        statusCode: 302,
-        destination: '/login'
-      }
-    }
-  }
-
+}: GetServerSidePropsContext) => {
   const {
     progressId,
   } = params as any;
@@ -66,7 +55,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       progressId
     },
   };
-}, sessionOptions)
+})
 
 export default function TrilhaPage({
   aula,
