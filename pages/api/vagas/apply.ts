@@ -3,10 +3,6 @@ import { withSessionRoute } from "../../../lib/withAuth";
 import { createAppliedVacancy } from "../../../prisma/appliedVacancy";
 
 async function vagaRoute(req: NextApiRequest, res: NextApiResponse) {
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return res.redirect("/login");
-  }
-
   try {
     const subscription = await createAppliedVacancy({
       userId: req.session.user.id,

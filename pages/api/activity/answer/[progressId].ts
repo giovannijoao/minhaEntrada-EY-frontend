@@ -6,10 +6,6 @@ import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
 async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return res.redirect("/login");
-  }
-
   const progressId = req.query.progressId as string;
   const {
     answers

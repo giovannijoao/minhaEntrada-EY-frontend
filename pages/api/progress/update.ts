@@ -3,10 +3,6 @@ import { withSessionRoute } from "../../../lib/withAuth";
 import { updateAulaProgressFinished } from "../../../prisma/aulaProgress";
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-  if (!req.session.user || !req.session.user.isLoggedIn) {
-    return res.redirect("/login");
-  }
-
   try {
     const progress = await updateAulaProgressFinished({
       id: req.body.progressId,
