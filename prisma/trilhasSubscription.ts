@@ -1,4 +1,4 @@
-import { TrilhaSubscription } from '@prisma/client';
+import { Prisma, TrilhaSubscription } from '@prisma/client';
 import prisma from './prisma';
 
 export const getTrilhaSubscriptionById = async ({
@@ -56,4 +56,14 @@ export const updateTrilhaSubscription = async ({
     data: rest,
   });
   return record;
+};
+
+export const queryTrilhasSubscription = async ({
+  filters,
+}: {
+  filters: Prisma.TrilhaSubscriptionWhereInput
+}) => {
+  return prisma.trilhaSubscription.findMany({
+    where: filters,
+  });
 };
