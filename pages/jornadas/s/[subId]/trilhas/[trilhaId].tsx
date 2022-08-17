@@ -1,5 +1,5 @@
 import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@chakra-ui/icons";
-import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import { Badge, Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -127,7 +127,7 @@ export default function TrilhaPage({
           {
             trilha.data.attributes.aulas?.data.map(aula => {
               const p = progress?.find(p => p.aulaId === aula.id);
-              const Icon = (p?.hasActivity && p.isActivityFinished) ?? p?.isClassFinished ? CheckCircleIcon : TimeIcon;
+              const Icon = (p?.hasActivity ? p.isActivityFinished : p?.isClassFinished) ? CheckCircleIcon : TimeIcon;
               return <Flex
                 key={aula.id.toString().concat('-aula')}
                 bg="whiteAlpha.300"
@@ -137,9 +137,12 @@ export default function TrilhaPage({
                 gap={4}
               >
                 <Icon />
-                <Text flex={1}>{aula.attributes.name}</Text>
+                <Flex direction="column" gap={2} flex={1} alignItems="flex-start">
+                  <Text flex={1}>{aula.attributes.name}</Text>
+                  {p?.hasActivity && !p.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
+                </Flex>
                 <Text>{aula.attributes.duration}</Text>
-                {!p && <IconButton
+                <IconButton
                   aria-label="Prosseguir para a aula"
                   icon={<ArrowForwardIcon />}
                   variant="outline"
@@ -147,21 +150,10 @@ export default function TrilhaPage({
                     bg: 'gray.400',
                     color: 'gray.brand'
                   }}
-                  onClick={() => createProgress({
+                  onClick={() => p ? router.push(`/aula/${p.id}`) : createProgress({
                     aulaId: aula.id
                   })}
-                />}
-                {p && <Link href={`/aula/${p.id}`}>
-                  <IconButton
-                    aria-label="Prosseguir para a aula"
-                    icon={<ArrowForwardIcon />}
-                    variant="outline"
-                    _hover={{
-                      bg: 'gray.400',
-                      color: 'gray.brand'
-                    }}
-                  />
-                </Link>}
+                />
               </Flex>
             })
           }

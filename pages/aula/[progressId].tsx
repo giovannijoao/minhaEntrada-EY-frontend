@@ -126,7 +126,7 @@ export default function TrilhaPage({
             <Link href={`/activity/${progressId}`}><Button colorScheme={"yellow"}>Ir para atividades</Button></Link>
           }
         </Center>}
-        {!isEnded && <Text textAlign="center">Finalize a aula para realizar as atividades</Text>}
+        {!isEnded && aula.data.attributes.atividade?.data && <Text textAlign="center">Finalize a aula para realizar as atividades</Text>}
       </Flex>
     </Flex>}
     {progress.isClassFinished && <Center p={8} flexDirection="column" gap={4}>
