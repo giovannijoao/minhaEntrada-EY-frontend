@@ -2,10 +2,10 @@
 
 import HeaderV2 from "./Header";
 
-export default function Layout({ children }: any) {
+export default function Layout({ children, role }: any) {
   return (
     <>
-      <HeaderV2 />
+      <HeaderV2 role={role} />
       <main>{children}</main>
     </>
   )

@@ -23,16 +23,21 @@ const NavLink = ({ children, link }: { children: ReactNode, link: {
   </Link>
 );
 
-export default function HeaderV2() {
+export default function HeaderV2({
+  role,
+}: {
+  role: string
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const Links = useMemo(() => {
     const links = [{
       title: 'Jornadas',
-      href: '/jornadas'
+      href: '/jornadas',
+      role: 'user'
     }]
-    return links;
-  }, []);
+    return links.filter(x => x.role === role);
+  }, [role]);
 
   return (
     <>

@@ -14,7 +14,7 @@ type AppPropsWithLayout = AppProps & {
 }
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const getLayout = Component.getLayout ?? ((page) => <Layout>{page}</Layout>)
+  const getLayout = Component.getLayout ?? ((page) => <Layout role={pageProps.role || 'user'}>{page}</Layout>)
 
   return <ThemeProvider>
     {getLayout(<Component {...pageProps} />)}

@@ -15,5 +15,6 @@ export const sessionOptions: IronSessionOptions = {
 declare module "iron-session" {
   interface IronSessionData {
     user: User;
+    role?: 'admin' | 'user';
   }
 }

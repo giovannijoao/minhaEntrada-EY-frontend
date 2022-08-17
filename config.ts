@@ -1,3 +1,3 @@
 const mediaUrl = process.env.CMS_URL_MEDIA || '';
-
-export { mediaUrl }
+const cmsUrl = process.env.CMS_API_URL || "http://127.0.0.1:1337/api";
+export { mediaUrl, cmsUrl };

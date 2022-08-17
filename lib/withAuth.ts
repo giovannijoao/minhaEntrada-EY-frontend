@@ -2,11 +2,12 @@ import { withIronSessionSsr } from "iron-session/next";
 import { GetServerSidePropsContext, GetServerSidePropsResult, NextApiRequest, NextApiResponse } from "next";
 import { sessionOptions } from "./session";
 
-const withAuth = (gssp: any) => {
+const withAuth = (gssp: any, role: string) => {
   return async (
     context: GetServerSidePropsContext
   ) => {
-    if (!context.req.session.user || !context.req.session.user.isLoggedIn) {
+    if (!context.req.session.user || !context.req.session.user.isLoggedIn || context.req.session.role !== role) {
+      context.req.session.destroy();
       return {
         redirect: {
           destination: "/login",
@@ -14,6 +15,7 @@ const withAuth = (gssp: any) => {
         },
       };
     }
+
 
     return await gssp(context);
   };
@@ -29,4 +31,4 @@ function withSessionSsr<
   return withIronSessionSsr(handler, sessionOptions);
 }
 
-export const withAuthSsr = (handler: any) => withSessionSsr(withAuth(handler));
+export const withAuthSsr = (handler: any, role = 'user') => withSessionSsr(withAuth(handler, role));

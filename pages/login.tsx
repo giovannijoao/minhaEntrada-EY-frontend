@@ -19,7 +19,7 @@ const Login: NextPageWithLayout = () => {
     try {
       setIsLoading(true)
       const response = await axios.post('/api/users/sign-in', values);
-      router.push('/jornadas')
+      router.push(response.data.role === 'user' ? '/jornadas' : '/admin')
     } catch (error) {
       //TODO: Missing error treatment
     }
