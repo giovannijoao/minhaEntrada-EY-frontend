@@ -1,12 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { withSessionRoute } from "../../../lib/withAuth";
-import { updateAulaProgressFinished } from "../../../prisma/aulaProgress";
+import {
+  createAulaProgress,
+  updateAulaProgress,
+} from "../../../prisma/aulaProgress";
 
-async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
+async function progressCreate(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const progress = await updateAulaProgressFinished({
+    const progress = await updateAulaProgress({
       id: req.body.progressId,
-      isFinished: req.body.isFinished
+      data: {
+        isClassFinished: req.body.isClassFinished,
+        isActivityFinished: req.body.isActivityFinished || false,
+        hasActivity: req.body.hasActivity ?? null
+      },
     });
     res.json(progress);
   } catch (error) {
@@ -14,4 +21,4 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withSessionRoute(loginRoute);
+export default withSessionRoute(progressCreate);

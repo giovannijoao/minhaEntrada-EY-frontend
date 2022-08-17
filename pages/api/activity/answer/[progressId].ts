@@ -53,7 +53,8 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
       }
     })
 
-    progress.isFinished = true;
+    progress.isActivityFinished = true;
+    progress.hasActivity = true;
     progress.totalQuestions = totalQuestions;
     progress.totalCorrect = totalCorrect;
     progress.activityId = aula.data.attributes.atividade.data.id;

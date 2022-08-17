@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { Button, Center, Flex, Heading, IconButton, Link, Text, useToast } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
+import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -69,11 +70,16 @@ export default function TrilhaPage({
 
   const onFinished = useCallback(async () => {
     setEnded(true);
+    const response = await axios.post('/api/progress/update', {
+      progressId: progressId,
+      isClassFinished: true,
+      hasActivity: !!aula.data.attributes.atividade?.data,
+    })
     if (aula.data.attributes.atividade?.data) toast({
       title: 'Aula finalizada',
       description: 'Hora de fazer as atividades'
     })
-  }, [aula.data.attributes.atividade?.data, toast])
+  }, [aula.data.attributes.atividade?.data, progressId, toast])
 
   useEffect(() => {
     if (window) {
@@ -99,7 +105,7 @@ export default function TrilhaPage({
         {aula.data.attributes.name}
       </Heading>
     </Flex>
-    { !progress.isFinished && <Flex
+    { !progress.isClassFinished && <Flex
       flexFlow={{
         base: 'column-reverse',
         md: 'row'
@@ -123,9 +129,10 @@ export default function TrilhaPage({
         {!isEnded && <Text textAlign="center">Finalize a aula para realizar as atividades</Text>}
       </Flex>
     </Flex>}
-    {progress.isFinished && <Center p={8} flexDirection="column" gap={4}>
+    {progress.isClassFinished && <Center p={8} flexDirection="column" gap={4}>
       <Heading>Você já finalizou essa aula.</Heading>
-      <Link href={`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`}><Button colorScheme="yellow">Ver outras aulas</Button></Link>
+      {!progress.isActivityFinished && aula.data.attributes.atividade?.data && <Link href={`/activity/${progressId}`}><Button colorScheme="yellow">Realizar as atividades</Button></Link>}
+      <Link href={`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`}><Button colorScheme="yellow" variant="outline">Ver outras aulas</Button></Link>
     </Center>}
   </Flex>
 }

@@ -17,7 +17,15 @@ export const getAllProgresses = async ({
       userId,
       jornadaSubscriptionId,
       trilhaId,
-      ...(isFinished ? { isFinished } : {})
+      ...(isFinished ? {
+        OR: [{
+          hasActivity: true,
+          isActivityFinished: true
+        }, {
+          hasActivity: false,
+          isClassFinished: true
+        }]
+       } : {})
     },
   });
 };
@@ -44,30 +52,12 @@ export const createAulaProgress = async (data: Omit<AulaProgress, 'id' | 'create
   return aulaProgress;
 };
 
-export const updateAulaProgressFinished = async ({
-  id,
-  isFinished,
-}: {
-  id: string;
-  isFinished: boolean;
-}) => {
-  const aulaProgress = await prisma.aulaProgress.update({
-    where: {
-      id
-    },
-    data: {
-      isFinished
-    }
-  });
-  return aulaProgress;
-};
-
 export const updateAulaProgress = async ({
   id,
   data,
 }: {
   id: string;
-  data: AulaProgress;
+  data: Partial<AulaProgress>;
 }) => {
   const { id: _, ...rest }= data;
   const aulaProgress = await prisma.aulaProgress.update({

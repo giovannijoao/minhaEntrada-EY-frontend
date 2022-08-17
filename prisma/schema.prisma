@@ -52,7 +52,9 @@ model AulaProgress {
   jornadaSubscriptionId String              @db.ObjectId
   trilhaId              Int
   aulaId                Int
-  isFinished            Boolean             @default(false)
+  isClassFinished       Boolean             @default(false)
+  isActivityFinished    Boolean             @default(false)
+  hasActivity           Boolean?
   activityId            Int?
   answers               Answer[]
   totalQuestions        Int?

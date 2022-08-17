@@ -1,5 +1,5 @@
 import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@chakra-ui/icons";
-import { Flex, Heading, IconButton, Text } from "@chakra-ui/react";
+import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -70,7 +70,7 @@ export default function TrilhaPage({
   }) => {
     const response = await axios.post('/api/progress/create', {
       aulaId,
-      isFinished: false,
+      isClassFinished: false,
       jornadaSubscriptionId,
       trilhaId: trilha.data.id,
     })
@@ -79,7 +79,7 @@ export default function TrilhaPage({
     // TODO: Adicionar isLoading no botão de ingressar
   }, [jornadaSubscriptionId, router, trilha.data.id])
 
-  const finishedClasses = Array.from(new Set(progress?.filter(p => p.isFinished).map(x => x.aulaId)));
+  const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
   return <Flex
     direction="column"
     h="100vh"
@@ -126,8 +126,8 @@ export default function TrilhaPage({
         >
           {
             trilha.data.attributes.aulas?.data.map(aula => {
-              const isFinished = progress?.find(p => p.aulaId === aula.id)?.isFinished;
-              const Icon = isFinished ? CheckCircleIcon : TimeIcon;
+              const p = progress?.find(p => p.aulaId === aula.id);
+              const Icon = (p?.hasActivity && p.isActivityFinished) ?? p?.isClassFinished ? CheckCircleIcon : TimeIcon;
               return <Flex
                 key={aula.id.toString().concat('-aula')}
                 bg="whiteAlpha.300"
@@ -139,7 +139,7 @@ export default function TrilhaPage({
                 <Icon />
                 <Text flex={1}>{aula.attributes.name}</Text>
                 <Text>{aula.attributes.duration}</Text>
-                <IconButton
+                {!p && <IconButton
                   aria-label="Prosseguir para a aula"
                   icon={<ArrowForwardIcon />}
                   variant="outline"
@@ -150,7 +150,18 @@ export default function TrilhaPage({
                   onClick={() => createProgress({
                     aulaId: aula.id
                   })}
-                />
+                />}
+                {p && <Link href={`/aula/${p.id}`}>
+                  <IconButton
+                    aria-label="Prosseguir para a aula"
+                    icon={<ArrowForwardIcon />}
+                    variant="outline"
+                    _hover={{
+                      bg: 'gray.400',
+                      color: 'gray.brand'
+                    }}
+                  />
+                </Link>}
               </Flex>
             })
           }
