@@ -1,12 +1,12 @@
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Input, InputGroup, InputRightElement, Link, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Input, InputGroup, InputRightElement, Link, Stack, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { NextPageWithLayout } from './_app';
 
-const SignUp: NextPage = () => {
+const SignUp: NextPageWithLayout = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -106,5 +106,11 @@ const SignUp: NextPage = () => {
     </Flex>
   )
 }
+
+SignUp.getLayout = function getLayout(page: ReactElement) {
+  return <>
+    {page}
+  </>
+};
 
 export default SignUp

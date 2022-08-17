@@ -1,11 +1,11 @@
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Stack } from '@chakra-ui/react'
 import axios from 'axios'
-import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { NextPageWithLayout } from './_app'
 
-const Login: NextPage = () => {
+const Login: NextPageWithLayout = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit } = useForm({
@@ -67,5 +67,11 @@ const Login: NextPage = () => {
     </Flex>
   )
 }
+
+Login.getLayout = function getLayout(page: ReactElement) {
+  return <>
+    {page}
+  </>
+};
 
 export default Login

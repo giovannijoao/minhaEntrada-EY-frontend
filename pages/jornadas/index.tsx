@@ -80,13 +80,6 @@ export default function StartPage({
     h="100vh"
   >
     <Flex
-      h={24}
-      p={8}
-      alignItems='center'
-    >
-      <Heading color="white">minhaEntrada EY</Heading>
-    </Flex>
-    <Flex
       h={36}
       p={8}
       justifyContent="center"
