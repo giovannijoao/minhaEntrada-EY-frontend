@@ -158,7 +158,7 @@ export default function StartPage({
                 src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
                 fit={"cover"}
                 borderRadius="md"
-                aria-label={jornada.attributes.image.data.attributes.caption} />
+                aria-label={jornada.attributes.image?.data.attributes.caption} />
               <Flex direction={"column"} gap={2}>
                 <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
                 <Button size="xs" bg="yellow.brand" color='gray.brand' onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>

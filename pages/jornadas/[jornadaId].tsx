@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Link } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "../../lib/session";
@@ -7,6 +7,9 @@ import cmsClient from "../../services/cmsClient";
 import { IVagasAll } from "../../types/CMS/Vaga";
 import { IJornadaFindOne } from "../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../types/CMS/Trilha";
+import { useRouter } from "next/router";
+import axios from "axios";
+import { useCallback } from "react";
 
 type IProps = {
   jornada: IJornadaFindOne,
@@ -68,6 +71,16 @@ export default function StartPage({
   subscription,
   vagas,
 }: IProps) {
+
+  const router = useRouter();
+
+  const handleIngressar = useCallback(async () => {
+    await axios.post('/api/jornadas/ingress', {
+      jornadaId: jornada.data.id
+    });
+    router.reload()
+  }, [jornada.data.id, router])
+
   return <Flex
     direction="column"
     h="100vh"
@@ -91,6 +104,22 @@ export default function StartPage({
       gap={4}
     >
       <Heading>Suas trilhas para desenvolvimento</Heading>
+      {
+        !subscription.id && <>
+          <Flex
+            direction="column"
+            p={8}
+            bg="whiteAlpha.300"
+            gap={2}
+            alignItems="self-start"
+            borderRadius={"md"}
+            boxShadow="lg"
+          >
+            <Text fontWeight={"bold"}>Ingresse na jornada para entrar nas trilhas</Text>
+            <Button bg="yellow.brand" color="gray.brand" onClick={handleIngressar}>Ingressar</Button>
+          </Flex>
+        </>
+      }
       <Flex
         gap={4}
         wrap={"wrap"}
@@ -107,9 +136,12 @@ export default function StartPage({
               color="gray.brand"
               p={8}
             >
-              <Link href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}>
+              {subscription.id && <Link href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}>
                 <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
-              </Link>
+              </Link>}
+              {!subscription.id && <>
+                <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
+              </>}
             </Center>
           })
         }
