@@ -86,6 +86,7 @@ export default function TrilhaPage({
     router.push(`/aula/${response.data.id}`)
   }, [jornadaSubscriptionId, router, trilha.data.id])
 
+  const finishedClasses = Array.from(new Set(progress?.filter(p => p.isFinished).map(x => x.aulaId)));
   return <Flex
     direction="column"
     h="100vh"
@@ -127,7 +128,7 @@ export default function TrilhaPage({
         flex={1}
       >
         <Heading fontSize="xl">Meu progresso</Heading>
-        <Heading fontSize="4xl">{`${progress?.filter(p => p.isFinished).length || 0} / ${trilha.data.attributes.aulas?.data.length}`}</Heading>
+        <Heading fontSize="4xl">{`${finishedClasses.length || 0} / ${trilha.data.attributes.aulas?.data.length}`}</Heading>
       </Flex>
       <Flex direction="column" flex={2}>
         <Heading>Aulas</Heading>

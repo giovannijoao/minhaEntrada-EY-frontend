@@ -126,7 +126,7 @@ export default function Page({
       gap={6}
       color={"gray.brand"}
     >
-      <IconButton onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
+      <IconButton onClick={() => router.replace(`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`)} icon={<ChevronLeftIcon />} aria-label="Voltar" />
       <Flex direction="column">
         <Heading fontSize="3xl" fontWeight={"bold"}>
           {aula.data.attributes.name}

@@ -1,5 +1,6 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { Button, Center, Flex, Heading, IconButton, Link, Textarea, useToast } from "@chakra-ui/react";
+import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
@@ -12,6 +13,7 @@ import { IAulaFindOne } from "../../types/Aula";
 
 type IProps = {
   aula: IAulaFindOne
+  progress: AulaProgress
   progressId: string
 }
 
@@ -48,6 +50,8 @@ export const getServerSideProps = withIronSessionSsr(async ({
     }
   }
 
+  const { created_at, updated_at, ...restProgres } = progress;
+
   const [responseAula] = await Promise.all([
     cmsClient.get<IAulaFindOne>(`aulas/${progress?.aulaId}`, {
       params: {
@@ -58,6 +62,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
   return {
     props: {
       aula: responseAula.data,
+      progress: restProgres,
       progressId
     },
   };
@@ -65,6 +70,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
 
 export default function TrilhaPage({
   aula,
+  progress,
   progressId
 }: IProps) {
   const router = useRouter();
@@ -110,7 +116,7 @@ export default function TrilhaPage({
         {aula.data.attributes.name}
       </Heading>
     </Flex>
-    <Flex
+    { !progress.isFinished && <Flex
       flexFlow={{
         base: 'column-reverse',
         md: 'row'
@@ -132,6 +138,10 @@ export default function TrilhaPage({
           }
         </Center>}
       </Flex>
-    </Flex>
+    </Flex>}
+    {progress.isFinished && <Center p={8} flexDirection="column" gap={4}>
+      <Heading>Você já finalizou essa aula.</Heading>
+      <Link href={`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`}><Button colorScheme="yellow">Ver outras aulas</Button></Link>
+    </Center>}
   </Flex>
 }
