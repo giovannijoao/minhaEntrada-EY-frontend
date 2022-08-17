@@ -52,7 +52,11 @@ export const getServerSideProps = withAuthSsr(async ({
   const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
   const hasFinishedClasses = finishedClasses.length === (responseTrilha.data.data.attributes.aulas?.data.length as number);
   const hasFinishedCourse = hasFinishedClasses && (grade?._avg?.finalGrade || 0) >= FINAL_GRADE_GTE;
-
+  console.log({
+    hasFinishedClasses,
+    hasFinishedCourse,
+    grade,
+  })
   return {
     props: {
       trilha: responseTrilha.data,
@@ -141,7 +145,7 @@ export default function TrilhaPage({
           <Heading fontSize="xl">Meu progresso</Heading>
           <Heading fontSize="4xl">{`${finishedClasses.length || 0} / ${trilha.data.attributes.aulas?.data.length}`}</Heading>
         </Flex>
-        {hasFinishedCourse || hasFinishedClasses && <Box
+        {(hasFinishedCourse || hasFinishedClasses) && <Box
           bg='yellow.brand'
           borderRadius="md"
           p={4}
@@ -153,6 +157,7 @@ export default function TrilhaPage({
           {hasFinishedCourse && <>
             <Text fontSize="lg" fontWeight="bold">Parabéns!</Text>
             <Text>Você finalizou o curso</Text>
+            <Badge>Nota: {finalGrade}</Badge>
           </>}
           {hasFinishedClasses && !hasFinishedCourse && <>
             <Text fontSize="lg" fontWeight="bold">Quase lá!</Text>
