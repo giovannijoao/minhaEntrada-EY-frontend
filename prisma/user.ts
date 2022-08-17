@@ -1,9 +1,20 @@
+import { Prisma } from '@prisma/client'
 import prisma from './prisma'
 
 // READ
-export const getAllUsers = async () => {
-  const users = await prisma.user.findMany({})
-  return users
+export const getAllUsers = async ({
+  filters,
+}: {
+  filters?: Prisma.UserWhereInput
+}) => {
+  const users = await prisma.user.findMany({
+    where: filters
+  })
+
+  return users.map(user => {
+    const { password: _, ...restUser } = user;
+    return restUser
+  })
 }
 
 export const getUser = async (id: string) => {
