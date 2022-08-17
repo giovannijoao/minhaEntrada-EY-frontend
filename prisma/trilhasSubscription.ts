@@ -58,12 +58,14 @@ export const updateTrilhaSubscription = async ({
   return record;
 };
 
-export const queryTrilhasSubscription = async ({
-  filters,
-}: {
-  filters: Prisma.TrilhaSubscriptionWhereInput
-}) => {
-  return prisma.trilhaSubscription.findMany({
-    where: filters,
+export const getTrilhasStaticsIsFinished = async () => {
+  return prisma.trilhaSubscription.groupBy({
+    by: ['trilhaId', 'isFinished'],
+    _count: {
+      _all: true,
+    },
+    _avg: {
+      finalGrade: true
+    }
   });
 };
