@@ -1,4 +1,4 @@
-import { Center, Flex, Heading, Link } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, Link } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "../../lib/session";
@@ -7,6 +7,13 @@ import cmsClient from "../../services/cmsClient";
 import { IVagasAll } from "../../types/CMS/Vaga";
 import { IJornadaFindOne } from "../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../types/CMS/Trilha";
+
+type IProps = {
+  jornada: IJornadaFindOne,
+  trilhas: ITrilhasAll,
+  subscription: JornadaSubscription
+  vagas: IVagasAll
+}
 
 export const getServerSideProps = withIronSessionSsr(async ({
   req,
@@ -22,7 +29,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
     }
   }
   const id = params?.jornadaId;
-  const [responseJornadas, responseTrilhas, subscription] = await Promise.all([
+  const [responseJornadas, responseTrilhas, subscription, vagas] = await Promise.all([
     cmsClient.get<IJornadaFindOne>(`jornadas/${id}`, {
       params: {
         populate: 'image'
@@ -33,15 +40,15 @@ export const getServerSideProps = withIronSessionSsr(async ({
         'filters[jornadas][id][$eq]': id
       }
     }),
+    getJornadaSubscription({
+      jornadaId: Number(id),
+      userId: req.session.user.id,
+    }),
     cmsClient.get<IVagasAll>(`vagas`, {
       params: {
         'filters[jornadas][id][$eq]': id
       }
     }),
-    getJornadaSubscription({
-      jornadaId: Number(id),
-      userId: req.session.user.id,
-    })
   ])
 
   const { created_at, updated_at, ...restSubscription } = subscription || {};
@@ -50,6 +57,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
       jornada: responseJornadas.data,
       trilhas: responseTrilhas.data,
       subscription: restSubscription,
+      vagas: vagas.data
     },
   };
 }, sessionOptions)
@@ -58,11 +66,8 @@ export default function StartPage({
   jornada,
   trilhas,
   subscription,
-}: {
-  jornada: IJornadaFindOne,
-  trilhas: ITrilhasAll,
-  subscription: JornadaSubscription
-}) {
+  vagas,
+}: IProps) {
   return <Flex
     direction="column"
     h="100vh"
@@ -110,5 +115,32 @@ export default function StartPage({
         }
       </Flex>
     </Flex>
+    {vagas.data.length > 0 && <Flex
+      direction="column"
+      p={8}
+      gap={4}
+    >
+      <Heading>Vagas Disponíveis</Heading>
+      <Flex
+        gap={4}
+        wrap={"wrap"}
+        justifyContent="flex-start"
+      >
+        {vagas.data.map(vaga => {
+          return <Link
+            key={vaga.id.toString().concat('-vaga')}
+            href={`/vagas/${vaga.id}`}
+          >
+            <Button
+              p={4}
+              bgColor='yellow.brand'
+              color="gray.brand"
+            >
+              {vaga.attributes.name}
+            </Button>
+          </Link>
+        })}
+      </Flex>
+    </Flex>}
   </Flex>
 }

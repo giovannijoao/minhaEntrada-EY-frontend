@@ -5,7 +5,7 @@ export type IJornada = {
   attributes: {
     name: string;
     description: string;
-    image: {
+    image?: {
       data: {
         id: number;
         attributes: {
