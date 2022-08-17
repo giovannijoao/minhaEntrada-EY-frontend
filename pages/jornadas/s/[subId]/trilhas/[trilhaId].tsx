@@ -201,7 +201,7 @@ export default function TrilhaPage({
                   <Text flex={1}>{aula.attributes.name}</Text>
                   {p?.hasActivity && !p.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                   {p?.finalGrade && <Badge bgColor="yellow.brand">Nota: {p.finalGrade}</Badge>}
-                  {!aula.attributes.atividade?.data && <Badge>Sem atividade</Badge>}
+                  {!aula.attributes.atividade?.data && <Badge>Atividade não disponível</Badge>}
                   {!!aula.attributes.atividade?.data && p?.isClassFinished && !p?.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                 </Flex>
                 <Text>{aula.attributes.duration}</Text>
