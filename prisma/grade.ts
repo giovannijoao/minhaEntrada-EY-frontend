@@ -21,20 +21,13 @@ export const getJornadaGrade = async ({
 }: {
   jornadaSubscriptionId: string;
 }) => {
-  const trilhas = await prisma.trilhaSubscription.findMany({
+  const grade = await prisma.trilhaSubscription.aggregate({
     where: {
       jornadaSubscriptionId
-    }
-  })
-  const subscription = await prisma.aulaProgress.aggregate({
-    where: {
-      trilhaSubscriptionId: {
-        in: trilhas.map(x => x.id)
-      },
     },
     _avg: {
-      finalGrade: true,
-    },
-  });
-  return subscription;
+      finalGrade: true
+    }
+  })
+  return grade;
 };
