@@ -6,7 +6,8 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { withAuthSsr } from "../../../../../lib/withAuth";
-import { getAllProgresses, getGrade } from "../../../../../prisma/aulaProgress";
+import { getAllProgresses } from "../../../../../prisma/aulaProgress";
+import { getTrilhaSubscriptionByJornada } from "../../../../../prisma/trilhas";
 import cmsClient from "../../../../../services/cmsClient";
 import { ITrilhaFindOne } from "../../../../../types/CMS/Trilha";
 
@@ -24,16 +25,30 @@ export const getServerSideProps = withAuthSsr(async ({
     trilhaId,
   } = params as any;
 
-  const [responseTrilha, progress, grade] = await Promise.all([
+  const trilhaSubscription = await getTrilhaSubscriptionByJornada({
+    jornadaSubscriptionId,
+    trilhaId: Number(trilhaId)
+  });
+
+  if (!trilhaSubscription) {
+    return {
+      redirect: {
+        destination: '/jornadas',
+        statusCode: 302,
+      }
+    }
+  }
+
+  const [responseTrilha, progress] = await Promise.all([
     cmsClient.get<ITrilhaFindOne>(`trilhas/${trilhaId}`, {
       params: {
-        populate: 'aulas.atividade'
+        populate: 'aulas.atividade',
+        'filters[aulas][id][$in]': trilhaSubscription?.classesIds
       }
     }),
     getAllProgresses({
       userId: req.session.user.id,
-      jornadaSubscriptionId,
-      trilhaId: Number(trilhaId),
+      trilhaSubscriptionId: trilhaSubscription?.id,
     }).then(res => {
       return res.map(x => {
         return {
@@ -43,29 +58,25 @@ export const getServerSideProps = withAuthSsr(async ({
         }
       })
     }),
-    getGrade({
-      userId: req.session.user.id,
-      jornadaSubscriptionId,
-      trilhaId: Number(trilhaId),
-    })
+    // getGrade({
+    //   userId: req.session.user.id,
+    //   jornadaSubscriptionId,
+    //   trilhaId: Number(trilhaId),
+    // })
   ])
-  const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
-  const hasFinishedClasses = finishedClasses.length === (responseTrilha.data.data.attributes.aulas?.data.length as number);
-  const hasFinishedCourse = hasFinishedClasses && (grade?._avg?.finalGrade || 0) >= FINAL_GRADE_GTE;
-  console.log({
-    hasFinishedClasses,
-    hasFinishedCourse,
-    grade,
-  })
+  // const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
+  // const hasFinishedClasses = finishedClasses.length === (responseTrilha.data.data.attributes.aulas?.data.length as number);
+  // const hasFinishedCourse = hasFinishedClasses && (grade?._avg?.finalGrade || 0) >= FINAL_GRADE_GTE;
   return {
     props: {
       trilha: responseTrilha.data,
       progress,
       jornadaSubscriptionId,
-      finishedClasses,
-      hasFinishedCourse,
-      hasFinishedClasses,
-      finalGrade: grade?._avg?.finalGrade || 0
+      trilhaSubscriptionId: trilhaSubscription.id,
+      finishedClasses: false,
+      hasFinishedCourse: false,
+      hasFinishedClasse: false,
+      // finalGrade: grade?._avg?.finalGrade || 0
     },
   };
 })
@@ -75,6 +86,7 @@ type IProps = {
   trilha: ITrilhaFindOne,
   progress: AulaProgress[],
   jornadaSubscriptionId: string,
+  trilhaSubscriptionId: string,
   finishedClasses: number[]
   hasFinishedCourse: boolean
   hasFinishedClasses: boolean
@@ -85,10 +97,11 @@ export default function TrilhaPage({
   trilha,
   progress,
   jornadaSubscriptionId,
+  trilhaSubscriptionId,
   finishedClasses,
   hasFinishedCourse,
   hasFinishedClasses,
-  finalGrade
+  finalGrade,
 }: IProps) {
   const router = useRouter();
 
@@ -100,13 +113,13 @@ export default function TrilhaPage({
     const response = await axios.post('/api/progress/create', {
       aulaId,
       isClassFinished: false,
-      jornadaSubscriptionId,
+      trilhaSubscriptionId,
       trilhaId: trilha.data.id,
     })
     router.push(`/aula/${response.data.id}`)
     // TODO: Adicionar error treatment
     // TODO: Adicionar isLoading no botão de ingressar
-  }, [jornadaSubscriptionId, router, trilha.data.id])
+  }, [router, trilha.data.id, trilhaSubscriptionId])
 
   return <Flex
     direction="column"
@@ -190,7 +203,7 @@ export default function TrilhaPage({
                   {p?.hasActivity && !p.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                   {p?.finalGrade && <Badge bgColor="yellow.brand">Nota: {p.finalGrade}</Badge>}
                   {!aula.attributes.atividade?.data && <Badge>Sem atividade</Badge>}
-                  {!!aula.attributes.atividade?.data && !p?.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
+                  {!!aula.attributes.atividade?.data && p?.isClassFinished && !p?.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                 </Flex>
                 <Text>{aula.attributes.duration}</Text>
                 <IconButton

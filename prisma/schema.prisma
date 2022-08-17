@@ -24,13 +24,26 @@ model User {
 }
 
 model JornadaSubscription {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  user         User           @relation(fields: [userId], references: [id])
-  userId       String         @db.ObjectId
-  jornadaId    Int
-  AulaProgress AulaProgress[]
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  user               User                 @relation(fields: [userId], references: [id])
+  userId             String               @db.ObjectId
+  jornadaId          Int
+  TrilhaSubscription TrilhaSubscription[]
+}
+
+model TrilhaSubscription {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @updatedAt
+  trilhaId              Int
+  jornadaSubscription   JornadaSubscription @relation(fields: [jornadaSubscriptionId], references: [id])
+  jornadaSubscriptionId String
+  classesIds            Int[]
+  finishedClasses       Int[]
+  finalGrade            Int?
+  AulaProgress          AulaProgress[]
 }
 
 model Answer {
@@ -43,23 +56,22 @@ model Answer {
 }
 
 model AulaProgress {
-  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
-  created_at            DateTime            @default(now())
-  updated_at            DateTime            @updatedAt
-  user                  User                @relation(fields: [userId], references: [id])
-  userId                String              @db.ObjectId
-  jornadaSubscription   JornadaSubscription @relation(fields: [jornadaSubscriptionId], references: [id])
-  jornadaSubscriptionId String              @db.ObjectId
-  trilhaId              Int
-  aulaId                Int
-  isClassFinished       Boolean             @default(false)
-  isActivityFinished    Boolean             @default(false)
-  hasActivity           Boolean?
-  activityId            Int?
-  answers               Answer[]
-  totalQuestions        Int?
-  totalCorrect          Int?
-  finalGrade            Float?
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  user                 User                @relation(fields: [userId], references: [id])
+  userId               String              @db.ObjectId
+  aulaId               Int
+  isClassFinished      Boolean             @default(false)
+  isActivityFinished   Boolean             @default(false)
+  hasActivity          Boolean?
+  activityId           Int?
+  answers              Answer[]
+  totalQuestions       Int?
+  totalCorrect         Int?
+  finalGrade           Float?
+  TrilhaSubscription   TrilhaSubscription? @relation(fields: [trilhaSubscriptionId], references: [id])
+  trilhaSubscriptionId String?             @db.ObjectId
 }
 
 model AppliedVacancy {

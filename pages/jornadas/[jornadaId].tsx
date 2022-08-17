@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { withAuthSsr } from "../../lib/withAuth";
 import { getJornadaSubscription } from "../../prisma/jornadasSubscription";
+import { getTrilhasSubscriptionForJornada } from "../../prisma/trilhas";
 import cmsClient from "../../services/cmsClient";
 import { IJornadaFindOne } from "../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../types/CMS/Trilha";
@@ -24,7 +25,20 @@ export const getServerSideProps = withAuthSsr(async ({
   params,
 }: GetServerSidePropsContext) => {
   const id = params?.jornadaId;
-  const [responseJornadas, responseTrilhas, subscription, vagas] = await Promise.all([
+  const subscription = await getJornadaSubscription({
+    jornadaId: Number(id),
+    userId: req.session.user.id,
+  });
+
+  let trilhasIds = [];
+  if (subscription) {
+    const trilhasSubscription = await getTrilhasSubscriptionForJornada({
+      jornadaSubscriptionId: subscription.id
+    });
+    trilhasIds.push(...trilhasSubscription.map(x => x.trilhaId));
+  }
+
+  const [responseJornadas, responseTrilhas, vagas] = await Promise.all([
     cmsClient.get<IJornadaFindOne>(`jornadas/${id}`, {
       params: {
         populate: 'image'
@@ -32,12 +46,9 @@ export const getServerSideProps = withAuthSsr(async ({
     }),
     cmsClient.get<ITrilhasAll>(`trilhas`, {
       params: {
-        'filters[jornadas][id][$eq]': id
+        'filters[jornadas][id][$eq]': id,
+        ...trilhasIds.length > 0 ? { 'filters[id][$in]': trilhasIds } : {}
       }
-    }),
-    getJornadaSubscription({
-      jornadaId: Number(id),
-      userId: req.session.user.id,
     }),
     cmsClient.get<IVagasAll>(`vagas`, {
       params: {

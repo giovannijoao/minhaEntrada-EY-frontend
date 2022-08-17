@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { withSessionRoute } from "../../../../lib/withAuth";
 import { createAnswers } from "../../../../prisma/answer";
 import { getAulaProgress, updateAulaProgress } from "../../../../prisma/aulaProgress";
+import { getTrilhaGrade } from "../../../../prisma/grade";
+import { getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhas";
 import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
@@ -26,9 +28,14 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
       progressId,
     });
 
-    if (!progress) return res.status(400).json({
-      message: 'Bad request'
-    })
+    const trilhaSubscription = await getTrilhaSubscriptionById({
+      trilhaSubscriptionId: progress?.trilhaSubscriptionId as string,
+    });
+
+    if (!progress || !trilhaSubscription)
+      return res.status(400).json({
+        message: "Bad request",
+      });
 
     const aula = await cmsClient
       .get<IAulaFindOne>(`aulas/${progress?.aulaId}`, {
@@ -62,6 +69,24 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
     await updateAulaProgress({
       id: progress.id,
       data: progress
+    })
+
+    const finishedClasses = Array.from(new Set([...trilhaSubscription?.finishedClasses || [], progress.aulaId]));
+    let finalGrade = null;
+
+    if (finishedClasses.length === trilhaSubscription.classesIds.length) {
+      const grade = await getTrilhaGrade({
+        trilhaSubscriptionId: trilhaSubscription.id,
+      })
+      finalGrade = grade._avg.finalGrade
+    }
+
+    await updateTrilhaSubscription({
+      id: trilhaSubscription.id,
+      data: {
+        finishedClasses,
+        finalGrade,
+      }
     })
 
     res.json(progress);

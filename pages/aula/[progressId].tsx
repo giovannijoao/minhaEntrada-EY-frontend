@@ -132,7 +132,7 @@ export default function TrilhaPage({
     {progress.isClassFinished && <Center p={8} flexDirection="column" gap={4}>
       <Heading>Você já finalizou essa aula.</Heading>
       {!progress.isActivityFinished && aula.data.attributes.atividade?.data && <Link href={`/activity/${progressId}`}><Button colorScheme="yellow">Realizar as atividades</Button></Link>}
-      <Link href={`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`}><Button colorScheme="yellow" variant="outline">Ver outras aulas</Button></Link>
+      {/* <Link href={`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`}><Button colorScheme="yellow" variant="outline">Ver outras aulas</Button></Link> */}
     </Center>}
   </Flex>
 }

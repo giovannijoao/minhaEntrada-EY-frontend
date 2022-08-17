@@ -1,12 +1,13 @@
 import { ArrowForwardIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { Button, Center, Flex, Heading, IconButton, Text, useToast } from "@chakra-ui/react";
-import { AulaProgress } from "@prisma/client";
+import { AulaProgress, TrilhaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { withAuthSsr } from "../../../lib/withAuth";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
+import { getTrilhaSubscriptionById } from "../../../prisma/trilhas";
 import cmsClient from "../../../services/cmsClient";
 import { IAulaFindOne, IAulasAll } from "../../../types/CMS/Aula";
 
@@ -14,6 +15,7 @@ type IProps = {
   aula: IAulaFindOne
   progress: AulaProgress
   nextClasses: IAulasAll | null
+  trilhaSubscription: TrilhaSubscription
 }
 
 export const getServerSideProps = withAuthSsr(async ({
@@ -40,7 +42,7 @@ export const getServerSideProps = withAuthSsr(async ({
     progressId
   });
 
-  if (!progress) {
+  if (!progress || !progress.trilhaSubscriptionId) {
     return {
       redirect: {
         destination: '/jornadas',
@@ -48,11 +50,24 @@ export const getServerSideProps = withAuthSsr(async ({
       }
     }
   }
+  const trilhaSubscription = await getTrilhaSubscriptionById({
+    trilhaSubscriptionId: progress.trilhaSubscriptionId
+  });
+
+  if (!trilhaSubscription) {
+    return {
+      redirect: {
+        destination: '/jornadas',
+        statusCode: 302
+      }
+    }
+  }
+
   const {created_at, updated_at, ...progressRest} = progress;
+  const { created_at: created_at2, updated_at: updated_at2, ...trilhaSubscriptionRest } = trilhaSubscription;
 
   const progresses = await getAllProgresses({
-    jornadaSubscriptionId: progress.jornadaSubscriptionId,
-    trilhaId: progress.trilhaId,
+    trilhaSubscriptionId: progress.trilhaSubscriptionId,
     userId: req.session.user.id,
     isFinished: true,
   })
@@ -64,7 +79,7 @@ export const getServerSideProps = withAuthSsr(async ({
     cmsClient.get<IAulasAll>(`aulas`, {
       params: {
         populate: 'trilha',
-        'filters[trilha][id][$eq]': progress.trilhaId,
+        'filters[trilha][id][$eq]': trilhaSubscription.trilhaId,
         'filters[id][$notIn]': completedClasses,
         'pagination[limit]': '1'
       }
@@ -76,6 +91,7 @@ export const getServerSideProps = withAuthSsr(async ({
       aula: responseAula,
       nextClasses: responseNextAula,
       progress: progressRest,
+      trilhaSubscription: trilhaSubscriptionRest,
     },
   };
 })
@@ -83,7 +99,8 @@ export const getServerSideProps = withAuthSsr(async ({
 export default function Page({
   aula,
   progress,
-  nextClasses
+  nextClasses,
+  trilhaSubscription,
 }: IProps) {
   const router = useRouter();
   const toast = useToast();
@@ -98,12 +115,11 @@ export default function Page({
     const response = await axios.post('/api/progress/create', {
       aulaId,
       isFinished: false,
-      jornadaSubscriptionId: progress.jornadaSubscriptionId,
-      trilhaId: progress.trilhaId,
+      trilhaSubscriptionId: trilhaSubscription.id
     })
     // TODO: Adicionar loading do botão de próxima aula
     router.push(`/aula/${response.data.id}`)
-  }, [progress.jornadaSubscriptionId, progress.trilhaId, router])
+  }, [router, trilhaSubscription.id])
 
   return <Flex
     direction="column"
@@ -119,7 +135,7 @@ export default function Page({
       gap={6}
       color={"gray.brand"}
     >
-      <IconButton onClick={() => router.replace(`/jornadas/s/${progress.jornadaSubscriptionId}/trilhas/${progress.trilhaId}`)} icon={<ChevronLeftIcon />} aria-label="Voltar" />
+      <IconButton onClick={() => router.replace(`/jornadas/s/${trilhaSubscription.jornadaSubscriptionId}/trilhas/${trilhaSubscription.trilhaId}`)} icon={<ChevronLeftIcon />} aria-label="Voltar" />
       <Flex direction="column">
         <Heading fontSize="3xl" fontWeight={"bold"}>
           {aula.data.attributes.name}
