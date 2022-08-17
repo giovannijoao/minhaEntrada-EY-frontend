@@ -19,6 +19,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
       jornadaId: req.body.jornadaId,
       userId: req.session.user.id as string,
       availableTrilhas: trilhas.data.data.map(x => x.id),
+      isFinished: false,
     });
 
     await prisma.trilhaSubscription.createMany({

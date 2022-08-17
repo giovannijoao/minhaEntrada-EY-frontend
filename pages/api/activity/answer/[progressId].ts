@@ -3,7 +3,8 @@ import { withSessionRoute } from "../../../../lib/withAuth";
 import { createAnswers } from "../../../../prisma/answer";
 import { getAulaProgress, updateAulaProgress } from "../../../../prisma/aulaProgress";
 import { getTrilhaGrade } from "../../../../prisma/grade";
-import { getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhasSubscription";
+import { updateJornadaSubscription } from "../../../../prisma/jornadasSubscription";
+import { getTrilhasSubscriptionForJornada, getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhasSubscription";
 import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
@@ -90,6 +91,19 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
           finishedClasses.length === trilhaSubscription.classesIds.length,
       },
     });
+
+    const subscriptions = await getTrilhasSubscriptionForJornada({
+      jornadaSubscriptionId: trilhaSubscription.jornadaSubscriptionId
+    })
+
+    const allTrilhasFinished = subscriptions.every(x => x.isFinished);
+    updateJornadaSubscription({
+      id: trilhaSubscription.jornadaSubscriptionId,
+      data: {
+        isFinished: allTrilhasFinished,
+        finishedTrilhas: subscriptions.filter(x => x.isFinished).map(x => x.trilhaId)
+      }
+    })
 
     res.json(progress);
   } catch (error) {

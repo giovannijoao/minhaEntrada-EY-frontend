@@ -35,3 +35,19 @@ export const createJornadaSubscription = async (data: Prisma.JornadaSubscription
   });
   return jornadaSubscription;
 };
+
+export const updateJornadaSubscription = async ({
+  data,
+  id,
+}: {
+  id: string,
+  data: Partial<JornadaSubscription>;
+}) => {
+  const jornadaSubscription = await prisma.jornadaSubscription.update({
+    where: {
+      id,
+    },
+    data,
+  });
+  return jornadaSubscription;
+};

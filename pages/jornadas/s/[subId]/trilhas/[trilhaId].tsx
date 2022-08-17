@@ -58,12 +58,8 @@ export const getServerSideProps = withAuthSsr(async ({
         }
       })
     }),
-    // getGrade({
-    //   userId: req.session.user.id,
-    //   jornadaSubscriptionId,
-    //   trilhaId: Number(trilhaId),
-    // })
   ])
+  console.log(62, responseTrilha.data.data.attributes.aulas?.data[0].attributes.atividade)
   const finishedClasses = trilhaSubscription.finishedClasses;
   const hasFinishedClasses = trilhaSubscription.classesIds.length === trilhaSubscription.finishedClasses.length;
   const hasFinishedCourse = hasFinishedClasses && (trilhaSubscription.finalGrade || 0) >= FINAL_GRADE_GTE;
@@ -199,7 +195,6 @@ export default function TrilhaPage({
                 <Icon />
                 <Flex direction="column" gap={2} flex={1} alignItems="flex-start">
                   <Text flex={1}>{aula.attributes.name}</Text>
-                  {p?.hasActivity && !p.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                   {p?.finalGrade && <Badge bgColor="yellow.brand">Nota: {p.finalGrade}</Badge>}
                   {!aula.attributes.atividade?.data && <Badge>Atividade não disponível</Badge>}
                   {!!aula.attributes.atividade?.data && p?.isClassFinished && !p?.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}

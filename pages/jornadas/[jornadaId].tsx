@@ -1,3 +1,4 @@
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Button, Center, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
@@ -17,6 +18,7 @@ type IProps = {
   trilhas: ITrilhasAll,
   subscription: JornadaSubscription
   vagas: IVagasAll
+  finishedTrilhas: number[]
 }
 
 export const getServerSideProps = withAuthSsr(async ({
@@ -31,11 +33,13 @@ export const getServerSideProps = withAuthSsr(async ({
   });
 
   let trilhasIds = [];
+  let finishedTrilhas = []
   if (subscription) {
     const trilhasSubscription = await getTrilhasSubscriptionForJornada({
       jornadaSubscriptionId: subscription.id
     });
     trilhasIds.push(...trilhasSubscription.map(x => x.trilhaId));
+    finishedTrilhas.push(...trilhasSubscription.filter(x => x.isFinished).map(x => x.trilhaId));
   }
 
   const [responseJornadas, responseTrilhas, vagas] = await Promise.all([
@@ -63,7 +67,8 @@ export const getServerSideProps = withAuthSsr(async ({
       jornada: responseJornadas.data,
       trilhas: responseTrilhas.data,
       subscription: restSubscription,
-      vagas: vagas.data
+      vagas: vagas.data,
+      finishedTrilhas,
     },
   };
 });
@@ -73,6 +78,7 @@ export default function StartPage({
   trilhas,
   subscription,
   vagas,
+  finishedTrilhas,
 }: IProps) {
 
   const router = useRouter();
@@ -132,6 +138,7 @@ export default function StartPage({
       >
         {
           trilhas.data.map(trilha => {
+            const isFinished = finishedTrilhas.find(x => x === trilha.id);
             return <Center
               minW={32}
               h={32}
@@ -140,7 +147,17 @@ export default function StartPage({
               borderRadius="md"
               color="gray.brand"
               p={8}
+              position="relative"
             >
+              {
+                isFinished && <CheckCircleIcon
+                  position="absolute"
+                  top={1}
+                  right={1}
+                  h={8}
+                  w={8}
+                />
+              }
               {subscription.id && <Link href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}>
                 <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
               </Link>}
