@@ -8,15 +8,17 @@ import { ITrilhasAll } from '../../../types/CMS/Trilha';
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const subscription = await createJornadaSubscription({
-      jornadaId: req.body.jornadaId,
-      userId: req.session.user.id
-    });
     const trilhas = await cmsClient.get<ITrilhasAll>(`trilhas`, {
       params: {
         'populate': 'aulas',
         'filters[jornadas][id][$eq]': req.body.jornadaId
       }
+    });
+
+    const subscription = await createJornadaSubscription({
+      jornadaId: req.body.jornadaId,
+      userId: req.session.user.id as string,
+      availableTrilhas: trilhas.data.data.map(x => x.id),
     });
 
     await prisma.trilhaSubscription.createMany({

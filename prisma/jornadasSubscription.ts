@@ -1,4 +1,4 @@
-import { JornadaSubscription } from '@prisma/client';
+import { JornadaSubscription, Prisma } from '@prisma/client';
 import prisma from './prisma'
 
 export const getAllJornadaSubscriptionsForUser = async ({
@@ -29,7 +29,7 @@ export const getJornadaSubscription = async ({
 };
 
 // CREATE
-export const createJornadaSubscription = async (data: Omit<JornadaSubscription, 'id' | 'AulaProgress' | 'created_at' | 'updated_at'>) => {
+export const createJornadaSubscription = async (data: Prisma.JornadaSubscriptionUncheckedCreateInput) => {
   const jornadaSubscription = await prisma.jornadaSubscription.create({
     data,
   });
