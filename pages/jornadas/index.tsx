@@ -98,6 +98,10 @@ export default function StartPage({
       <Flex
         gap={4}
         wrap={"wrap"}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
       >
         {
           subscriptions.map(subscription => {
@@ -105,9 +109,10 @@ export default function StartPage({
               w="2xs"
               key={subscription.id.toString().concat('-sub')}
               borderRadius="md"
-              bgColor="gray.300"
+              bgColor="whiteAlpha.300"
+              boxShadow={"md"}
+              color="white"
               p={4}
-              color="gray.brand"
             >
               <Image
                 w={"100%"}
@@ -131,6 +136,10 @@ export default function StartPage({
       <Flex
         gap={4}
         wrap={"wrap"}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
       >
         {
           jornadas.data.map(jornada => {
@@ -138,9 +147,10 @@ export default function StartPage({
               w="2xs"
               key={jornada.id.toString().concat('-jornada')}
               borderRadius="md"
-              bgColor="gray.300"
+              bgColor="whiteAlpha.300"
+              boxShadow={"md"}
+              color="white"
               p={4}
-              color="gray.brand"
             >
               <Image
                 w={"100%"}
@@ -151,7 +161,7 @@ export default function StartPage({
                 aria-label={jornada.attributes.image.data.attributes.caption} />
               <Flex direction={"column"} gap={2}>
                 <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
-                <Button size="xs" bg="yellow.brand" onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
+                <Button size="xs" bg="yellow.brand" color='gray.brand' onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
               </Flex>
             </Box>
           })

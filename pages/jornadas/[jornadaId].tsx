@@ -89,6 +89,8 @@ export default function StartPage({
         {
           trilhas.data.map(trilha => {
             return <Center
+              minW={32}
+              h={32}
               key={trilha.id.toString().concat('-trilha')}
               bg={trilha.attributes.color || 'yellow.brand'}
               borderRadius="md"
