@@ -64,19 +64,19 @@ export const getServerSideProps = withAuthSsr(async ({
     //   trilhaId: Number(trilhaId),
     // })
   ])
-  // const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
-  // const hasFinishedClasses = finishedClasses.length === (responseTrilha.data.data.attributes.aulas?.data.length as number);
-  // const hasFinishedCourse = hasFinishedClasses && (grade?._avg?.finalGrade || 0) >= FINAL_GRADE_GTE;
+  const finishedClasses = trilhaSubscription.finishedClasses;
+  const hasFinishedClasses = trilhaSubscription.classesIds.length === trilhaSubscription.finishedClasses.length;
+  const hasFinishedCourse = hasFinishedClasses && (trilhaSubscription.finalGrade || 0) >= FINAL_GRADE_GTE;
   return {
     props: {
       trilha: responseTrilha.data,
       progress,
       jornadaSubscriptionId,
       trilhaSubscriptionId: trilhaSubscription.id,
-      finishedClasses: false,
-      hasFinishedCourse: false,
-      hasFinishedClasse: false,
-      // finalGrade: grade?._avg?.finalGrade || 0
+      finishedClasses: trilhaSubscription.finishedClasses,
+      hasFinishedCourse: hasFinishedCourse,
+      hasFinishedClasses: hasFinishedClasses,
+      finalGrade: trilhaSubscription.finalGrade || 0
     },
   };
 })
@@ -96,7 +96,6 @@ type IProps = {
 export default function TrilhaPage({
   trilha,
   progress,
-  jornadaSubscriptionId,
   trilhaSubscriptionId,
   finishedClasses,
   hasFinishedCourse,
