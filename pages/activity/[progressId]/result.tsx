@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { withAuthSsr } from "../../../lib/withAuth";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
-import { getTrilhaSubscriptionById } from "../../../prisma/trilhas";
+import { getTrilhaSubscriptionById } from "../../../prisma/trilhasSubscription";
 import cmsClient from "../../../services/cmsClient";
 import { IAulaFindOne, IAulasAll } from "../../../types/CMS/Aula";
 

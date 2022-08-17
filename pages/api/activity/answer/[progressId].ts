@@ -3,7 +3,7 @@ import { withSessionRoute } from "../../../../lib/withAuth";
 import { createAnswers } from "../../../../prisma/answer";
 import { getAulaProgress, updateAulaProgress } from "../../../../prisma/aulaProgress";
 import { getTrilhaGrade } from "../../../../prisma/grade";
-import { getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhas";
+import { getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhasSubscription";
 import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
