@@ -59,6 +59,7 @@ model AulaProgress {
   answers               Answer[]
   totalQuestions        Int?
   totalCorrect          Int?
+  finalGrade            Float?
 }
 
 model AppliedVacancy {

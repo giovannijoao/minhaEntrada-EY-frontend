@@ -30,6 +30,25 @@ export const getAllProgresses = async ({
   });
 };
 
+export const getGrade = async ({
+  userId,
+  jornadaSubscriptionId,
+  trilhaId,
+}: {
+  userId: string;
+  jornadaSubscriptionId: string;
+  trilhaId: number;
+}) => {
+  return prisma.aulaProgress.aggregate({
+    where: {
+      userId,
+      jornadaSubscriptionId,
+      trilhaId,
+    },
+
+  });
+};
+
 export const getAulaProgress = async ({
   progressId,
   userId,

@@ -140,7 +140,7 @@ export default function Page({
       >
         <Heading
           fontSize="4xl"
-        >{Math.round((progress.totalQuestions as number) / (progress.totalCorrect as number)) * 10}</Heading>
+        >{progress.finalGrade}</Heading>
       </Center>
     </Center>
     <Center

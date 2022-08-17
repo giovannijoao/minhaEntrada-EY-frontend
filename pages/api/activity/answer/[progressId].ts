@@ -58,6 +58,7 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
     progress.totalQuestions = totalQuestions;
     progress.totalCorrect = totalCorrect;
     progress.activityId = aula.data.attributes.atividade.data.id;
+    progress.finalGrade = Math.round((progress.totalCorrect / progress.totalQuestions) * 10)
     await updateAulaProgress({
       id: progress.id,
       data: progress

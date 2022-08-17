@@ -14,6 +14,7 @@ type IProps = {
   trilha: ITrilhaFindOne,
   progress: AulaProgress[],
   jornadaSubscriptionId: string,
+  finishedClasses: number[]
 }
 
 export const getServerSideProps = withAuthSsr(async ({
@@ -47,11 +48,14 @@ export const getServerSideProps = withAuthSsr(async ({
       })
     })
   ])
+  const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
+
   return {
     props: {
       trilha: responseTrilha.data,
       progress,
       jornadaSubscriptionId,
+      finishedClasses,
     },
   };
 })
@@ -60,6 +64,7 @@ export default function TrilhaPage({
   trilha,
   progress,
   jornadaSubscriptionId,
+  finishedClasses,
 }: IProps) {
   const router = useRouter();
 
@@ -79,7 +84,6 @@ export default function TrilhaPage({
     // TODO: Adicionar isLoading no botão de ingressar
   }, [jornadaSubscriptionId, router, trilha.data.id])
 
-  const finishedClasses = Array.from(new Set(progress?.filter(p => p.hasActivity ? p.isActivityFinished : p.isClassFinished).map(x => x.aulaId)));
   return <Flex
     direction="column"
     h="100vh"
