@@ -1,13 +1,16 @@
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
-import { Box, Flex, Heading, HStack, Icon, IconButton, Link, Stack, useDisclosure } from '@chakra-ui/react';
+import { Avatar, Box, Button, Flex, Heading, HStack, Icon, IconButton, Link, Menu, MenuButton, MenuItem, MenuList, Stack, useDisclosure } from '@chakra-ui/react';
 import { ReactNode, useMemo } from 'react';
 import { GiStonePath } from 'react-icons/gi';
+import useUser from '../lib/useUser';
 
 
-const NavLink = ({ children, link }: { children: ReactNode, link: {
-  href: string,
-  title: string,
-} }) => (
+const NavLink = ({ children, link }: {
+  children: ReactNode, link: {
+    href: string,
+    title: string,
+  }
+}) => (
   <Link
     px={2}
     py={1}
@@ -18,7 +21,7 @@ const NavLink = ({ children, link }: { children: ReactNode, link: {
     }}
     href={link.href}
     color="white"
-    >
+  >
     {children}
   </Link>
 );
@@ -28,6 +31,7 @@ export default function HeaderV2({
 }: {
   role: string
 }) {
+  const { user, logout } = useUser();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const Links = useMemo(() => {
@@ -55,7 +59,7 @@ export default function HeaderV2({
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Flex  alignItems="center" gap={4}>
+            <Flex alignItems="center" gap={4}>
               <Icon as={GiStonePath} color='yellow.brand' h={8} w={8} />
               <Heading fontSize={"2xl"} color="yellow.brand">minhaEntrada EY</Heading>
             </Flex>
@@ -68,6 +72,29 @@ export default function HeaderV2({
               ))}
             </HStack>
           </HStack>
+          {user && <Flex alignItems={'center'}>
+            <Stack direction={'row'} spacing={7}>
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rounded={'full'}
+                  variant={'link'}
+                  cursor={'pointer'}
+                  minW={0}>
+                  <Avatar
+                    size={'sm'}
+                    name={`${user.firstName} ${user.lastName}`}
+                  />
+                </MenuButton>
+                <MenuList bgColor="gray.brand">
+                  {/* <Link href="/user"><MenuItem>Perfil</MenuItem></Link> */}
+                  <MenuItem onClick={logout} _hover={{
+                    bg: 'whiteAlpha.300'
+                  }}>Sair</MenuItem>
+                </MenuList>
+              </Menu>
+            </Stack>
+          </Flex>}
         </Flex>
 
         {isOpen ? (
