@@ -41,6 +41,7 @@ model TrilhaSubscription {
   trilhaId              Int
   jornadaSubscription   JornadaSubscription @relation(fields: [jornadaSubscriptionId], references: [id])
   jornadaSubscriptionId String
+  isFinished            Boolean             @default(false)
   classesIds            Int[]
   finishedClasses       Int[]
   finalGrade            Int?

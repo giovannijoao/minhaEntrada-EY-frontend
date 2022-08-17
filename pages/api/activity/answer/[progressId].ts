@@ -86,8 +86,10 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
       data: {
         finishedClasses,
         finalGrade,
-      }
-    })
+        isFinished:
+          finishedClasses.length === trilhaSubscription.classesIds.length,
+      },
+    });
 
     res.json(progress);
   } catch (error) {

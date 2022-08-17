@@ -1,10 +1,9 @@
-import { Center, Flex, Heading, Stat, StatArrow, StatGroup, StatHelpText, StatLabel, StatNumber } from "@chakra-ui/react";
+import { Flex, Heading, Stat, StatGroup, StatLabel, StatNumber } from "@chakra-ui/react";
 import { TrilhaSubscription } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { withAuthSsr } from "../../../lib/withAuth";
-import prisma from "../../../prisma/prisma";
-import { queryTrilhasSubscription } from "../../../prisma/trilhasSubscription";
+import { getTrilhasStaticsIsFinished } from "../../../prisma/trilhasSubscription";
 import cmsClient from "../../../services/cmsClient";
 import { IJornadaFindOne } from "../../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../../types/CMS/Trilha";
@@ -29,19 +28,13 @@ export const getServerSideProps = withAuthSsr(async ({
     })
   ])
 
-  const subscriptions = await queryTrilhasSubscription({
-    filters: {
-      trilhaId: {
-        in: responseTrilhas.data.data.map(x => x.id)
-      }
-    }
-  }).then(res => res.map(({ created_at, updated_at, ...rest}) => rest))
+  const statics = await getTrilhasStaticsIsFinished();
 
   return {
     props: {
       jornada: responseJornadas.data,
       trilhas: responseTrilhas.data,
-      subscriptions,
+      statics,
     },
   };
 }, 'admin');
@@ -49,14 +42,23 @@ export const getServerSideProps = withAuthSsr(async ({
 type IProps = {
   jornada: IJornadaFindOne,
   trilhas: ITrilhasAll,
-  subscriptions: TrilhaSubscription[]
+  statics: {
+    isFinished: boolean;
+    trilhaId: number;
+    _avg: {
+      finalGrade: number | null;
+    };
+    _count: {
+      _all: number;
+    };
+  }[]
 }
 
 
 export default function StartPage({
   jornada,
   trilhas,
-  subscriptions,
+  statics,
 }: IProps) {
 
   const router = useRouter();
@@ -105,12 +107,16 @@ export default function StartPage({
                 <Stat>
                   <StatLabel>Cursando</StatLabel>
                   <StatNumber>
-                    {subscriptions.filter(x => x.finishedClasses.length < x.classesIds.length).length}
+                    {statics.find(x => !x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}
                   </StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel>Concluído</StatLabel>
-                  <StatNumber>{subscriptions.filter(x => x.finalGrade).length}</StatNumber>
+                  <StatNumber>{statics.find(x => x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}</StatNumber>
+                </Stat>
+                <Stat>
+                  <StatLabel>Abandono</StatLabel>
+                  <StatNumber>0</StatNumber>
                 </Stat>
               </StatGroup>
             </Flex>
