@@ -1,12 +1,12 @@
-import { Box, Center, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { Center, Flex, Heading, Link } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import { withIronSessionSsr } from "iron-session/next";
-import { mediaUrl } from "../../config";
 import { sessionOptions } from "../../lib/session";
 import { getJornadaSubscription } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
-import { IJornadaFindOne, IJornadasAll } from "../../types/Jornada";
-import { ITrilhasAll } from "../../types/Trilha";
+import { IVagasAll } from "../../types/CMS/Vaga";
+import { IJornadaFindOne } from "../../types/CMS/Jornada";
+import { ITrilhasAll } from "../../types/CMS/Trilha";
 
 export const getServerSideProps = withIronSessionSsr(async ({
   req,
@@ -29,6 +29,11 @@ export const getServerSideProps = withIronSessionSsr(async ({
       }
     }),
     cmsClient.get<ITrilhasAll>(`trilhas`, {
+      params: {
+        'filters[jornadas][id][$eq]': id
+      }
+    }),
+    cmsClient.get<IVagasAll>(`vagas`, {
       params: {
         'filters[jornadas][id][$eq]': id
       }

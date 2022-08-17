@@ -8,7 +8,7 @@ import { mediaUrl } from "../../config";
 import { sessionOptions } from "../../lib/session";
 import { getAllJornadaSubscriptionsForUser } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
-import { IJornada, IJornadasAll } from "../../types/Jornada";
+import { IJornada, IJornadasAll } from "../../types/CMS/Jornada";
 
 type ISubscriptionWithJornada = JornadaSubscription & {
   jornada: IJornada;

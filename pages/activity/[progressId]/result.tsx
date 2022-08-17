@@ -10,7 +10,7 @@ import { sessionOptions } from "../../../lib/session";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
 import cmsClient from "../../../services/cmsClient";
 import { Question } from "../../../types/CMS/Atividade";
-import { IAulaFindOne, IAulasAll } from "../../../types/Aula";
+import { IAulaFindOne, IAulasAll } from "../../../types/CMS/Aula";
 
 type IProps = {
   aula: IAulaFindOne

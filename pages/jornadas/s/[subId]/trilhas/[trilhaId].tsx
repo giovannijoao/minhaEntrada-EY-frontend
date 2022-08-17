@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import { sessionOptions } from "../../../../../lib/session";
 import { getAllProgresses } from "../../../../../prisma/aulaProgress";
 import cmsClient from "../../../../../services/cmsClient";
-import { ITrilhaFindOne } from "../../../../../types/Trilha";
+import { ITrilhaFindOne } from "../../../../../types/CMS/Trilha";
 
 type IProps = {
   trilha: ITrilhaFindOne,

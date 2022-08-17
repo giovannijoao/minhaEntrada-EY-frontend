@@ -4,7 +4,7 @@ import { sessionOptions } from "../../../../lib/session";
 import { createAnswers } from "../../../../prisma/answer";
 import { getAulaProgress, updateAulaProgress, updateAulaProgressFinished } from "../../../../prisma/aulaProgress";
 import cmsClient from "../../../../services/cmsClient";
-import { IAulaFindOne } from "../../../../types/Aula";
+import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
 async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!req.session.user || !req.session.user.isLoggedIn) {
