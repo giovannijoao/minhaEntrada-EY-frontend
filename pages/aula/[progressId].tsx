@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Button, Center, Flex, Heading, IconButton, Link, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, IconButton, Link, Text, Textarea, useToast } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { withIronSessionSsr } from "iron-session/next";
@@ -118,11 +118,11 @@ export default function TrilhaPage({
       p={8}
       gap={16}
     >
-      <Flex flex={1} direction="column" gap={4}>
+      {/* <Flex flex={1} direction="column" gap={4}>
         <Heading fontSize="lg">Minhas anotações</Heading>
         <Textarea flex={1} />
-      </Flex>
-      <Flex>
+      </Flex> */}
+      <Flex m="auto" direction="column">
         {ready && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url} onEnded={onFinished} />}
         {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4} m="auto">
           <Heading>Aula finalizada</Heading>
@@ -131,6 +131,7 @@ export default function TrilhaPage({
             <Link href={`/activity/${progressId}`}><Button colorScheme={"yellow"}>Ir para atividades</Button></Link>
           }
         </Center>}
+        {!isEnded && <Text textAlign="center">Finalize a aula para realizar as atividades</Text>}
       </Flex>
     </Flex>}
     {progress.isFinished && <Center p={8} flexDirection="column" gap={4}>
