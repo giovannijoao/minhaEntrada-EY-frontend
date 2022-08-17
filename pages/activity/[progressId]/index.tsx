@@ -111,6 +111,7 @@ export default function Page({
       progressId,
       answers,
     })
+    // TODO: Adicionar loading do botão de submit
     router.replace(`/activity/${progressId}/result`)
   }, [progressId, router]);
 

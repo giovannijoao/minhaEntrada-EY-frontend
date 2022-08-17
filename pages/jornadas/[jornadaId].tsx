@@ -79,6 +79,8 @@ export default function StartPage({
       jornadaId: jornada.data.id
     });
     router.reload()
+    // TODO: Adicionar error treatment
+    // TODO: Adicionar isLoading no botão de ingressar
   }, [jornada.data.id, router])
 
   return <Flex

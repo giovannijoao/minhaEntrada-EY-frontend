@@ -91,6 +91,7 @@ const SignUp: NextPageWithLayout = () => {
                 size="lg"
                 bg={'yellow.brand'}
                 color={'gray.brand'}
+                isLoading={isLoading}
               >
                 Criar conta
               </Button>

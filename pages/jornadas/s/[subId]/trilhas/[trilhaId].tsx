@@ -84,6 +84,8 @@ export default function TrilhaPage({
       trilhaId: trilha.data.id,
     })
     router.push(`/aula/${response.data.id}`)
+    // TODO: Adicionar error treatment
+    // TODO: Adicionar isLoading no botão de ingressar
   }, [jornadaSubscriptionId, router, trilha.data.id])
 
   const finishedClasses = Array.from(new Set(progress?.filter(p => p.isFinished).map(x => x.aulaId)));

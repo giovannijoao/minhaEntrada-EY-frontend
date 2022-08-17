@@ -103,6 +103,7 @@ export default function Page({
       jornadaSubscriptionId: progress.jornadaSubscriptionId,
       trilhaId: progress.trilhaId,
     })
+    // TODO: Adicionar loading do botão de próxima aula
     router.push(`/aula/${response.data.id}`)
   }, [progress.jornadaSubscriptionId, progress.trilhaId, router])
 

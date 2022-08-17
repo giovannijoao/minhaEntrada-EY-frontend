@@ -57,6 +57,7 @@ const Login: NextPageWithLayout = () => {
                 type="submit"
                 bg={'yellow.brand'}
                 color={'gray.brand'}
+                isLoading={isLoading}
                 >
                 Entrar
               </Button>
