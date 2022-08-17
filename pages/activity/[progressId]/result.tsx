@@ -9,7 +9,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { sessionOptions } from "../../../lib/session";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
 import cmsClient from "../../../services/cmsClient";
-import { Question } from "../../../types/Atividade";
+import { Question } from "../../../types/CMS/Atividade";
 import { IAulaFindOne, IAulasAll } from "../../../types/Aula";
 
 type IProps = {

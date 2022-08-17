@@ -8,7 +8,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { sessionOptions } from "../../../lib/session";
 import { getAulaProgress } from "../../../prisma/aulaProgress";
 import cmsClient from "../../../services/cmsClient";
-import { Question } from "../../../types/Atividade";
+import { Question } from "../../../types/CMS/Atividade";
 import { IAulaFindOne } from "../../../types/Aula";
 
 type IProps = {
