@@ -35,6 +35,10 @@ export default function HeaderV2({
       title: 'Jornadas',
       href: '/jornadas',
       role: 'user'
+    }, {
+      title: 'Pessoas',
+      href: '/admin/pessoas',
+      role: 'admin'
     }]
     return links.filter(x => x.role === role);
   }, [role]);
