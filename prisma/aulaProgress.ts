@@ -45,7 +45,9 @@ export const getGrade = async ({
       jornadaSubscriptionId,
       trilhaId,
     },
-
+    _avg: {
+      finalGrade: true
+    }
   });
 };
 
