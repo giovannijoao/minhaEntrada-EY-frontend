@@ -1,6 +1,5 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { sessionOptions } from "../../../lib/session";
+import { withSessionRoute } from "../../../lib/withAuth";
 import { createAppliedVacancy } from "../../../prisma/appliedVacancy";
 
 async function vagaRoute(req: NextApiRequest, res: NextApiResponse) {
@@ -19,4 +18,4 @@ async function vagaRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withIronSessionApiRoute(vagaRoute, sessionOptions);
+export default withSessionRoute(vagaRoute);

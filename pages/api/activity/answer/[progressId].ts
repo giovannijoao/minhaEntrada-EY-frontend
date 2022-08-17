@@ -1,8 +1,7 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { sessionOptions } from "../../../../lib/session";
+import { withSessionRoute } from "../../../../lib/withAuth";
 import { createAnswers } from "../../../../prisma/answer";
-import { getAulaProgress, updateAulaProgress, updateAulaProgressFinished } from "../../../../prisma/aulaProgress";
+import { getAulaProgress, updateAulaProgress } from "../../../../prisma/aulaProgress";
 import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
 
@@ -74,4 +73,4 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withIronSessionApiRoute(answerRoute, sessionOptions);
+export default withSessionRoute(answerRoute);

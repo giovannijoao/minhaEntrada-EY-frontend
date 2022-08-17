@@ -1,5 +1,5 @@
-import { withIronSessionSsr } from "iron-session/next";
-import { GetServerSidePropsContext, GetServerSidePropsResult, NextApiRequest, NextApiResponse } from "next";
+import { withIronSessionApiRoute, withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler } from "next";
 import { sessionOptions } from "./session";
 
 const withAuth = (gssp: any, role: string) => {
@@ -32,3 +32,17 @@ function withSessionSsr<
 }
 
 export const withAuthSsr = (handler: any, role = 'user') => withSessionSsr(withAuth(handler, role));
+
+export function withSessionRoute(handler: NextApiHandler, role = 'user') {
+  return withIronSessionApiRoute((req, res) => {
+    if (
+      !req.session.user ||
+      !req.session.user.isLoggedIn ||
+      req.session.role !== role
+    ) {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+    return handler(req, res)
+  }, sessionOptions);
+}

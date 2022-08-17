@@ -1,10 +1,5 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { sessionOptions } from "../../../lib/session";
-import { getUserByEmail } from "../../../prisma/user";
-import bcrypt from "bcryptjs";
-import { User } from "../user";
-import { createJornadaSubscription } from "../../../prisma/jornadasSubscription";
+import { withSessionRoute } from "../../../lib/withAuth";
 import { createAulaProgress } from "../../../prisma/aulaProgress";
 
 async function progressCreate(req: NextApiRequest, res: NextApiResponse) {
@@ -29,4 +24,4 @@ async function progressCreate(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withIronSessionApiRoute(progressCreate, sessionOptions);
+export default withSessionRoute(progressCreate);

@@ -1,10 +1,6 @@
 
-import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { sessionOptions } from '../../../lib/session'
-import { getUserByEmail } from '../../../prisma/user'
-import bcrypt from 'bcryptjs'
-import { User } from '../user'
+import { withSessionRoute } from '../../../lib/withAuth'
 import { createJornadaSubscription } from '../../../prisma/jornadasSubscription'
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
@@ -23,4 +19,4 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withIronSessionApiRoute(loginRoute, sessionOptions);
+export default withSessionRoute(loginRoute);
