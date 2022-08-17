@@ -74,15 +74,11 @@ export default function TrilhaPage({
 
   const onFinished = useCallback(async () => {
     setEnded(true);
-    const response = await axios.post('/api/progress/update', {
-      isFinished: true,
-      progressId,
-    })
     if (aula.data.attributes.atividade?.data) toast({
       title: 'Aula finalizada',
       description: 'Hora de fazer as atividades'
     })
-  }, [aula.data.attributes.atividade?.data, progressId, toast])
+  }, [aula.data.attributes.atividade?.data, toast])
 
   useEffect(() => {
     if (window) {
@@ -90,7 +86,6 @@ export default function TrilhaPage({
     }
   }, [])
 
-  const isWindowAvailable = typeof window !== 'undefined';
   return <Flex
     direction="column"
     h="100vh"
