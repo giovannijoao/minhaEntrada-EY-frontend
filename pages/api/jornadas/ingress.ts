@@ -29,6 +29,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
           jornadaSubscriptionId: subscription.id,
           finishedClasses: [],
           finalGrade: null,
+          userId: req.session.user.id as string,
         }
       })
     })

@@ -1,5 +1,5 @@
-import { Prisma, TrilhaSubscription } from '@prisma/client';
-import prisma from './prisma';
+import { Prisma, TrilhaSubscription } from "@prisma/client";
+import prisma from "./prisma";
 
 export const getTrilhaSubscriptionById = async ({
   trilhaSubscriptionId,
@@ -13,13 +13,12 @@ export const getTrilhaSubscriptionById = async ({
   });
 };
 
-
 export const getTrilhaSubscriptionByJornada = async ({
   jornadaSubscriptionId,
   trilhaId,
 }: {
   jornadaSubscriptionId: string;
-  trilhaId: number
+  trilhaId: number;
 }) => {
   return prisma.trilhaSubscription.findFirst({
     where: {
@@ -60,12 +59,67 @@ export const updateTrilhaSubscription = async ({
 
 export const getTrilhasStaticsIsFinished = async () => {
   return prisma.trilhaSubscription.groupBy({
-    by: ['trilhaId', 'isFinished'],
+    by: ["trilhaId", "isFinished"],
     _count: {
       _all: true,
     },
     _avg: {
-      finalGrade: true
-    }
+      finalGrade: true,
+    },
+  });
+};
+
+export const getUsersFromTrilha = async ({
+  trilhaId,
+  search,
+}: {
+  trilhaId: number;
+  search?: string;
+}) => {
+  console.log(80, search);
+  return prisma.trilhaSubscription.findMany({
+    where: {
+      trilhaId,
+      ...(search
+        ? {
+            user: {
+              OR: [
+                {
+                  firstName: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  lastName: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  email: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              ],
+            },
+          }
+        : {}),
+    },
+    include: {
+      jornadaSubscription: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
