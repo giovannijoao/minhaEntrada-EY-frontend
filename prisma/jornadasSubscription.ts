@@ -51,3 +51,12 @@ export const updateJornadaSubscription = async ({
   });
   return jornadaSubscription;
 };
+
+export const getJornadasStaticsIsFinished = async () => {
+  return prisma.jornadaSubscription.groupBy({
+    by: ["jornadaId", "isFinished"],
+    _count: {
+      _all: true,
+    },
+  });
+}

@@ -76,7 +76,6 @@ export const getUsersFromTrilha = async ({
   trilhaId: number;
   search?: string;
 }) => {
-  console.log(80, search);
   return prisma.trilhaSubscription.findMany({
     where: {
       trilhaId,

@@ -11,6 +11,7 @@ import { ITrilha, ITrilhasAll } from "../../../types/CMS/Trilha";
 import { IoIosPeople } from 'react-icons/io'
 import axios from "axios";
 import { SearchIcon } from "@chakra-ui/icons";
+import { getJornadasStaticsIsFinished } from "../../../prisma/jornadasSubscription";
 
 export const getServerSideProps = withAuthSsr(async ({
   req,
@@ -31,26 +32,38 @@ export const getServerSideProps = withAuthSsr(async ({
     })
   ])
 
-  const statics = await getTrilhasStaticsIsFinished();
+  const [trilhaStatics, jornadaStatics] = await Promise.all([
+    getTrilhasStaticsIsFinished(),
+    getJornadasStaticsIsFinished()
+  ]);
 
   return {
     props: {
+      role: req.session.role,
       jornada: responseJornadas.data,
       trilhas: responseTrilhas.data,
-      statics,
-    },
+      trilhaStatics,
+      jornadaStatics,
+    } as IProps,
   };
 }, 'admin');
 
 type IProps = {
   jornada: IJornadaFindOne,
   trilhas: ITrilhasAll,
-  statics: {
+  trilhaStatics: {
     isFinished: boolean;
     trilhaId: number;
     _avg: {
       finalGrade: number | null;
     };
+    _count: {
+      _all: number;
+    };
+  }[]
+  jornadaStatics: {
+    isFinished: boolean;
+    jornadaId: number;
     _count: {
       _all: number;
     };
@@ -61,7 +74,8 @@ type IProps = {
 export default function StartPage({
   jornada,
   trilhas,
-  statics,
+  trilhaStatics,
+  jornadaStatics,
 }: IProps) {
 
   const router = useRouter();
@@ -86,6 +100,36 @@ export default function StartPage({
         <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
           {jornada.data.attributes.name}
         </Heading>
+      </Flex>
+      <Flex
+        direction="column"
+        my={4}
+        mx={8}
+        p={8}
+        gap={4}
+        w="sm"
+        border="2px"
+        borderColor={"yellow.brand"}
+        boxShadow="md"
+        borderRadius="md"
+      >
+        <Heading mt={2} fontSize="xl">Jornada</Heading>
+        <StatGroup gap={6}>
+          <Stat>
+            <StatLabel>Cursando</StatLabel>
+            <StatNumber>
+              {jornadaStatics.find(x => !x.isFinished && x.jornadaId === jornada.data.id)?._count._all || 0}
+            </StatNumber>
+          </Stat>
+          <Stat>
+            <StatLabel>Concluído</StatLabel>
+            <StatNumber>{jornadaStatics.find(x => x.isFinished && x.jornadaId === jornada.data.id)?._count._all || 0}</StatNumber>
+          </Stat>
+          <Stat>
+            <StatLabel>Abandono</StatLabel>
+            <StatNumber>0</StatNumber>
+          </Stat>
+        </StatGroup>
       </Flex>
       <Flex
         direction="column"
@@ -114,12 +158,12 @@ export default function StartPage({
                   <Stat>
                     <StatLabel>Cursando</StatLabel>
                     <StatNumber>
-                      {statics.find(x => !x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}
+                      {trilhaStatics.find(x => !x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}
                     </StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Concluído</StatLabel>
-                    <StatNumber>{statics.find(x => x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}</StatNumber>
+                    <StatNumber>{trilhaStatics.find(x => x.isFinished && x.trilhaId === trilha.id)?._count._all || 0}</StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Abandono</StatLabel>
