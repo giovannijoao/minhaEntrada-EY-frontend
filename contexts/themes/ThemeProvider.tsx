@@ -4,10 +4,8 @@ import theme from './theme';
 const ThemeProvider = ({ children }: any) => {
   return (
     <ChakraProvider theme={theme}>
-      <ColorModeProvider>
-        <CSSReset />
-        {children}
-      </ColorModeProvider>
+      <CSSReset />
+      {children}
     </ChakraProvider>
   );
 }
