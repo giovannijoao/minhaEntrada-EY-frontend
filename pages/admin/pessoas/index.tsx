@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Center, Flex, Heading, IconButton, Input, InputGroup, InputLeftElement, Text } from "@chakra-ui/react"
+import { Avatar, Center, Flex, Heading, IconButton, Input, InputGroup, InputLeftElement, Select, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
@@ -7,20 +7,35 @@ import { useRouter } from "next/router"
 import { useCallback, useReducer, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { withAuthSsr } from "../../../lib/withAuth"
+import cmsClient from "../../../services/cmsClient"
+import { IVagaFindOne, IVagasAll } from "../../../types/CMS/Vaga"
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
+  const [responseVaga] = await Promise.all([
+    cmsClient.get<IVagasAll>(`vagas`, {
+      params: {}
+    })
+  ])
   return {
     props: {
+      vagas: responseVaga.data,
       role: context.req.session.role
     }
   }
 }, 'admin')
 
-export default function AdminPage() {
+type Props = {
+  vagas: IVagasAll
+}
+
+export default function AdminPage({
+  vagas,
+}: Props) {
   const router = useRouter();
   const searchFormMethods = useForm({
     defaultValues: {
       search: '',
+      vaga: '',
     }
   });
 
@@ -74,6 +89,11 @@ export default function AdminPage() {
             </InputLeftElement>
             <Input type='text' placeholder='Nome ou e-mail' {...searchFormMethods.register('search')} />
           </InputGroup>
+          <Select {...searchFormMethods.register('vaga')}>
+            {vagas.data.map(vaga => {
+              return <option key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
+            })}
+          </Select>
           <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
         </Flex>
       </Flex>
