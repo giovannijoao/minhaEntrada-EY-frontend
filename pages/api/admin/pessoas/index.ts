@@ -25,7 +25,13 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
         },
       ];
     }
-
+    if (req.query.vaga) {
+      filters.AppliedVacancy = {
+        some: {
+          vagaId: Number(req.query.vaga),
+        }
+      }
+    }
     const subscription = await getAllUsers({
       filters,
     });
