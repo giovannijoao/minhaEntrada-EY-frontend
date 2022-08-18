@@ -6,6 +6,7 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import ReactPlayer from "react-player";
+import { mediaUrl } from "../../config";
 import { withAuthSsr } from "../../lib/withAuth";
 import { getAulaProgress } from "../../prisma/aulaProgress";
 import cmsClient from "../../services/cmsClient";
@@ -45,10 +46,13 @@ export const getServerSideProps = withAuthSsr(async ({
   const [responseAula] = await Promise.all([
     cmsClient.get<IAulaFindOne>(`aulas/${progress?.aulaId}`, {
       params: {
-        populate: 'atividade'
+        populate: ['atividade', 'video']
       }
     }),
   ])
+  if (responseAula.data.data.attributes.video) {
+    responseAula.data.data.attributes.video.data.attributes.url = mediaUrl.concat(responseAula.data.data.attributes.video.data.attributes.url)
+  }
   return {
     props: {
       aula: responseAula.data,
@@ -118,7 +122,7 @@ export default function TrilhaPage({
         <Textarea flex={1} />
       </Flex> */}
       <Flex m="auto" direction="column">
-        {ready && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url} onEnded={onFinished} />}
+        {ready && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url ? aula.data.attributes.url : aula.data.attributes.video?.data.attributes.url as string} onEnded={onFinished} />}
         {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4} m="auto">
           <Heading>Aula finalizada</Heading>
           {
