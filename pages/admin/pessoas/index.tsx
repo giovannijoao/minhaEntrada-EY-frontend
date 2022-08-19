@@ -176,7 +176,7 @@ export default function AdminPage({
                 </Stack>
               </Stack>
 
-              <Link href={`mailto:${user.email}`} target="_blank">
+              <Link href={`/admin/pessoas/${user.id}`}>
                 <Button
                   w={'full'}
                   mt={8}
@@ -187,7 +187,7 @@ export default function AdminPage({
                     transform: 'translateY(-2px)',
                     boxShadow: 'lg',
                   }}>
-                  E-mail
+                  Perfil
                 </Button>
               </Link>
             </Box>

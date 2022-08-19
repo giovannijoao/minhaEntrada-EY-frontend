@@ -10,7 +10,7 @@ async function ingressRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
     const trilhas = await cmsClient.get<ITrilhasAll>(`trilhas`, {
       params: {
-        populate: ["aulas", "emblema"],
+        populate: ["aulas"],
         "filters[jornadas][id][$eq]": req.body.jornadaId,
       },
     });
@@ -39,7 +39,7 @@ async function ingressRoute(req: NextApiRequest, res: NextApiResponse) {
           finishedClasses: [],
           finalGrade: null,
           userId: req.session.user.id as string,
-          hasEmblema: !!trilha.attributes.emblema?.data,
+          hasEmblema: null,
         };
       })
     })

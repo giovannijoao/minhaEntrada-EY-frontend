@@ -77,8 +77,9 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
     let finalGrade = null;
 
     let hasEmblema = false;
+    let emblema = null
     if (finishedClasses.length === trilhaSubscription.classesIds.length) {
-      const [grade, emblema] = await Promise.all([
+      const [grade, emblemaData] = await Promise.all([
         getTrilhaGrade({
           trilhaSubscriptionId: trilhaSubscription.id,
         }),
@@ -90,7 +91,8 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
         }),
       ]);
       finalGrade = grade._avg.finalGrade
-      hasEmblema = !!emblema.data.data[0];
+      hasEmblema = !!emblemaData.data.data[0];
+      emblema = emblemaData.data.data[0];
     }
 
     await updateTrilhaSubscription({
@@ -101,6 +103,7 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
         isFinished:
           finishedClasses.length === trilhaSubscription.classesIds.length,
         hasEmblema,
+        emblema,
       },
     });
 

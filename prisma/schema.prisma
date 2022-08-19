@@ -52,6 +52,7 @@ model TrilhaSubscription {
   finalGrade            Int?
   AulaProgress          AulaProgress[]
   hasEmblema            Boolean?
+  emblema               Json?
 }
 
 model Answer {
