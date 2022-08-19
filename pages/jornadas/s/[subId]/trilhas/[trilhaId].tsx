@@ -1,14 +1,16 @@
 import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@chakra-ui/icons";
-import { Badge, Box, Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, IconButton, Image, Link, Text } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
+import { mediaUrl } from "../../../../../config";
 import { withAuthSsr } from "../../../../../lib/withAuth";
 import { getAllProgresses } from "../../../../../prisma/aulaProgress";
 import { getTrilhaSubscriptionByJornada } from "../../../../../prisma/trilhasSubscription";
 import cmsClient from "../../../../../services/cmsClient";
+import { IEmblema, IEmblemasAll } from "../../../../../types/CMS/Emblema";
 import { ITrilhaFindOne } from "../../../../../types/CMS/Trilha";
 
 
@@ -39,7 +41,11 @@ export const getServerSideProps = withAuthSsr(async ({
     }
   }
 
-  const [responseTrilha, progress] = await Promise.all([
+  const finishedClasses = trilhaSubscription.finishedClasses;
+  const hasFinishedClasses = trilhaSubscription.classesIds.length === trilhaSubscription.finishedClasses.length;
+  const hasFinishedCourse = hasFinishedClasses && (trilhaSubscription.finalGrade || 0) >= FINAL_GRADE_GTE;
+
+  const [responseTrilha, progress, emblema] = await Promise.all([
     cmsClient.get<ITrilhaFindOne>(`trilhas/${trilhaId}`, {
       params: {
         populate: 'aulas.atividade',
@@ -58,11 +64,14 @@ export const getServerSideProps = withAuthSsr(async ({
         }
       })
     }),
+    hasFinishedCourse && trilhaSubscription.hasEmblema ? cmsClient.get<IEmblemasAll>("emblemas", {
+      params: {
+        "filters[trilha][id][$eq]": trilhaSubscription.trilhaId,
+        populate: 'image'
+      },
+    }).then(res => res.data.data[0]) : null
   ])
-  console.log(62, responseTrilha.data.data.attributes.aulas?.data[0].attributes.atividade)
-  const finishedClasses = trilhaSubscription.finishedClasses;
-  const hasFinishedClasses = trilhaSubscription.classesIds.length === trilhaSubscription.finishedClasses.length;
-  const hasFinishedCourse = hasFinishedClasses && (trilhaSubscription.finalGrade || 0) >= FINAL_GRADE_GTE;
+
   return {
     props: {
       trilha: responseTrilha.data,
@@ -72,7 +81,8 @@ export const getServerSideProps = withAuthSsr(async ({
       finishedClasses: trilhaSubscription.finishedClasses,
       hasFinishedCourse: hasFinishedCourse,
       hasFinishedClasses: hasFinishedClasses,
-      finalGrade: trilhaSubscription.finalGrade || 0
+      finalGrade: trilhaSubscription.finalGrade || 0,
+      emblema,
     },
   };
 })
@@ -87,6 +97,7 @@ type IProps = {
   hasFinishedCourse: boolean
   hasFinishedClasses: boolean
   finalGrade: number
+  emblema?: IEmblema
 }
 
 export default function TrilhaPage({
@@ -97,6 +108,7 @@ export default function TrilhaPage({
   hasFinishedCourse,
   hasFinishedClasses,
   finalGrade,
+  emblema,
 }: IProps) {
   const router = useRouter();
 
@@ -134,13 +146,44 @@ export default function TrilhaPage({
         {trilha.data.attributes.name}
       </Heading>
     </Flex>
+    {emblema && emblema.attributes.image.data && <Flex
+      p={4}
+      mx={8}
+      my={4}
+      borderRadius={"lg"}
+      boxShadow="md"
+      bgColor="whiteAlpha.300"
+      alignItems={"center"}
+      gap={8}
+      direction={{
+        base: 'column',
+        md: 'row'
+      }}
+    >
+      <Image
+        h={emblema.attributes.image.data.attributes.formats.thumbnail.height}
+        w={emblema.attributes.image.data.attributes.formats.thumbnail.width}
+        rounded='full'
+        objectFit={"cover"}
+        src={mediaUrl.concat(emblema.attributes.image.data.attributes.formats.thumbnail.url)}
+        alt={emblema.attributes.image.data.attributes.caption}
+        boxShadow="lg"
+      />
+      <Flex direction={"column"}>
+        <Heading>Emblema conquistado!</Heading>
+        <Text>Você finalizou o curso e conquistou um emblema. Ele será exibido em seu perfil.</Text>
+      </Flex>
+    </Flex>}
     <Flex
-      direction="row"
+      direction={{
+        base: 'column',
+        md: 'row'
+      }}
       p={8}
       gap={16}
       alignItems="flex-start"
     >
-      <Flex direction="column" gap={4} flex={1}>
+      <Flex direction="column" gap={4} flex={1} w='full'>
         <Flex
           p={8}
           alignItems="center"
@@ -165,7 +208,7 @@ export default function TrilhaPage({
           {hasFinishedCourse && <>
             <Text fontSize="lg" fontWeight="bold">Parabéns!</Text>
             <Text>Você finalizou o curso</Text>
-            <Badge>Nota: {finalGrade}</Badge>
+            <Badge bg="gray.brand" color="yellow.brand">Nota: {finalGrade}</Badge>
           </>}
           {hasFinishedClasses && !hasFinishedCourse && <>
             <Text fontSize="lg" fontWeight="bold">Quase lá!</Text>
@@ -173,7 +216,7 @@ export default function TrilhaPage({
           </>}
         </Box>}
       </Flex>
-      <Flex direction="column" flex={2}>
+      <Flex direction="column" flex={2} w='full'>
         <Heading>Aulas</Heading>
         <Flex
           direction="column"
@@ -195,7 +238,7 @@ export default function TrilhaPage({
                 <Icon />
                 <Flex direction="column" gap={2} flex={1} alignItems="flex-start">
                   <Text flex={1}>{aula.attributes.name}</Text>
-                  {p?.finalGrade && <Badge bgColor="yellow.brand">Nota: {p.finalGrade}</Badge>}
+                  {p?.finalGrade && <Badge bg="gray.brand" color="yellow.brand">Nota: {p.finalGrade}</Badge>}
                   {!aula.attributes.atividade?.data && <Badge>Atividade não disponível</Badge>}
                   {!!aula.attributes.atividade?.data && p?.isClassFinished && !p?.isActivityFinished && <Badge bgColor="yellow.brand">Atividade pendente</Badge>}
                 </Flex>

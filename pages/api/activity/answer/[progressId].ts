@@ -7,6 +7,7 @@ import { updateJornadaSubscription } from "../../../../prisma/jornadasSubscripti
 import { getTrilhasSubscriptionForJornada, getTrilhaSubscriptionById, updateTrilhaSubscription } from "../../../../prisma/trilhasSubscription";
 import cmsClient from "../../../../services/cmsClient";
 import { IAulaFindOne } from "../../../../types/CMS/Aula";
+import { IEmblemasAll } from "../../../../types/CMS/Emblema";
 
 async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
   const progressId = req.query.progressId as string;
@@ -75,11 +76,21 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
     const finishedClasses = Array.from(new Set([...trilhaSubscription?.finishedClasses || [], progress.aulaId]));
     let finalGrade = null;
 
+    let hasEmblema = false;
     if (finishedClasses.length === trilhaSubscription.classesIds.length) {
-      const grade = await getTrilhaGrade({
-        trilhaSubscriptionId: trilhaSubscription.id,
-      })
+      const [grade, emblema] = await Promise.all([
+        getTrilhaGrade({
+          trilhaSubscriptionId: trilhaSubscription.id,
+        }),
+        cmsClient.get<IEmblemasAll>("emblemas", {
+          params: {
+            "filters[trilha][id][$eq]": trilhaSubscription.trilhaId,
+            populate: 'image'
+          },
+        }),
+      ]);
       finalGrade = grade._avg.finalGrade
+      hasEmblema = !!emblema.data.data[0];
     }
 
     await updateTrilhaSubscription({
@@ -89,6 +100,7 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
         finalGrade,
         isFinished:
           finishedClasses.length === trilhaSubscription.classesIds.length,
+        hasEmblema,
       },
     });
 
@@ -101,7 +113,8 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
       id: trilhaSubscription.jornadaSubscriptionId,
       data: {
         isFinished: allTrilhasFinished,
-        finishedTrilhas: subscriptions.filter(x => x.isFinished).map(x => x.trilhaId)
+        finishedTrilhas: subscriptions.filter(x => x.isFinished).map(x => x.trilhaId),
+
       }
     })
 

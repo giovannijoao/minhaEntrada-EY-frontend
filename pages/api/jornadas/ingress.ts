@@ -6,7 +6,7 @@ import prisma from '../../../prisma/prisma';
 import cmsClient from '../../../services/cmsClient';
 import { ITrilhasAll } from '../../../types/CMS/Trilha';
 
-async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
+async function ingressRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
     const trilhas = await cmsClient.get<ITrilhasAll>(`trilhas`, {
       params: {
@@ -50,4 +50,4 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withSessionRoute(loginRoute);
+export default withSessionRoute(ingressRoute);

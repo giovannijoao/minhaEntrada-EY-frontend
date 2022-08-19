@@ -50,7 +50,7 @@ export const getServerSideProps = withAuthSsr(async ({
       }
     }),
   ])
-  if (responseAula.data.data.attributes.video) {
+  if (responseAula.data.data.attributes.video?.data) {
     responseAula.data.data.attributes.video.data.attributes.url = mediaUrl.concat(responseAula.data.data.attributes.video.data.attributes.url)
   }
   return {
