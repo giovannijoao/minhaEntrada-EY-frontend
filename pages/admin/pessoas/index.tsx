@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Center, Flex, Heading, IconButton, Input, InputGroup, InputLeftElement, Select, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, Flex, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Select, Stack, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
@@ -39,14 +39,36 @@ export default function AdminPage({
     }
   });
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [data, setData] = useState<{
+    users: User[],
+    stats: {
+      trilhasStats: {
+        userId: string,
+        _count: {
+          hasEmblema: number
+        }
+      }[],
+      jornadasStats: {
+        userId: string,
+        _count: {
+          _all: number
+        }
+      }[]
+    }
+  }>({
+    users: [],
+    stats: {
+      trilhasStats: [],
+      jornadasStats: []
+    }
+  });
 
   const handleSubmit = useCallback(
     async (values: any) => {
       const response = await axios.get('/api/admin/pessoas', {
         params: values,
       })
-      setUsers(response.data)
+      setData(response.data)
     },
     [],
   )
@@ -103,20 +125,71 @@ export default function AdminPage({
     <Flex
       p={8}
     >
-      {users.map(user => {
+      {data.users.map(user => {
+        const trilhaStat = data.stats.trilhasStats.find(x => x.userId === user.id);
+        const jornadaStat = data.stats.jornadasStats.find(x => x.userId === user.id);
         return <Center
           key={user.id}
-          flexDirection="column"
-          w="xs"
-          textAlign="center"
-          p={4}
-          border="1px"
-          borderColor={"yellow.brand"}
-          borderRadius="lg"
         >
-          <Avatar name={`${user.firstName} ${user.lastName}`} />
-          <Heading fontSize="xl">{user.firstName} {user.lastName}</Heading>
-          <Text>{user.email}</Text>
+          <Box
+            maxW={'270px'}
+            w={'full'}
+            bg={'whiteAlpha.300'}
+            boxShadow={'2xl'}
+            rounded={'md'}
+            overflow={'hidden'}>
+            <Box
+              h={'60px'}
+              w={'full'}
+              bg="whiteAlpha.400"
+            />
+            <Flex justify={'center'} mt={-12}>
+              <Avatar
+                size={'xl'}
+                name={`${user.firstName} ${user.lastName}`}
+                css={{
+                  border: '2px solid white',
+                }}
+              />
+            </Flex>
+
+            <Box p={6}>
+              <Stack spacing={0} align={'center'} mb={5}>
+                <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'} textAlign="center">
+                  {user.firstName} {user.lastName}
+                </Heading>
+                {/* <Text color={'gray.500'}>Frontend Developer</Text> */}
+              </Stack>
+
+              <Stack direction={'row'} justify={'center'} spacing={6}>
+                <Stack spacing={0} align={'center'}>
+                  <Text fontWeight={600}>{trilhaStat?._count.hasEmblema || 0}</Text>
+                  <Text fontSize={'sm'} color={'whiteAlpha.800'}>
+                    Emblema{(trilhaStat?._count.hasEmblema || 0) > 1 && 's'}
+                  </Text>
+                </Stack>
+                <Stack spacing={0} align={'center'}>
+                  <Text fontWeight={600}>{jornadaStat?._count._all || 0}</Text>
+                  <Text fontSize={'sm'} color={'whiteAlpha.800'}>
+                    Jornada{(jornadaStat?._count._all || 0) > 1 && 's'}
+                  </Text>
+                </Stack>
+              </Stack>
+
+              <Button
+                w={'full'}
+                mt={8}
+                bg={'gray.900'}
+                color={'white'}
+                rounded={'md'}
+                _hover={{
+                  transform: 'translateY(-2px)',
+                  boxShadow: 'lg',
+                }}>
+                Perfil
+              </Button>
+            </Box>
+          </Box>
         </Center>
       })}
     </Flex>

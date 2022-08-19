@@ -5,7 +5,7 @@ import prisma from './prisma'
 export const getAllUsers = async ({
   filters,
 }: {
-  filters?: Prisma.UserWhereInput
+  filters?: Prisma.UserWhereInput,
 }) => {
   const users = await prisma.user.findMany({
     where: filters
@@ -16,6 +16,30 @@ export const getAllUsers = async ({
     return restUser
   })
 }
+
+export const getUsersStats = async ({
+  filters,
+}: {
+  filters?: Prisma.UserWhereInput;
+}) => {
+  const trilhasStats = await prisma.trilhaSubscription.groupBy({
+    by: ['userId'],
+    _count: {
+      hasEmblema: true,
+    }
+  });
+  const jornadasStats = await prisma.jornadaSubscription.groupBy({
+    by: ["userId"],
+    _count: {
+      _all: true,
+    },
+  });
+
+  return {
+    trilhasStats,
+    jornadasStats,
+  };
+};
 
 export const getUser = async (id: string) => {
   const user = await prisma.user.findUnique({

@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { withSessionRoute } from "../../../../lib/withAuth";
-import { getAllUsers } from "../../../../prisma/user";
+import { getAllUsers, getUsersStats } from "../../../../prisma/user";
 
 async function pessoas(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -32,10 +32,18 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
-    const subscription = await getAllUsers({
-      filters,
+    const [users, stats] = await Promise.all([
+      getAllUsers({
+        filters,
+      }),
+      getUsersStats({
+        filters,
+      })
+    ]);
+    res.json({
+      users,
+      stats,
     });
-    res.json(subscription);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
   }
