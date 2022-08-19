@@ -1,7 +1,7 @@
 import { extendTheme, ThemeConfig } from '@chakra-ui/react'
 
 const config: ThemeConfig = {
-  initialColorMode: "light",
+  initialColorMode: "dark",
   useSystemColorMode: false,
 };
 const theme = extendTheme({
@@ -13,7 +13,7 @@ const theme = extendTheme({
         color: 'white'
       },
       "option": {
-        color: "gray.brand"
+        color: "white"
       }
     },
   },
