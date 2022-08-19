@@ -1,8 +1,8 @@
-import { AppliedVacancy } from '@prisma/client';
+import { AppliedVacancy, Prisma } from '@prisma/client';
 import prisma from './prisma';
 
 // CREATE
-export const createAppliedVacancy = async (data: Omit<AppliedVacancy, 'id' | 'created_at' | 'updated_at'>) => {
+export const createAppliedVacancy = async (data: Prisma.AppliedVacancyUncheckedCreateInput) => {
   const record = await prisma.appliedVacancy.create({
     data,
   });
@@ -20,6 +20,19 @@ export const getAppliedVacancy = async ({
     where: {
       vagaId,
       userId
+    },
+  });
+  return record;
+};
+
+export const getAppliedVacancies = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  const record = await prisma.appliedVacancy.findMany({
+    where: {
+      userId,
     },
   });
   return record;

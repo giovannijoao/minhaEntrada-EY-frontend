@@ -1,19 +1,21 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
 import { Avatar, Badge, Box, Center, Flex, Heading, IconButton, SimpleGrid, StackDivider, Stat, StatGroup, StatLabel, StatNumber, Text, VStack } from "@chakra-ui/react"
-import { JornadaSubscription, TrilhaSubscription, User } from "@prisma/client"
+import { AppliedVacancy, JornadaSubscription, TrilhaSubscription, User } from "@prisma/client"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
 import { mediaUrl } from "../../../config"
 import { withAuthSsr } from "../../../lib/withAuth"
+import { getAppliedVacancies } from "../../../prisma/appliedVacancy"
 import { getAllJornadaSubscriptionsForUser } from "../../../prisma/jornadasSubscription"
 import { getTrilhaSubscriptionsForUser } from "../../../prisma/trilhasSubscription"
 import { getUser } from "../../../prisma/user"
 import { IEmblema } from "../../../types/CMS/Emblema"
 import { IJornada } from "../../../types/CMS/Jornada"
+import { IVaga } from "../../../types/CMS/Vaga"
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const id = context.params?.id as string;
-  const [user, trilhasSubscription, jornadasSubscription] = await Promise.all([
+  const [user, trilhasSubscription, jornadasSubscription, vacancies] = await Promise.all([
     getUser(id),
     getTrilhaSubscriptionsForUser({
       userId: id
@@ -33,12 +35,22 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
         updated_at: null,
       }
     })),
+    getAppliedVacancies({
+      userId: id,
+    }).then(res => res.map(x => {
+      return {
+        ...x,
+        created_at: null,
+        updated_at: null,
+      }
+    })),
   ])
 
   return {
     props: {
       trilhasSubscription,
       jornadasSubscription,
+      vacancies,
       user: {
         ...user,
         created_at: null,
@@ -53,12 +65,14 @@ type Props = {
   user: User
   trilhasSubscription: TrilhaSubscription[]
   jornadasSubscription: JornadaSubscription[]
+  vacancies: AppliedVacancy[]
 }
 
 export default function AdminPage({
   user,
   trilhasSubscription,
-  jornadasSubscription
+  jornadasSubscription,
+  vacancies,
 }: Props) {
   const router = useRouter();
 
@@ -86,7 +100,7 @@ export default function AdminPage({
       base: 1,
       md: 3
     }}
-    alignItems="self-start"
+      alignItems="self-start"
     >
       <Box bg="whiteAlpha.300" borderRadius="lg" boxShadow='lg'>
         <Center px={8} py={2} bg="yellow.brand" borderTopRadius="lg">
@@ -96,7 +110,7 @@ export default function AdminPage({
           {trilhasSubscription.filter(x => x.hasEmblema).length === 0 && <Center w="full" p={4}>
             <Text>Sem emblemas</Text>
           </Center>}
-          { trilhasSubscription.filter(x => x.hasEmblema).length > 0 && <VStack
+          {trilhasSubscription.filter(x => x.hasEmblema).length > 0 && <VStack
             w='full'
             divider={<StackDivider borderColor='whiteAlpha.500' />}
           >
@@ -147,6 +161,27 @@ export default function AdminPage({
                     <StatNumber>{sub.finishedTrilhas.length}</StatNumber>
                   </Stat>
                 </StatGroup>
+              </Flex>
+            })}
+          </VStack>}
+        </Flex>
+      </Box>
+      <Box bg="whiteAlpha.300" borderRadius="lg" boxShadow='lg'>
+        <Center px={8} py={2} bg="yellow.brand" borderTopRadius="lg">
+          <Heading fontSize={"xl"} color='gray.brand'>Vagas Interessadas</Heading>
+        </Center>
+        <Flex p={4}>
+          {vacancies.length === 0 && <Center w="full" p={4}>
+            <Text>Sem interesses</Text>
+          </Center>}
+          {vacancies.length > 0 && <VStack
+            w='full'
+            divider={<StackDivider borderColor='whiteAlpha.500' />}
+          >
+            {vacancies.map(vacancy => {
+              const vaga = vacancy.vaga as IVaga;
+              return <Flex w="full" key={vacancy.id.toString().concat('-vaga')} gap={2} alignItems="center">
+                <Text flex={1}>{vaga.attributes.name}</Text>
               </Flex>
             })}
           </VStack>}
