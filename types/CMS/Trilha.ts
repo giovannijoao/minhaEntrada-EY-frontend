@@ -1,4 +1,5 @@
 import { IAulasAll } from "./Aula";
+import { IEmblemaFindOne } from "./Emblema";
 import { IImageFormat } from "./IImageFormat";
 import { IJornadasAll } from "./Jornada";
 
@@ -10,6 +11,7 @@ export type ITrilha = {
     color: string;
     jornadas?: IJornadasAll;
     aulas?: IAulasAll;
+    emblema: IEmblemaFindOne
   };
 };
 

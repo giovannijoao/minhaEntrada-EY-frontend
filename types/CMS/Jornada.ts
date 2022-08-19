@@ -1,24 +1,11 @@
-import { IImageFormat } from "./IImageFormat";
+import { IImageFindOne } from "./IImageFormat";
 
 export type IJornada = {
   id: number;
   attributes: {
     name: string;
     description: string;
-    image: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          caption: string;
-          formats: {
-            thumbnail: IImageFormat
-            medium: IImageFormat
-            small: IImageFormat
-          };
-        };
-      };
-    };
+    image: IImageFindOne;
   };
 };
 
