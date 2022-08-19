@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Box, Button, Center, Flex, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Select, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, Flex, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
@@ -176,18 +176,20 @@ export default function AdminPage({
                 </Stack>
               </Stack>
 
-              <Button
-                w={'full'}
-                mt={8}
-                bg={'gray.900'}
-                color={'white'}
-                rounded={'md'}
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'lg',
-                }}>
-                Perfil
-              </Button>
+              <Link href={`mailto:${user.email}`} target="_blank">
+                <Button
+                  w={'full'}
+                  mt={8}
+                  bg={'gray.900'}
+                  color={'white'}
+                  rounded={'md'}
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'lg',
+                  }}>
+                  E-mail
+                </Button>
+              </Link>
             </Box>
           </Box>
         </Center>
