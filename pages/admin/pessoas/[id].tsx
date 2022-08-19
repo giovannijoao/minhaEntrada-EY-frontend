@@ -94,6 +94,9 @@ export default function AdminPage({
         <Heading fontSize="3xl" fontWeight={"bold"}>
           {user.firstName} {user.lastName}
         </Heading>
+        <Heading fontSize="xl" fontWeight={"light"}>
+          {user.email}
+        </Heading>
       </Flex>
     </Flex>
     <SimpleGrid p={8} gap={4} columns={{
