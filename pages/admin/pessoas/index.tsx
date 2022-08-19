@@ -77,7 +77,7 @@ export default function AdminPage({
         alignItems="flex-start"
         >
         <Flex
-          w="md"
+          w="xl"
           gap={2}
           alignItems='center'
         >
@@ -87,9 +87,11 @@ export default function AdminPage({
             >
               <SearchIcon color="white" />
             </InputLeftElement>
-            <Input type='text' placeholder='Nome ou e-mail' {...searchFormMethods.register('search')} />
+            <Input type='text' placeholder='Nome ou e-mail' {...searchFormMethods.register('search')} _placeholder={{
+              color: 'white'
+            }} />
           </InputGroup>
-          <Select {...searchFormMethods.register('vaga')}>
+          <Select placeholder="Buscar por vaga de interesse" {...searchFormMethods.register('vaga')}>
             {vagas.data.map(vaga => {
               return <option key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
             })}
