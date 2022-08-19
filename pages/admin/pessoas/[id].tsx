@@ -1,23 +1,19 @@
-import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Badge, Box, Button, Center, Flex, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, StackDivider, Text, VStack } from "@chakra-ui/react"
-import { TrilhaSubscription, User } from "@prisma/client"
-import axios from "axios"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { Avatar, Badge, Box, Center, Flex, Heading, IconButton, SimpleGrid, StackDivider, Stat, StatGroup, StatLabel, StatNumber, Text, VStack } from "@chakra-ui/react"
+import { JornadaSubscription, TrilhaSubscription, User } from "@prisma/client"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
-import { useCallback, useReducer, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
 import { mediaUrl } from "../../../config"
 import { withAuthSsr } from "../../../lib/withAuth"
+import { getAllJornadaSubscriptionsForUser } from "../../../prisma/jornadasSubscription"
 import { getTrilhaSubscriptionsForUser } from "../../../prisma/trilhasSubscription"
 import { getUser } from "../../../prisma/user"
-import cmsClient from "../../../services/cmsClient"
-import { IEmblema, IEmblemasAll } from "../../../types/CMS/Emblema"
-import { ITrilha } from "../../../types/CMS/Trilha"
-import { IVagaFindOne, IVagasAll } from "../../../types/CMS/Vaga"
+import { IEmblema } from "../../../types/CMS/Emblema"
+import { IJornada } from "../../../types/CMS/Jornada"
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const id = context.params?.id as string;
-  const [user, trilhasSubscription] = await Promise.all([
+  const [user, trilhasSubscription, jornadasSubscription] = await Promise.all([
     getUser(id),
     getTrilhaSubscriptionsForUser({
       userId: id
@@ -27,12 +23,22 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
         created_at: null,
         updated_at: null,
       }
-    }))
+    })),
+    getAllJornadaSubscriptionsForUser({
+      userId: id,
+    }).then(res => res.map(x => {
+      return {
+        ...x,
+        created_at: null,
+        updated_at: null,
+      }
+    })),
   ])
 
   return {
     props: {
       trilhasSubscription,
+      jornadasSubscription,
       user: {
         ...user,
         created_at: null,
@@ -46,11 +52,13 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 type Props = {
   user: User
   trilhasSubscription: TrilhaSubscription[]
+  jornadasSubscription: JornadaSubscription[]
 }
 
 export default function AdminPage({
   user,
-  trilhasSubscription
+  trilhasSubscription,
+  jornadasSubscription
 }: Props) {
   const router = useRouter();
 
@@ -74,13 +82,21 @@ export default function AdminPage({
         </Heading>
       </Flex>
     </Flex>
-    <Flex p={8} gap={4}>
+    <SimpleGrid p={8} gap={4} columns={{
+      base: 1,
+      md: 3
+    }}
+    alignItems="self-start"
+    >
       <Box bg="whiteAlpha.300" borderRadius="lg" boxShadow='lg'>
         <Center px={8} py={2} bg="yellow.brand" borderTopRadius="lg">
           <Heading fontSize={"xl"} color='gray.brand'>Emblemas conquistados</Heading>
         </Center>
         <Flex p={4}>
-          <VStack
+          {trilhasSubscription.filter(x => x.hasEmblema).length === 0 && <Center w="full" p={4}>
+            <Text>Sem emblemas</Text>
+          </Center>}
+          { trilhasSubscription.filter(x => x.hasEmblema).length > 0 && <VStack
             w='full'
             divider={<StackDivider borderColor='whiteAlpha.500' />}
           >
@@ -94,22 +110,49 @@ export default function AdminPage({
                 <Badge>{sub.finalGrade}</Badge>
               </Flex>
             })}
-          </VStack>
+          </VStack>}
         </Flex>
       </Box>
       <Box bg="whiteAlpha.300" borderRadius="lg" boxShadow='lg'>
         <Center px={8} py={2} bg="yellow.brand" borderTopRadius="lg">
           <Heading fontSize={"xl"} color='gray.brand'>Jornadas</Heading>
         </Center>
-        <Flex p={4}>
-          <VStack
+        <Flex p={2}>
+          {jornadasSubscription.length === 0 && <Center w="full" p={4}>
+            <Text>Sem jornadas</Text>
+          </Center>}
+          {jornadasSubscription.length > 0 && <VStack
+            w='full'
             divider={<StackDivider borderColor='whiteAlpha.500' />}
           >
-
-          </VStack>
+            {jornadasSubscription.map(sub => {
+              const jornada = sub.jornada as IJornada;
+              return <Flex w="full"
+                key={sub.id.toString().concat('-jornada')}
+                gap={2}
+                p={2}
+                border="1px"
+                borderColor="whiteAlpha.100"
+                borderRadius="md"
+                direction={'column'}
+              >
+                <Heading fontSize="lg" textAlign="center">{jornada.attributes.name}</Heading>
+                <StatGroup>
+                  <Stat>
+                    <StatLabel>Trilhas</StatLabel>
+                    <StatNumber>{sub.availableTrilhas.length}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Finalizadas</StatLabel>
+                    <StatNumber>{sub.finishedTrilhas.length}</StatNumber>
+                  </Stat>
+                </StatGroup>
+              </Flex>
+            })}
+          </VStack>}
         </Flex>
       </Box>
-    </Flex>
+    </SimpleGrid>
 
   </>
 }

@@ -35,6 +35,7 @@ model JornadaSubscription {
   finishedTrilhas    Int[]                @default([])
   isFinished         Boolean?
   TrilhaSubscription TrilhaSubscription[]
+  jornada            Json
 }
 
 model TrilhaSubscription {

@@ -1,4 +1,5 @@
 import { IImageFindOne } from "./IImageFormat";
+import { ITrilhasAll } from "./Trilha";
 
 export type IJornada = {
   id: number;
@@ -6,6 +7,7 @@ export type IJornada = {
     name: string;
     description: string;
     image: IImageFindOne;
+    trilhas?: ITrilhasAll
   };
 };
 

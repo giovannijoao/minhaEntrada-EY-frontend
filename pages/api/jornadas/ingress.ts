@@ -4,16 +4,20 @@ import { withSessionRoute } from '../../../lib/withAuth'
 import { createJornadaSubscription, getJornadaSubscription } from '../../../prisma/jornadasSubscription'
 import prisma from '../../../prisma/prisma';
 import cmsClient from '../../../services/cmsClient';
+import { IJornadaFindOne } from '../../../types/CMS/Jornada';
 import { ITrilhasAll } from '../../../types/CMS/Trilha';
 
 async function ingressRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const trilhas = await cmsClient.get<ITrilhasAll>(`trilhas`, {
+    const jornada = await cmsClient.get<IJornadaFindOne>(`jornadas/${req.body.jornadaId}`, {
       params: {
-        populate: ["aulas"],
-        "filters[jornadas][id][$eq]": req.body.jornadaId,
-      },
-    });
+        populate: ['trilhas.aulas']
+      }
+    })
+
+    const trilhas = jornada.data.data.attributes.trilhas as ITrilhasAll;
+
+    Reflect.deleteProperty(jornada.data.data.attributes, 'trilhas');
 
     let subscription = await getJornadaSubscription({
       jornadaId: req.body.jornadaId,
@@ -24,14 +28,15 @@ async function ingressRoute(req: NextApiRequest, res: NextApiResponse) {
       subscription = await createJornadaSubscription({
         jornadaId: req.body.jornadaId,
         userId: req.session.user.id as string,
-        availableTrilhas: trilhas.data.data.map(x => x.id),
+        availableTrilhas: trilhas?.data.map(x => x.id),
         isFinished: false,
+        jornada: jornada.data.data
       });
     }
 
 
     await prisma.trilhaSubscription.createMany({
-      data: trilhas.data.data.map(trilha => {
+      data: trilhas.data.map(trilha => {
         return {
           trilhaId: trilha.id,
           classesIds: trilha.attributes.aulas?.data.map((aula) => aula.id),
