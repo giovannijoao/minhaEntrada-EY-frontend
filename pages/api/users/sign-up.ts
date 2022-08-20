@@ -1,16 +1,25 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { useToast } from '@chakra-ui/react';
 import bcrypt from 'bcryptjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createUser } from '../../../prisma/user';
+import { createUser, getUserByEmail } from '../../../prisma/user';
+import { ErrorMessagesToast } from '../../../utils/constants/ErrorMessagesToast';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
+  const toast = useToast()
   try {
     const { firstName, lastName, email, password } = req.body;
-
-    //TODO: Missing check if user already exists and return error
+    
+    const verifyUserAlreadyExist = await getUserByEmail(email);
+    if(verifyUserAlreadyExist)
+      return toast({
+        description: ErrorMessagesToast.usuarioJaCadastrado,
+        status: "error",
+        position: "top-right"
+      })     
 
     const salt = await bcrypt.genSalt(process.env.PASSWORD_SALT ? Number(process.env.PASSWORD_SALT) : 10);
     const encryptedPassword = await bcrypt.hash(password, salt)

@@ -1,17 +1,19 @@
 import { ArrowForwardIcon, CheckCircleIcon, ChevronLeftIcon, TimeIcon } from "@chakra-ui/icons";
-import { Badge, Box, Flex, Heading, IconButton, Image, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, IconButton, Image, Link, Text, useToast } from "@chakra-ui/react";
 import { AulaProgress } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { mediaUrl } from "../../../../../config";
 import { withAuthSsr } from "../../../../../lib/withAuth";
 import { getAllProgresses } from "../../../../../prisma/aulaProgress";
 import { getTrilhaSubscriptionByJornada } from "../../../../../prisma/trilhasSubscription";
 import cmsClient from "../../../../../services/cmsClient";
+import { IAula } from "../../../../../types/CMS/Aula";
 import { IEmblema, IEmblemasAll } from "../../../../../types/CMS/Emblema";
 import { ITrilhaFindOne } from "../../../../../types/CMS/Trilha";
+import { ErrorMessagesToast } from "../../../../../utils/constants/ErrorMessagesToast";
 
 
 const FINAL_GRADE_GTE = 7;
@@ -110,22 +112,34 @@ export default function TrilhaPage({
   finalGrade,
   emblema,
 }: IProps) {
+  const [isLoading, setIsLoading] = useState<boolean>()
+  const toast = useToast()
   const router = useRouter();
+
+  const initializeActivity = useCallback(async (p: IAula) => {
+    setIsLoading(true);
+    router.push(`/aula/${p.id}`)
+  }, [router]);
 
   const createProgress = useCallback(async ({
     aulaId,
   }: {
     aulaId: number;
   }) => {
-    const response = await axios.post('/api/progress/create', {
+    await axios.post('/api/progress/create', {
       aulaId,
       isClassFinished: false,
       trilhaSubscriptionId,
       trilhaId: trilha.data.id,
+    }).then(resp => {
+      router.push(`/aula/${resp.data.id}`)
+    }).catch(error => {
+      toast({
+        position: "top-right",
+        description: ErrorMessagesToast.iniciarAtividade,
+        status: "error"
+      })
     })
-    router.push(`/aula/${response.data.id}`)
-    // TODO: Adicionar error treatment
-    // TODO: Adicionar isLoading no botão de ingressar
   }, [router, trilha.data.id, trilhaSubscriptionId])
 
   return <Flex
@@ -251,7 +265,8 @@ export default function TrilhaPage({
                     bg: 'gray.400',
                     color: 'gray.brand'
                   }}
-                  onClick={() => p ? router.push(`/aula/${p.id}`) : createProgress({
+                  isLoading={isLoading}
+                  onClick={() => p ? initializeActivity(p) : createProgress({
                     aulaId: aula.id
                   })}
                 />

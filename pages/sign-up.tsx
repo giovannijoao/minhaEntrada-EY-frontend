@@ -1,13 +1,15 @@
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Input, InputGroup, InputRightElement, Link, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Input, InputGroup, InputRightElement, Link, Stack, Text, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { ReactElement, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { ErrorMessagesToast } from '../utils/constants/ErrorMessagesToast';
 import { NextPageWithLayout } from './_app';
 
 const SignUp: NextPageWithLayout = () => {
   const router = useRouter()
+  const toast = useToast()
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit } = useForm({
@@ -20,14 +22,19 @@ const SignUp: NextPageWithLayout = () => {
   });
 
   const handleFormEvent = useCallback(async (values: any) => {
-    try {
-      setIsLoading(true)
-      const response = await axios.post('/api/users/sign-up', values);
+    setIsLoading(true)
+    await axios.post('/api/users/sign-up', values)
+    .then((resp) => {
       router.push('/jornadas')
-    } catch (error) {
-      //TODO: Missing error treatment
-    }
-
+    })
+    .catch((error) => {
+      setIsLoading(false)
+      toast({
+        description: ErrorMessagesToast.signUp,
+        position: "top-right",
+        status: "error"
+      })
+    })
   }, [router]);
 
   return (

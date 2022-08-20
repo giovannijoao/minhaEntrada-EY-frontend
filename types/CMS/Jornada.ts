@@ -9,6 +9,7 @@ export type IJornada = {
     image: IImageFindOne;
     trilhas?: ITrilhasAll
   };
+  isSubmitting?: boolean;
 };
 
 export type IJornadaFindOne = {

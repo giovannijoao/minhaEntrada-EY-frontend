@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, Image, Link, Text, useToast } from "@chakra-ui/react";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
 import { sessionOptions } from "../../lib/session";
@@ -13,6 +13,7 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 import { getAppliedVacancy } from "../../prisma/appliedVacancy";
 import { AppliedVacancy } from "@prisma/client";
+import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type IProps = {
   vaga: IVagaFindOne
@@ -63,15 +64,23 @@ export default function StartPage({
 }: IProps) {
 
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast()
   const router = useRouter()
 
   const handleApply = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     await axios.post('/api/vagas/apply', {
       vagaId: vaga.data.id
-    });
-    router.reload()
-    // TODO: Adicionar error treatment
+    }).then(resp => {
+      router.reload() 
+    }).catch(error => {
+      setIsLoading(false)
+      toast({
+        description: ErrorMessagesToast.vagas,
+        status: "error",
+        position: "top-right",
+      })
+    })
   }, [router, vaga.data.id])
 
   return <Flex

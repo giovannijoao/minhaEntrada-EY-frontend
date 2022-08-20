@@ -1,14 +1,15 @@
-import { Box, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Link, useToast } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { mediaUrl } from "../../config";
 import { withAuthSsr } from "../../lib/withAuth";
 import { getAllJornadaSubscriptionsForUser } from "../../prisma/jornadasSubscription";
 import cmsClient from "../../services/cmsClient";
 import { IJornada, IJornadasAll } from "../../types/CMS/Jornada";
+import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type ISubscriptionWithJornada = JornadaSubscription & {
   jornada: IJornada;
@@ -55,17 +56,31 @@ export default function StartPage({
   jornadas: IJornadasAll,
   subscriptions: ISubscriptionWithJornada[]
 }) {
-
+  const [jornadasState, setJornadasState] = useState<IJornadasAll>(jornadas);
+  const toast = useToast();
   const router = useRouter()
 
   const handleIngressar = useCallback(async (jornadaId: number) => {
+    const jornada = jornadas.data.filter(jornada => jornada.id==jornadaId)[0];
+    changeSubmitting(jornada)
     await axios.post('/api/jornadas/ingress',{
       jornadaId
-    });
-    router.reload()
-    // TODO: Adicionar error treatment
-    // TODO: Adicionar isLoading no botão de ingressar
+    }).then(resp => {
+      router.reload()
+    }).catch(error => {
+      changeSubmitting(jornada)
+      toast({
+        description: `${ErrorMessagesToast.jornada} ${jornada.attributes.name}`,
+        position: "top-right",
+        status: "error"
+      })
+    })
   }, [router])
+
+  const changeSubmitting = useCallback(async (jornada: IJornada) => {
+    jornada.isSubmitting=!jornada.isSubmitting
+    setJornadasState({ ...jornadasState })
+  }, [jornadasState])
 
   return <Flex
     direction="column"
@@ -119,7 +134,7 @@ export default function StartPage({
         }
       </Flex>
     </Flex>}
-    {jornadas.data.length > 0 && <Flex
+    {jornadasState.data.length > 0 && <Flex
       direction="column"
       p={8}
       gap={4}
@@ -134,7 +149,7 @@ export default function StartPage({
         }}
       >
         {
-          jornadas.data.map(jornada => {
+          jornadasState.data.map(jornada => {
             return <Box
               w="2xs"
               key={jornada.id.toString().concat('-jornada')}
@@ -153,7 +168,7 @@ export default function StartPage({
                 aria-label={jornada.attributes.image?.data.attributes.caption} />
               <Flex direction={"column"} gap={2}>
                 <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
-                <Button size="xs" bg="yellow.brand" color='gray.brand' onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
+                <Button size="xs" bg="yellow.brand" color='gray.brand' isLoading={jornada.isSubmitting} onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
               </Flex>
             </Box>
           })
