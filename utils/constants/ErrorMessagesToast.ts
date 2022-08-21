@@ -1,5 +1,4 @@
 export const ErrorMessagesToast = {
-  usuarioJaCadastrado: "Esse e-mail já possui um cadastro",
   login: "Email ou Senha inválido(s)",
   jornada: "Não foi possível ingressar na jornada",
   atividades: "Não foi possível carregar suas atividades",

@@ -9,17 +9,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  const toast = useToast()
   try {
     const { firstName, lastName, email, password } = req.body;
     
     const verifyUserAlreadyExist = await getUserByEmail(email);
     if(verifyUserAlreadyExist)
-      return toast({
-        description: ErrorMessagesToast.usuarioJaCadastrado,
-        status: "error",
-        position: "top-right"
-      })     
+      return res.status(500).json({ message: "Esse e-mail já possui um cadastro" || 'Internal server error' });
 
     const salt = await bcrypt.genSalt(process.env.PASSWORD_SALT ? Number(process.env.PASSWORD_SALT) : 10);
     const encryptedPassword = await bcrypt.hash(password, salt)
