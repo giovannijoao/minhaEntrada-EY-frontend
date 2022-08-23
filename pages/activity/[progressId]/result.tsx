@@ -4,12 +4,13 @@ import { AulaProgress, TrilhaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { withAuthSsr } from "../../../lib/withAuth";
 import { getAllProgresses, getAulaProgress } from "../../../prisma/aulaProgress";
 import { getTrilhaSubscriptionById } from "../../../prisma/trilhasSubscription";
 import cmsClient from "../../../services/cmsClient";
 import { IAulaFindOne, IAulasAll } from "../../../types/CMS/Aula";
+import { ErrorMessagesToast } from "../../../utils/constants/ErrorMessagesToast";
 
 type IProps = {
   aula: IAulaFindOne
@@ -102,6 +103,7 @@ export default function Page({
   nextClasses,
   trilhaSubscription,
 }: IProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter();
   const toast = useToast();
 
@@ -112,13 +114,21 @@ export default function Page({
   }: {
     aulaId: number;
   }) => {
-    const response = await axios.post('/api/progress/create', {
+    setIsLoading(true)
+    await axios.post('/api/progress/create', {
       aulaId,
       isFinished: false,
       trilhaSubscriptionId: trilhaSubscription.id
+    }).then(resp => {
+      router.push(`/aula/${resp.data.id}`)
+    }).catch(error => {
+      setIsLoading(false)
+      toast({
+        description: ErrorMessagesToast.proximaAtividade,
+        position: "top-right",
+        status: "error"
+      })
     })
-    // TODO: Adicionar loading do botão de próxima aula
-    router.push(`/aula/${response.data.id}`)
   }, [router, trilhaSubscription.id])
 
   return <Flex
@@ -180,7 +190,7 @@ export default function Page({
     >
       <Heading fontSize="lg">Próxima aula</Heading>
       <Text fontSize="md">{nextAula.attributes.name}</Text>
-      <Button colorScheme="orange" rightIcon={<ArrowForwardIcon />} onClick={() => createProgress({
+      <Button colorScheme="orange" isLoading={isLoading} rightIcon={<ArrowForwardIcon />} onClick={() => createProgress({
         aulaId: nextAula.id
       })}>Ir para próxima aula</Button>
     </Center>}

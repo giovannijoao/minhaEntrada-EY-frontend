@@ -1,12 +1,14 @@
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Stack } from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useToast } from '@chakra-ui/react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { ErrorMessagesToast } from '../utils/constants/ErrorMessagesToast'
 import { NextPageWithLayout } from './_app'
 
 const Login: NextPageWithLayout = () => {
   const router = useRouter()
+  const toast = useToast()
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -16,13 +18,19 @@ const Login: NextPageWithLayout = () => {
   })
 
   const handleFormEvent = useCallback(async (values: any) => {
-    try {
-      setIsLoading(true)
-      const response = await axios.post('/api/users/sign-in', values);
-      router.push(response.data.role === 'user' ? '/jornadas' : '/admin')
-    } catch (error) {
-      //TODO: Missing error treatment
-    }
+    setIsLoading(true)
+    await axios.post('/api/users/sign-in', values)
+    .then((resp) => {
+      router.push(resp.data.role === 'user' ? '/jornadas' : '/admin')
+    })
+    .catch(() => {
+      setIsLoading(false);
+      toast({
+        description: ErrorMessagesToast.login,
+        position: "top-right",
+        status: "error"
+      })
+    })
   }, [router]);
 
   return (

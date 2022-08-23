@@ -1,10 +1,10 @@
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { Button, Center, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, Link, Text, Toast, useToast } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { withAuthSsr } from "../../lib/withAuth";
 import { getJornadaSubscription } from "../../prisma/jornadasSubscription";
 import { getTrilhasSubscriptionForJornada } from "../../prisma/trilhasSubscription";
@@ -12,6 +12,7 @@ import cmsClient from "../../services/cmsClient";
 import { IJornadaFindOne } from "../../types/CMS/Jornada";
 import { ITrilhasAll } from "../../types/CMS/Trilha";
 import { IVagasAll } from "../../types/CMS/Vaga";
+import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type IProps = {
   jornada: IJornadaFindOne,
@@ -80,16 +81,24 @@ export default function StartPage({
   vagas,
   finishedTrilhas,
 }: IProps) {
-
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
   const router = useRouter();
 
   const handleIngressar = useCallback(async () => {
+    setIsLoading(true)
     await axios.post('/api/jornadas/ingress', {
       jornadaId: jornada.data.id
+    }).then(resp => {
+      router.reload()
+    }).catch(error => {
+      setIsLoading(false)
+      toast({
+        description: ErrorMessagesToast.ingressarJornada,
+        status: "error",
+        position: "top-right",
+      })
     });
-    router.reload()
-    // TODO: Adicionar error treatment
-    // TODO: Adicionar isLoading no botão de ingressar
   }, [jornada.data.id, router])
 
   return <Flex
@@ -127,7 +136,7 @@ export default function StartPage({
             boxShadow="lg"
           >
             <Text fontWeight={"bold"}>Ingresse na jornada para entrar nas trilhas</Text>
-            <Button bg="yellow.brand" color="gray.brand" onClick={handleIngressar}>Ingressar</Button>
+            <Button bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
           </Flex>
         </>
       }
@@ -148,6 +157,7 @@ export default function StartPage({
               color="gray.brand"
               p={8}
               position="relative"
+              
             >
               {
                 isFinished && <CheckCircleIcon

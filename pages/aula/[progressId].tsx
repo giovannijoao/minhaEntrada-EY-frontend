@@ -11,6 +11,7 @@ import { withAuthSsr } from "../../lib/withAuth";
 import { getAulaProgress } from "../../prisma/aulaProgress";
 import cmsClient from "../../services/cmsClient";
 import { IAulaFindOne } from "../../types/CMS/Aula";
+import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type IProps = {
   aula: IAulaFindOne
@@ -69,20 +70,22 @@ export default function TrilhaPage({
 }: IProps) {
   const router = useRouter();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [ready, setIsReady] = useState(false);
   const [isEnded, setEnded] = useState(false);
 
   const onFinished = useCallback(async () => {
     setEnded(true);
-    const response = await axios.post('/api/progress/update', {
+    await axios.post('/api/progress/update', {
       progressId: progressId,
       isClassFinished: true,
       hasActivity: !!aula.data.attributes.atividade?.data,
     })
-    if (aula.data.attributes.atividade?.data) toast({
-      title: 'Aula finalizada',
-      description: 'Hora de fazer as atividades'
-    })
+    if (aula.data.attributes.atividade?.data) 
+      toast({
+        title: 'Aula finalizada',
+        description: 'Hora de fazer as atividades'
+      })
   }, [aula.data.attributes.atividade?.data, progressId, toast])
 
   useEffect(() => {
@@ -127,7 +130,7 @@ export default function TrilhaPage({
           <Heading>Aula finalizada</Heading>
           {
             aula.data.attributes.atividade?.data &&
-            <Link href={`/activity/${progressId}`}><Button colorScheme={"yellow"}>Ir para atividades</Button></Link>
+            <Link href={`/activity/${progressId}`}><Button onClick={() => setIsLoading(true) } isLoading={isLoading} colorScheme={"yellow"}>Ir para atividades</Button></Link>
           }
         </Center>}
         {!isEnded && aula.data.attributes.atividade?.data && <Text textAlign="center">Finalize a aula para realizar as atividades</Text>}

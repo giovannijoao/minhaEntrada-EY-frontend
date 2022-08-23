@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Box, Button, Center, Checkbox, CheckboxGroup, Flex, Heading, IconButton, Radio, RadioGroup, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Checkbox, CheckboxGroup, Flex, Heading, IconButton, Radio, RadioGroup, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
@@ -10,6 +10,7 @@ import { getAulaProgress } from "../../../prisma/aulaProgress";
 import cmsClient from "../../../services/cmsClient";
 import { Question } from "../../../types/CMS/Atividade";
 import { IAulaFindOne } from "../../../types/CMS/Aula";
+import { ErrorMessagesToast } from "../../../utils/constants/ErrorMessagesToast";
 
 type IProps = {
   aula: IAulaFindOne
@@ -74,6 +75,8 @@ export default function Page({
   aula,
   progressId
 }: IProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
   const router = useRouter();
   const [selectedQuestionIndex, setSelectionQuestionIndex] = useState(0);
   const form = useForm({
@@ -106,13 +109,22 @@ export default function Page({
       }
     }
   }) => {
+    setIsLoading(true);
     const answers = Object.values(values.answers);
-    const response = await axios.post(`/api/activity/answer/${progressId}`, {
+    await axios.post(`/api/activity/answer/${progressId}`, {
       progressId,
       answers,
+    }).then(resp => {
+      router.replace(`/activity/${progressId}/result`)
+    }).catch(error => {
+      toast({ 
+        position: "top-right",
+        description: ErrorMessagesToast.atividades,
+        status: "error"
+      })
+
+      setIsLoading(false)
     })
-    // TODO: Adicionar loading do botão de submit
-    router.replace(`/activity/${progressId}/result`)
   }, [progressId, router]);
 
   return <Flex
@@ -262,7 +274,7 @@ export default function Page({
                 />
               }
               {selectedQuestionIndex < questions.length - 1  && <Button onClick={handleNext} colorScheme="yellow">Próxima</Button>}
-              {selectedQuestionIndex === questions.length - 1 && <Button type="submit" colorScheme="yellow">Enviar</Button>}
+              {selectedQuestionIndex === questions.length - 1 && <Button type="submit" colorScheme="yellow" isLoading={isLoading}>Enviar</Button>}
             </Flex>
           }
         </form>
