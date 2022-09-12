@@ -41,7 +41,7 @@ export const updateJornadaSubscription = async ({
   id,
 }: {
   id: string,
-  data: Partial<JornadaSubscription>;
+  data: Prisma.JornadaSubscriptionUpdateInput
 }) => {
   const jornadaSubscription = await prisma.jornadaSubscription.update({
     where: {
