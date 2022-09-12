@@ -99,7 +99,7 @@ export default function StartPage({
         position: "top-right",
       })
     });
-  }, [jornada.data.id, router])
+  }, [jornada.data.id, router, toast])
 
   return <Flex
     direction="column"
@@ -157,7 +157,7 @@ export default function StartPage({
               color="gray.brand"
               p={8}
               position="relative"
-              
+
             >
               {
                 isFinished && <CheckCircleIcon

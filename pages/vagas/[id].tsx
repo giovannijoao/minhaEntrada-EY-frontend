@@ -72,7 +72,7 @@ export default function StartPage({
     await axios.post('/api/vagas/apply', {
       vagaId: vaga.data.id
     }).then(resp => {
-      router.reload() 
+      router.reload()
     }).catch(error => {
       setIsLoading(false)
       toast({
@@ -81,7 +81,7 @@ export default function StartPage({
         position: "top-right",
       })
     })
-  }, [router, vaga.data.id])
+  }, [router, vaga.data.id, toast])
 
   return <Flex
     direction="column"

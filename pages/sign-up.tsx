@@ -35,7 +35,7 @@ const SignUp: NextPageWithLayout = () => {
         status: "error"
       })
     })
-  }, [router]);
+  }, [router, toast]);
 
   return (
     <Flex

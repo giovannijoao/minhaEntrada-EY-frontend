@@ -77,13 +77,13 @@ export default function AdminPage({
               color="white"
               p={4}
             >
-              <Image
+              {jornada.attributes.image?.data?.attributes.formats.small.url  && <Image
                 w={"100%"}
                 h={36}
                 src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
                 fit={"cover"}
                 borderRadius="md"
-                aria-label={jornada.attributes.image?.data.attributes.caption} />
+                aria-label={jornada.attributes.image?.data?.attributes.caption} />}
               <Flex direction={"column"} gap={2}>
                 <Link href={`/admin/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
               </Flex>

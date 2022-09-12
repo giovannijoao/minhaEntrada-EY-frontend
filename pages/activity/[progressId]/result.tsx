@@ -129,7 +129,7 @@ export default function Page({
         status: "error"
       })
     })
-  }, [router, trilhaSubscription.id])
+  }, [router, trilhaSubscription.id, toast])
 
   return <Flex
     direction="column"

@@ -140,7 +140,7 @@ export default function TrilhaPage({
         status: "error"
       })
     })
-  }, [router, trilha.data.id, trilhaSubscriptionId])
+  }, [router, trilha.data.id, trilhaSubscriptionId, toast])
 
   return <Flex
     direction="column"

@@ -117,7 +117,7 @@ export default function Page({
     }).then(resp => {
       router.replace(`/activity/${progressId}/result`)
     }).catch(error => {
-      toast({ 
+      toast({
         position: "top-right",
         description: ErrorMessagesToast.atividades,
         status: "error"
@@ -125,7 +125,7 @@ export default function Page({
 
       setIsLoading(false)
     })
-  }, [progressId, router]);
+  }, [progressId, router, toast]);
 
   return <Flex
     direction="column"

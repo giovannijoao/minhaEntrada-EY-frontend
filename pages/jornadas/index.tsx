@@ -60,6 +60,11 @@ export default function StartPage({
   const toast = useToast();
   const router = useRouter()
 
+  const changeSubmitting = useCallback(async (jornada: IJornada) => {
+    jornada.isSubmitting = !jornada.isSubmitting
+    setJornadasState({ ...jornadasState })
+  }, [jornadasState])
+
   const handleIngressar = useCallback(async (jornadaId: number) => {
     const jornada = jornadas.data.filter(jornada => jornada.id==jornadaId)[0];
     changeSubmitting(jornada)
@@ -75,12 +80,7 @@ export default function StartPage({
         status: "error"
       })
     })
-  }, [router])
-
-  const changeSubmitting = useCallback(async (jornada: IJornada) => {
-    jornada.isSubmitting=!jornada.isSubmitting
-    setJornadasState({ ...jornadasState })
-  }, [jornadasState])
+  }, [changeSubmitting, jornadas.data, router, toast])
 
   return <Flex
     direction="column"
@@ -121,13 +121,13 @@ export default function StartPage({
               color="white"
               p={4}
             >
-              <Image
+              {subscription.jornada.attributes.image?.data?.attributes.formats.small.url && <Image
                 w={"100%"}
                 h={36}
                 src={mediaUrl?.concat(subscription.jornada.attributes.image.data.attributes.formats.small.url)}
                 fit={"cover"}
                 borderRadius="md"
-                aria-label={subscription.jornada.attributes.image.data.attributes.caption} />
+                aria-label={subscription.jornada.attributes.image.data.attributes.caption} />}
               <Link href={`/jornadas/${subscription.jornada.id}`}><Heading mt={2} fontSize="xl">{subscription.jornada.attributes.name}</Heading></Link>
             </Box>
           })
@@ -159,13 +159,13 @@ export default function StartPage({
               color="white"
               p={4}
             >
-              <Image
+              {jornada.attributes.image?.data?.attributes.formats.small.url  && <Image
                 w={"100%"}
                 h={36}
                 src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
                 fit={"cover"}
                 borderRadius="md"
-                aria-label={jornada.attributes.image?.data.attributes.caption} />
+                aria-label={jornada.attributes.image?.data.attributes.caption} />}
               <Flex direction={"column"} gap={2}>
                 <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
                 <Button size="xs" bg="yellow.brand" color='gray.brand' isLoading={jornada.isSubmitting} onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
