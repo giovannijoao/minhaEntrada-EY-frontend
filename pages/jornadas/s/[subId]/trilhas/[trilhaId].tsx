@@ -116,7 +116,7 @@ export default function TrilhaPage({
   const toast = useToast()
   const router = useRouter();
 
-  const initializeActivity = useCallback(async (p: IAula) => {
+  const initializeActivity = useCallback(async (p: AulaProgress) => {
     setIsLoading(true);
     router.push(`/aula/${p.id}`)
   }, [router]);

@@ -160,10 +160,10 @@ export default function StartPage({
                 <Image
                   w={"100%"}
                   h={36}
-                  src={mediaUrl?.concat(jornada.attributes.image?.data.attributes.formats.small.url as string)}
+                  src={mediaUrl?.concat(jornada.attributes.image?.data?.attributes.formats.small.url as string)}
                   borderRadius="md"
                   fit={"cover"}
-                  aria-label={jornada.attributes.image?.data.attributes.caption} />
+                  aria-label={jornada.attributes.image?.data?.attributes.caption} />
                 <Flex direction={"column"} gap={2}>
                   <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
                   {/* <Button size="xs" bg="yellow.brand" color='gray.brand' onClick={() => handleIngressar(jornada.id)}>Ingressar</Button> */}
