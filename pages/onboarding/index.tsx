@@ -379,7 +379,7 @@ const CertificationForm = () => {
     <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
       <Flex p={8} boxShadow="md" bg="blackAlpha.500" w="lg" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
-          <Heading fontSize="2xl">Certificados e Cursos</Heading>
+          <Heading fontSize="2xl">Certificados e Licenças</Heading>
           <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
             Adicionar
           </Button>
@@ -402,7 +402,7 @@ const CertificationForm = () => {
     <Modal isOpen={isOpenAddCertificationModal} onClose={onCloseAddCertificationModal}>
       <ModalOverlay />
       <ModalContent bg="gray.800">
-        <ModalHeader>Adicionar Certificado</ModalHeader>
+        <ModalHeader>Adicionar Certificado ou Licença</ModalHeader>
         <ModalCloseButton />
         <form onSubmit={formAdd.handleSubmit(handleAdd)}>
           <ModalBody display="flex" flexDirection={"column"} gap={2}>
