@@ -1,7 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
+import format from "date-fns/format";
 import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 
 const tabs = [
   '1. Dados pessoais',
@@ -13,19 +14,28 @@ export default function OnBoarding() {
   const form = useForm({
     defaultValues: {
       // 1. Dados pessoais
-      firstName: "",
-      lastName: "",
-      birthDate: "",
-      email: "",
-      phoneNumber: "",
-      password: "",
-      passwordConfirm: "",
+      firstName: "João",
+      lastName: "Oliveira",
+      birthDate: "2000-07-04",
+      email: "joao@gmail.com",
+      phoneNumber: "11912345678",
+      password: "teste",
+      passwordConfirm: "teste",
+      // 2. Dados escolares e profissionais
+      education: [{
+        id: '1',
+        school: "FIAP",
+        degree: "Bacharelado",
+        grade: "Sistemas de Informação",
+        startDate: "2019-03-01",
+        endDate: "2022-12-01",
+      }]
     }
   });
   const [tabIndex, setTabIndex] = useState(0)
   const handleNext = useCallback(async () => {
     const selectedTab = tabs[tabIndex];
-    let result;
+    let result = true;
     if (selectedTab === "1. Dados pessoais") {
       result = await form.trigger([
         "firstName",
@@ -47,7 +57,7 @@ export default function OnBoarding() {
   }
 
   const errors = form.formState.errors;
-  console.log(errors)
+
   return <>
     <Flex
       direction="column"
@@ -63,114 +73,247 @@ export default function OnBoarding() {
         <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
         <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos começar preenchendo alguns dados</Heading>
       </Flex>
-      <form>
-        <Tabs
-          m={4}
-          index={tabIndex} onChange={handleTabsChange}
-        >
-          <TabList>
-            {tabs.map(item  => {
-              return <Tab key={item} sx={{
-                _selected: {
-                  color: 'yellow.brand'
-                }
-              }}>{item}</Tab>
-            })}
-          </TabList>
+      <FormProvider {...form}>
+        <form>
+          <Tabs
+            m={4}
+            index={tabIndex} onChange={handleTabsChange}
+          >
+            <TabList>
+              {tabs.map(item => {
+                return <Tab key={item} sx={{
+                  _selected: {
+                    color: 'yellow.brand'
+                  }
+                }}>{item}</Tab>
+              })}
+            </TabList>
 
-          <TabPanels>
-            <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
-              <Flex direction="column" w={{
-                base: 'full',
-                md: "4xl"
-              }} mx={'auto'} gap={4}>
-                <Flex gap={8} direction={{
-                  base: 'column',
-                  md: 'row'
-                }}>
-                  <FormControl isInvalid={!form.formState.dirtyFields["firstName"] && !!errors["firstName"]}>
-                    <FormLabel>Primeiro Nome</FormLabel>
-                    <Input type='text' id="firstName" {...form.register('firstName', { required: "Campo obrigatório" })} />
-                    {errors["firstName"] && <FormErrorMessage>
-                      {errors["firstName"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                  <FormControl isInvalid={!form.formState.dirtyFields["lastName"] && !!errors["lastName"]}>
-                    <FormLabel>Último Nome</FormLabel>
-                    <Input type='text' id="lastName" {...form.register('lastName', { required: "Campo obrigatório" })} />
-                    {errors["lastName"] && <FormErrorMessage>
-                      {errors["lastName"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                  <FormControl isInvalid={!form.formState.dirtyFields["birthDate"] && !!errors["birthDate"]}>
-                    <FormLabel>Data Nascimento</FormLabel>
-                    <Input type='date' id="birthDate" {...form.register('birthDate', { required: "Campo obrigatório" })} />
-                    {errors["birthDate"] && <FormErrorMessage>
-                      {errors["birthDate"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                </Flex>
-                <Flex gap={8} direction={{
-                  base: 'column',
-                  md: 'row'
-                }}>
-                  <FormControl isInvalid={!form.formState.dirtyFields["email"] && !!errors["email"]}>
-                    <FormLabel>Email</FormLabel>
-                    <Input type='email' id="email" {...form.register('email', { required: "Campo obrigatório" })} />
-                    {errors["email"] && <FormErrorMessage>
-                      {errors["email"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                  <FormControl isInvalid={!form.formState.dirtyFields["phoneNumber"] && !!errors["phoneNumber"]}>
-                    <FormLabel>Telefone Celular</FormLabel>
-                    <Input type='number' id="phoneNumber" {...form.register('phoneNumber', { required: "Campo obrigatório" })} />
-                    {errors["phoneNumber"] && <FormErrorMessage>
-                      {errors["phoneNumber"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                </Flex>
-                <Flex gap={8} direction={{
-                  base: 'column',
-                  md: 'row'
-                }}>
-                  <FormControl isInvalid={!form.formState.dirtyFields["password"] && !!errors["password"]}>
-                    <FormLabel>Senha</FormLabel>
-                    <Input type='password' id="password" {...form.register('password', { required: "Campo obrigatório" })} />
-                    {errors["password"] && <FormErrorMessage>
-                      {errors["password"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
-                  <FormControl isInvalid={!!errors["passwordConfirm"]}>
-                    <FormLabel>Confirme a senha</FormLabel>
-                    <Input type='password' id="passwordConfirm" {...form.register('passwordConfirm', {
-                      validate: (val) => {
-                        console.log(148, val)
-                        const password = form.watch('password');
-                        if (password !== val) {
-                          console.log(150, password, val)
-                          return "As senhas não conferem"
+            <TabPanels>
+              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
+                <Flex direction="column" w={{
+                  base: 'full',
+                  md: "4xl"
+                }} mx={'auto'} gap={4}>
+                  <Flex gap={8} direction={{
+                    base: 'column',
+                    md: 'row'
+                  }}>
+                    <FormControl isInvalid={!form.formState.dirtyFields["firstName"] && !!errors["firstName"]}>
+                      <FormLabel>Primeiro Nome</FormLabel>
+                      <Input type='text' id="firstName" {...form.register('firstName', { required: "Campo obrigatório" })} />
+                      {errors["firstName"] && <FormErrorMessage>
+                        {errors["firstName"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                    <FormControl isInvalid={!form.formState.dirtyFields["lastName"] && !!errors["lastName"]}>
+                      <FormLabel>Último Nome</FormLabel>
+                      <Input type='text' id="lastName" {...form.register('lastName', { required: "Campo obrigatório" })} />
+                      {errors["lastName"] && <FormErrorMessage>
+                        {errors["lastName"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                    <FormControl isInvalid={!form.formState.dirtyFields["birthDate"] && !!errors["birthDate"]}>
+                      <FormLabel>Data Nascimento</FormLabel>
+                      <Input type='date' id="birthDate" {...form.register('birthDate', { required: "Campo obrigatório" })} />
+                      {errors["birthDate"] && <FormErrorMessage>
+                        {errors["birthDate"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                  </Flex>
+                  <Flex gap={8} direction={{
+                    base: 'column',
+                    md: 'row'
+                  }}>
+                    <FormControl isInvalid={!form.formState.dirtyFields["email"] && !!errors["email"]}>
+                      <FormLabel>Email</FormLabel>
+                      <Input type='email' id="email" {...form.register('email', { required: "Campo obrigatório" })} />
+                      {errors["email"] && <FormErrorMessage>
+                        {errors["email"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                    <FormControl isInvalid={!form.formState.dirtyFields["phoneNumber"] && !!errors["phoneNumber"]}>
+                      <FormLabel>Telefone Celular</FormLabel>
+                      <Input type='number' id="phoneNumber" {...form.register('phoneNumber', { required: "Campo obrigatório" })} />
+                      {errors["phoneNumber"] && <FormErrorMessage>
+                        {errors["phoneNumber"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                  </Flex>
+                  <Flex gap={8} direction={{
+                    base: 'column',
+                    md: 'row'
+                  }}>
+                    <FormControl isInvalid={!form.formState.dirtyFields["password"] && !!errors["password"]}>
+                      <FormLabel>Senha</FormLabel>
+                      <Input type='password' id="password" {...form.register('password', { required: "Campo obrigatório" })} />
+                      {errors["password"] && <FormErrorMessage>
+                        {errors["password"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                    <FormControl isInvalid={!!errors["passwordConfirm"]}>
+                      <FormLabel>Confirme a senha</FormLabel>
+                      <Input type='password' id="passwordConfirm" {...form.register('passwordConfirm', {
+                        validate: (val) => {
+                          console.log(148, val)
+                          const password = form.watch('password');
+                          if (password !== val) {
+                            console.log(150, password, val)
+                            return "As senhas não conferem"
+                          }
                         }
-                      }
-                    })} />
-                    {errors["passwordConfirm"] && <FormErrorMessage>
-                      {errors["passwordConfirm"].message}
-                    </FormErrorMessage>}
-                  </FormControl>
+                      })} />
+                      {errors["passwordConfirm"] && <FormErrorMessage>
+                        {errors["passwordConfirm"].message}
+                      </FormErrorMessage>}
+                    </FormControl>
+                  </Flex>
                 </Flex>
-              </Flex>
-              <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
-                Próxima Etapa
-              </Button>
-            </TabPanel>
-            <TabPanel>
-              <p>two!</p>
-            </TabPanel>
-            <TabPanel>
-              <p>three!</p>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </form>
+                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                  Próxima Etapa
+                </Button>
+              </TabPanel>
+              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
+                <EducationForm />
+                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                  Próxima Etapa
+                </Button>
+              </TabPanel>
+              <TabPanel>
+                <p>three!</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </form>
+      </FormProvider>
     </Flex>
+  </>
+}
+
+type IEducation = {
+  school: string,
+  degree: string,
+  grade: string,
+  startDate: string,
+  endDate: string,
+}
+
+const EducationForm = () => {
+  const { isOpen: isOpenAddEducationModal, onOpen: onOpenAddEducationModal, onClose: onCloseAddEducationModal } = useDisclosure()
+  const form = useFormContext<{
+    education: IEducation[]
+  }>()
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    control: form.control,
+    name: "education", // unique name for your Field Array
+  });
+
+  const formAdd = useForm({
+    defaultValues: {
+      school: "",
+      degree: "",
+      grade: "",
+      startDate: "",
+      endDate: "",
+    }
+  })
+  const errors = formAdd.formState.errors;
+
+  const handleAdd = useCallback((values: IEducation) => {
+    console.log(values);
+    append(values)
+    onCloseAddEducationModal()
+  }, [append, onCloseAddEducationModal])
+
+  return <>
+    <Flex direction="column" w={{
+      base: 'full',
+      md: "4xl"
+    }} mx={'auto'} gap={4}>
+      <Flex p={8} boxShadow="md" bg="blackAlpha.500" w="lg" direction="column" gap={4}>
+        <Flex justifyContent={"space-between"} w="full">
+          <Heading fontSize="2xl">Formação Academica</Heading>
+          <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
+            Adicionar
+          </Button>
+        </Flex>
+        <Divider />
+        <Flex direction="column" gap={2}>
+          {
+            fields.map(ed => {
+              const startDate = format(new Date(ed.startDate), 'MMM yyyy')
+              const endDate = format(new Date(ed.endDate), 'MMM yyyy')
+              return <Flex key={ed.id} direction="column">
+                <Heading fontSize="lg">{ed.school}</Heading>
+                <Text>{ed.degree}, {ed.grade}</Text>
+                <Text fontWeight={"light"}>{startDate} - {endDate}</Text>
+              </Flex>
+            })
+          }
+        </Flex>
+      </Flex>
+    </Flex>
+    <Modal isOpen={isOpenAddEducationModal} onClose={onCloseAddEducationModal}>
+      <ModalOverlay />
+      <ModalContent bg="gray.800">
+        <ModalHeader>Adicionar Formação Academica</ModalHeader>
+        <ModalCloseButton />
+        <form onSubmit={formAdd.handleSubmit(handleAdd)}>
+          <ModalBody display="flex" flexDirection={"column"} gap={2}>
+            <FormControl
+              isInvalid={!formAdd.formState.dirtyFields.school && !!errors.school}
+              >
+              <FormLabel>Instituição</FormLabel>
+              <Input type='text' {...formAdd.register('school', { required: "Campo obrigatório" })} />
+              {errors.school && <FormErrorMessage>
+                {errors.school?.message}
+              </FormErrorMessage>}
+            </FormControl>
+            <FormControl
+              isInvalid={!formAdd.formState.dirtyFields.degree && !!errors.degree}
+            >
+              <FormLabel>Grau</FormLabel>
+              <Input type='text' {...formAdd.register('degree', { required: "Campo obrigatório" })} />
+              {errors.degree && <FormErrorMessage>
+                {errors.degree?.message}
+              </FormErrorMessage>}
+            </FormControl>
+            <FormControl
+              isInvalid={!formAdd.formState.dirtyFields.grade && !!errors.grade}
+            >
+              <FormLabel>Graduação</FormLabel>
+              <Input type='text' {...formAdd.register('grade', { required: "Campo obrigatório" })} />
+              {errors.grade && <FormErrorMessage>
+                {errors.grade?.message}
+              </FormErrorMessage>}
+            </FormControl>
+            <Flex gap={4}>
+              <FormControl
+                isInvalid={!formAdd.formState.dirtyFields.startDate && !!errors.startDate}
+              >
+                <FormLabel>Data de Inicio</FormLabel>
+                <Input type='date' {...formAdd.register('startDate', { required: "Campo obrigatório" })} />
+                {errors.startDate && <FormErrorMessage>
+                  {errors.startDate?.message}
+                </FormErrorMessage>}
+              </FormControl>
+              <FormControl
+                isInvalid={!formAdd.formState.dirtyFields.endDate && !!errors.endDate}
+              >
+                <FormLabel>Data de Fim</FormLabel>
+                <Input type='date' {...formAdd.register('endDate', { required: "Campo obrigatório" })} />
+                {errors.endDate && <FormErrorMessage>
+                  {errors.endDate?.message}
+                </FormErrorMessage>}
+              </FormControl>
+
+            </Flex>
+          </ModalBody>
+          <ModalFooter>
+            <Button bg="yellow.brand" color="gray.brand" type="submit">Adicionar</Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   </>
 }
