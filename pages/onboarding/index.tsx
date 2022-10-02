@@ -43,7 +43,6 @@ export async function getServerSideProps() {
       populate: ['questions.answers']
     }
   })
-  console.log(questionarioPerfil.data)
   return {
     props: {
       questionarioPerfil: questionarioPerfil.data,

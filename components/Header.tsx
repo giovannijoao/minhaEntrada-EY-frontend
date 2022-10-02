@@ -36,6 +36,14 @@ export default function HeaderV2({
 
   const Links = useMemo(() => {
     const links = [{
+      title: 'Entrar',
+      href: '/login',
+      role: 'unauthenticated'
+    }, {
+      title: 'Cadastrar',
+      href: '/sign-up',
+      role: 'unauthenticated'
+    }, {
       title: 'Jornadas',
       href: '/jornadas',
       role: 'user'
@@ -48,8 +56,13 @@ export default function HeaderV2({
       href: '/admin/jornadas',
       role: 'admin'
     }]
-    return links.filter(x => x.role === role);
-  }, [role]);
+    return links.filter(x => {
+      if (x.role === "unauthenticated" && !user?.isLoggedIn) return true;
+      let result = x.role === role
+      if (result && x.role === "user") result = result && !!user?.isLoggedIn;
+      return result;
+    });
+  }, [role, user?.isLoggedIn]);
 
   return (
     <>
@@ -76,7 +89,7 @@ export default function HeaderV2({
               ))}
             </HStack>
           </HStack>
-          {user && <Flex alignItems={'center'}>
+          {user?.isLoggedIn && <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
               <Menu>
                 <MenuButton
