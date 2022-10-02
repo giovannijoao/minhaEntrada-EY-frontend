@@ -1,8 +1,10 @@
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
+import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
 import format from "date-fns/format";
-import { useCallback, useState } from "react";
-import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { useCallback, useState, useEffect } from "react";
+import { Controller, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import cmsClient from "../../services/cmsClient";
+import { IQuestionarioPerfilFindOne } from "../../types/CMS/QuestionarioPerfil";
 
 const tabs = [
   '1. Dados pessoais',
@@ -10,25 +12,51 @@ const tabs = [
   '3. Questionário de perfil',
 ]
 
-export default function OnBoarding() {
-  const form = useForm<{
-    firstName: string;
-    lastName: string;
-    birthDate: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    passwordConfirm: string;
-    education: IEducation[];
-    certifications: {
-      name: string;
-      organization: string;
-      expiresAt: string;
-      issueDate: string;
-      credentialId: string;
-      credentialUrl: string;
+type IForm = {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  passwordConfirm: string;
+  education: IEducation[];
+  certifications: {
+    name: string;
+    organization: string;
+    expiresAt: string;
+    issueDate: string;
+    credentialId: string;
+    credentialUrl: string;
+  }[],
+  perfil: {
+    answers: {
+      questionId: number | string
+      answerId?: number | string
     }[]
-  }>({
+  }
+}
+
+export async function getServerSideProps() {
+  const questionarioPerfil = await cmsClient.get<IQuestionarioPerfilFindOne>(`questionario-perfil`, {
+    params: {
+      populate: ['questions.answers']
+    }
+  })
+  console.log(questionarioPerfil.data)
+  return {
+    props: {
+      questionarioPerfil: questionarioPerfil.data,
+    }, // will be passed to the page component as props
+  }
+}
+
+export default function OnBoarding({
+  questionarioPerfil
+}: {
+  questionarioPerfil: IQuestionarioPerfilFindOne
+}) {
+  const form = useForm<IForm>({
     defaultValues: {
       // 1. Dados pessoais
       firstName: "João",
@@ -46,7 +74,12 @@ export default function OnBoarding() {
         startDate: "2019-03-01",
         endDate: "2022-12-01",
       }],
-      certifications: []
+      certifications: [],
+      perfil: {
+        answers: questionarioPerfil.data.attributes.questions.map(question => ({
+          questionId: question.id,
+        }))
+      }
     }
   });
   const [tabIndex, setTabIndex] = useState(0)
@@ -73,6 +106,10 @@ export default function OnBoarding() {
     setTabIndex(index)
   }
 
+  const handleSubmit = useCallback((values: IForm) => {
+    console.log(90, values)
+  }, []);
+
   const errors = form.formState.errors;
 
   return <>
@@ -91,7 +128,7 @@ export default function OnBoarding() {
         <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos começar preenchendo alguns dados</Heading>
       </Flex>
       <FormProvider {...form}>
-        <form>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <Tabs
             m={4}
             index={tabIndex} onChange={handleTabsChange}
@@ -203,7 +240,7 @@ export default function OnBoarding() {
                 </Button>
               </TabPanel>
               <TabPanel>
-                <p>three!</p>
+                <PerfilQuestions questionarioPerfil={questionarioPerfil} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -250,7 +287,7 @@ const EducationForm = () => {
 
   return <>
     <Flex direction="column" w="full" h="full" gap={4}>
-      <Flex p={8} boxShadow="md" bg="blackAlpha.500" w="lg" direction="column" gap={4}>
+      <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Formação Academica</Heading>
           <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
@@ -282,7 +319,7 @@ const EducationForm = () => {
           <ModalBody display="flex" flexDirection={"column"} gap={2}>
             <FormControl
               isInvalid={!formAdd.formState.dirtyFields.school && !!errors.school}
-              >
+            >
               <FormLabel>Instituição</FormLabel>
               <Input type='text' {...formAdd.register('school', { required: "Campo obrigatório" })} />
               {errors.school && <FormErrorMessage>
@@ -377,7 +414,7 @@ const CertificationForm = () => {
 
   return <>
     <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
-      <Flex p={8} boxShadow="md" bg="blackAlpha.500" w="lg" direction="column" gap={4}>
+      <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Certificados e Licenças</Heading>
           <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
@@ -469,5 +506,50 @@ const CertificationForm = () => {
         </form>
       </ModalContent>
     </Modal>
+  </>
+}
+
+const PerfilQuestions = ({
+  questionarioPerfil
+}: {
+  questionarioPerfil: IQuestionarioPerfilFindOne
+}) => {
+  return <>
+    <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
+      <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
+        <Flex justifyContent={"space-between"} w="full">
+          <Heading fontSize="2xl">Responda as perguntas para definir um perfil</Heading>
+        </Flex>
+        <Divider />
+        <Stack direction="column" gap={2} divider={<StackDivider borderColor='gray.50' />}>
+          {questionarioPerfil.data.attributes.questions.map((question, i) => {
+            return <Flex key={question.id} p={4} m={2} alignItems="center" justifyContent={"space-evenly"} direction={{
+              base: 'column',
+              md: 'row'
+            }} gap={4}>
+              <Text flex={1}>{question.text}</Text>
+              <Controller
+                name={`perfil.answers.${i}.answerId`}
+                render={({ field }) => {
+                  return <RadioGroup flex={1} {...field}>
+                    <Stack m="auto" direction="row" flexWrap={'wrap'} gap={4} spacing={"8"} divider={<StackDivider visibility={{
+                      base: 'hidden',
+                      md: 'visible'
+                    }} borderColor='gray.200' />}>
+                      {question.answers.map(answer => {
+                        return <Radio key={`${question.id}-${answer.id}`} value={answer.id.toString()}>{answer.text}</Radio>
+                      })}
+                    </Stack>
+                  </RadioGroup>
+                }}
+              />
+            </Flex>
+          })}
+        </Stack>
+      </Flex>
+      <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} type="submit">
+        Finalizar
+      </Button>
+    </Flex>
   </>
 }
