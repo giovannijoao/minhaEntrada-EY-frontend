@@ -56,12 +56,7 @@ export const getUserByEmail = async (email: string) => {
 };
 
 // CREATE
-export const createUser = async (userData: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}) => {
+export const createUser = async (userData: Prisma.UserCreateInput) => {
   const user = await prisma.user.create({
     data: userData,
   });

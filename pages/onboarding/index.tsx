@@ -1,5 +1,6 @@
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
+import axios from "axios";
 import format from "date-fns/format";
 import { useCallback, useState, useEffect } from "react";
 import { Controller, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
@@ -12,7 +13,7 @@ const tabs = [
   '3. Questionário de perfil',
 ]
 
-type IForm = {
+export type IOnBoardingForm = {
   firstName: string;
   lastName: string;
   birthDate: string;
@@ -32,7 +33,7 @@ type IForm = {
   perfil: {
     answers: {
       questionId: number | string
-      answerId?: number | string
+      answerId?: string
     }[]
   }
 }
@@ -55,13 +56,13 @@ export default function OnBoarding({
 }: {
   questionarioPerfil: IQuestionarioPerfilFindOne
 }) {
-  const form = useForm<IForm>({
+  const form = useForm<IOnBoardingForm>({
     defaultValues: {
       // 1. Dados pessoais
       firstName: "João",
       lastName: "Oliveira",
       birthDate: "2000-07-04",
-      email: "joao@gmail.com",
+      email: `joao-${(Math.random() * 1000).toString()}@gmail.com`,
       phoneNumber: "11912345678",
       password: "teste",
       passwordConfirm: "teste",
@@ -70,10 +71,16 @@ export default function OnBoarding({
         school: "FIAP",
         degree: "Bacharelado",
         grade: "Sistemas de Informação",
-        startDate: "2019-03-01",
-        endDate: "2022-12-01",
+        startDate: "2019-03",
+        endDate: "2022-12",
       }],
-      certifications: [],
+      certifications: [{
+        name: "Cloud Fundamentals, Administration and Solution Architect",
+        organization: "FIAP",
+        issueDate: "2022-10",
+        credentialId: "f3161ba6deb4dfa3980ff93922918b2f",
+        credentialUrl: "https://on.fiap.com.br/pluginfile.php/1/local_nanocourses/certificado_nanocourse/25257/f3161ba6deb4dfa3980ff93922918b2f/certificado.png"
+      }],
       perfil: {
         answers: questionarioPerfil.data.attributes.questions.map(question => ({
           questionId: question.id,
@@ -105,8 +112,9 @@ export default function OnBoarding({
     setTabIndex(index)
   }
 
-  const handleSubmit = useCallback((values: IForm) => {
-    console.log(90, values)
+  const handleSubmit = useCallback(async (values: IOnBoardingForm) => {
+    await axios.post('/api/onboarding', values)
+    // TODO: Add progress and error treatment
   }, []);
 
   const errors = form.formState.errors;
@@ -348,7 +356,7 @@ const EducationForm = () => {
                 isInvalid={!formAdd.formState.dirtyFields.startDate && !!errors.startDate}
               >
                 <FormLabel>Data de Inicio</FormLabel>
-                <Input type='date' {...formAdd.register('startDate', { required: "Campo obrigatório" })} />
+                <Input type='month' {...formAdd.register('startDate', { required: "Campo obrigatório" })} />
                 {errors.startDate && <FormErrorMessage>
                   {errors.startDate?.message}
                 </FormErrorMessage>}
@@ -357,7 +365,7 @@ const EducationForm = () => {
                 isInvalid={!formAdd.formState.dirtyFields.endDate && !!errors.endDate}
               >
                 <FormLabel>Data de Fim</FormLabel>
-                <Input type='date' {...formAdd.register('endDate', { required: "Campo obrigatório" })} />
+                <Input type='month' {...formAdd.register('endDate', { required: "Campo obrigatório" })} />
                 {errors.endDate && <FormErrorMessage>
                   {errors.endDate?.message}
                 </FormErrorMessage>}
@@ -465,7 +473,7 @@ const CertificationForm = () => {
                 isInvalid={!formAdd.formState.dirtyFields.issueDate && !!errors.issueDate}
               >
                 <FormLabel>Data de Expedição*</FormLabel>
-                <Input type='date' {...formAdd.register('issueDate', { required: "Campo obrigatório" })} />
+                <Input type='month' {...formAdd.register('issueDate', { required: "Campo obrigatório" })} />
                 {errors.issueDate && <FormErrorMessage>
                   {errors.issueDate?.message}
                 </FormErrorMessage>}
@@ -474,7 +482,7 @@ const CertificationForm = () => {
                 isInvalid={!formAdd.formState.dirtyFields.expiresAt && !!errors.expiresAt}
               >
                 <FormLabel>Data de Expiração</FormLabel>
-                <Input type='date' {...formAdd.register('expiresAt')} />
+                <Input type='month' {...formAdd.register('expiresAt')} />
                 {errors.expiresAt && <FormErrorMessage>
                   {errors.expiresAt?.message}
                 </FormErrorMessage>}

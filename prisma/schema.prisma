@@ -11,15 +11,15 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  email      String   @unique
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  email      String    @unique
   firstName  String
   lastName   String
   password   String
-  bornDate   DateTime
-  profilePic String
+  bornDate   DateTime?
+  profilePic String?
 
   JornadaSubscription JornadaSubscription[]
   AulaProgress        AulaProgress[]
@@ -47,8 +47,8 @@ model UserCertification {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   organization  String
-  expiresAt     DateTime
-  issueDate     DateTime?
+  expiresAt     DateTime?
+  issueDate     DateTime
   credentialId  String?
   credentialUrl String?
 

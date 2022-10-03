@@ -40,10 +40,6 @@ export default function HeaderV2({
       href: '/login',
       role: 'unauthenticated'
     }, {
-      title: 'Cadastrar',
-      href: '/sign-up',
-      role: 'unauthenticated'
-    }, {
       title: 'Jornadas',
       href: '/jornadas',
       role: 'user'

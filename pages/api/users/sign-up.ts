@@ -11,7 +11,7 @@ export default async function handler(
 ) {
   try {
     const { firstName, lastName, email, password } = req.body;
-    
+
     const verifyUserAlreadyExist = await getUserByEmail(email);
     if(verifyUserAlreadyExist)
       return res.status(500).json({ message: "Esse e-mail já possui um cadastro" || 'Internal server error' });

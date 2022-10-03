@@ -9,9 +9,7 @@ export type IQuestionarioPerfil = {
       answers: {
         id: number;
         text: string;
-        perfil_usuarios: {
-          data: IPerfilUsuariosAll
-        }
+        perfil_usuarios: IPerfilUsuariosAll
       }[]
     }[];
   };
