@@ -54,8 +54,6 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     }
   );
 
-  console.log(questionarioPerfil.data.data)
-
   const answered = body.perfil.answers.map(x => parseInt(x.answerId as unknown as string));
   const questions = questionarioPerfil.data.data.attributes.questions.flatMap(question => {
     return question.answers.filter(answer => answered.includes(answer.id)).map(answer => {
@@ -88,10 +86,14 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     [key: number]: number
   });
 
+  await prisma.userScore.create({
+    data: {
+      result: score,
+      userId: user.id,
+    }
+  })
+
   return res.json({
-    user,
-    education,
-    certifications,
-    score,
+    success: true,
   })
 }

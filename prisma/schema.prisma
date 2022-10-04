@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  email      String    @unique
-  firstName  String
-  lastName   String
-  password   String
-  bornDate   DateTime?
-  profilePic String?
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  email           String    @unique
+  firstName       String
+  lastName        String
+  password        String
+  bornDate        DateTime?
+  profilePic      String?
+  selectedProfile Int
 
   JornadaSubscription JornadaSubscription[]
   AulaProgress        AulaProgress[]
@@ -28,6 +29,7 @@ model User {
   UserEducation       UserEducation[]
   UserCertification   UserCertification[]
   UserExperience      UserExperience[]
+  UserScore           UserScore[]
 }
 
 model UserEducation {
@@ -64,6 +66,14 @@ model UserExperience {
   endDate     DateTime
   description String
   skills      String[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+}
+
+model UserScore {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  result Json
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId

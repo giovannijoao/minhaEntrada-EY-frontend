@@ -2,6 +2,7 @@ import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
 import axios from "axios";
 import format from "date-fns/format";
+import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { Controller, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import cmsClient from "../../services/cmsClient";
@@ -56,6 +57,7 @@ export default function OnBoarding({
 }: {
   questionarioPerfil: IQuestionarioPerfilFindOne
 }) {
+  const router = useRouter();
   const form = useForm<IOnBoardingForm>({
     defaultValues: {
       // 1. Dados pessoais
@@ -113,9 +115,16 @@ export default function OnBoarding({
   }
 
   const handleSubmit = useCallback(async (values: IOnBoardingForm) => {
-    await axios.post('/api/onboarding', values)
+    const result = await axios.post('/api/onboarding', values)
     // TODO: Add progress and error treatment
-  }, []);
+    if (result.data.success) {
+      await axios.post('/api/users/sign-in', {
+        email: values.email,
+        password: values.password
+      })
+      router.push('/onboarding/welcome')
+    }
+  }, [router]);
 
   const errors = form.formState.errors;
 
