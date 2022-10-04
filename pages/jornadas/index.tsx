@@ -7,8 +7,10 @@ import { useCallback, useState } from "react";
 import { mediaUrl } from "../../config";
 import { withAuthSsr } from "../../lib/withAuth";
 import { getAllJornadaSubscriptionsForUser } from "../../prisma/jornadasSubscription";
+import prisma from "../../prisma/prisma";
 import cmsClient from "../../services/cmsClient";
 import { IJornada, IJornadasAll } from "../../types/CMS/Jornada";
+import { IPerfilUsuarioFindOne } from "../../types/CMS/PerfilUsuario";
 import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type ISubscriptionWithJornada = JornadaSubscription & {
@@ -17,15 +19,32 @@ type ISubscriptionWithJornada = JornadaSubscription & {
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const { req } = context;
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.session.user.id
+    }
+  })
+
+  const selectedProfile = user?.selectedProfile;
+
+  console.log(30, selectedProfile)
+
+  const perfil = await cmsClient.get<IPerfilUsuarioFindOne>(`/perfil-usuarios/${selectedProfile}`, {
+    params: {
+      populate: 'jornadas'
+    }
+  })
+
   const [responseJornadas, subscriptions] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
-        populate: 'image'
+        populate: 'image',
+        "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id)
       }
     }),
     getAllJornadaSubscriptionsForUser({
       userId: req.session.user.id
-    })
+    }),
   ])
 
   const jornadasSubscription = subscriptions.map(x => x.jornadaId);
@@ -45,6 +64,7 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
     props: {
       jornadas: responseJornadas.data,
       subscriptions: parsedSubscription,
+      perfil: perfil.data,
     },
   };
 })
@@ -52,9 +72,11 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 export default function StartPage({
   jornadas,
   subscriptions,
+  perfil,
 }: {
   jornadas: IJornadasAll,
   subscriptions: ISubscriptionWithJornada[]
+  perfil: IPerfilUsuarioFindOne
 }) {
   const [jornadasState, setJornadasState] = useState<IJornadasAll>(jornadas);
   const toast = useToast();
@@ -91,10 +113,16 @@ export default function StartPage({
       p={8}
       justifyContent="center"
       backgroundColor="yellow.brand"
-      direction="column"
+      direction="row"
     >
-      <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
-      <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
+      <Flex direction="column" grow={2}>
+        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
+        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
+      </Flex>
+      { perfil && <Flex direction="column" grow={1} alignItems="flex-end">
+        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Seu Perfil:</Heading>
+        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">{perfil.data.attributes.name}</Heading>
+      </Flex>}
     </Flex>
     {subscriptions.length > 0 && <Flex
       direction="column"

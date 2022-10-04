@@ -1,7 +1,10 @@
+import { IJornadasAll } from "./Jornada";
+
 export type IPerfilUsuario = {
   id: number;
   attributes: {
     name: string;
+    jornadas: IJornadasAll
   };
 };
 
