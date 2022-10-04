@@ -27,8 +27,6 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 
   const selectedProfile = user?.selectedProfile;
 
-  console.log(30, selectedProfile)
-
   const perfil = await cmsClient.get<IPerfilUsuarioFindOne>(`/perfil-usuarios/${selectedProfile}`, {
     params: {
       populate: 'jornadas'
