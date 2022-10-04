@@ -10,40 +10,40 @@ import { IQuestionarioPerfilFindOne } from "../../../types/CMS/QuestionarioPerfi
 
 export default async function onboardingProcess(req: NextApiRequest, res: NextApiResponse) {
   const body = req.body as IOnBoardingForm;
-  // const { firstName, lastName, email, password } = body;
+  const { firstName, lastName, email, password } = body;
 
-  // const verifyUserAlreadyExist = await getUserByEmail(email);
-  // if (verifyUserAlreadyExist)
-  //   throw new Error("Esse e-mail já possui um cadastro");
-  // const salt = await bcrypt.genSalt(
-  //   process.env.PASSWORD_SALT ? Number(process.env.PASSWORD_SALT) : 10
-  // );
-  // const encryptedPassword = await bcrypt.hash(password, salt);
-  // const user = await createUser({
-  //   firstName,
-  //   lastName,
-  //   email,
-  //   password: encryptedPassword,
-  // });
+  const verifyUserAlreadyExist = await getUserByEmail(email);
+  if (verifyUserAlreadyExist)
+    throw new Error("Esse e-mail já possui um cadastro");
+  const salt = await bcrypt.genSalt(
+    process.env.PASSWORD_SALT ? Number(process.env.PASSWORD_SALT) : 10
+  );
+  const encryptedPassword = await bcrypt.hash(password, salt);
+  const user = await createUser({
+    firstName,
+    lastName,
+    email,
+    password: encryptedPassword,
+  });
 
-  // const [education, certifications] = await Promise.all([
-  //   prisma.userEducation.createMany({
-  //     data: body.education.map((ed) => ({
-  //       ...ed,
-  //       userId: user.id,
-  //       startDate: startOfDay(new Date(ed.startDate)),
-  //       endDate: startOfDay(new Date(ed.endDate)),
-  //     })),
-  //   }),
-  //   prisma.userCertification.createMany({
-  //     data: body.certifications.map((cert) => ({
-  //       ...cert,
-  //       userId: user.id,
-  //       issueDate: startOfDay(new Date(cert.issueDate)),
-  //       expiresAt: cert.expiresAt ? startOfDay(new Date(cert.expiresAt)) : undefined,
-  //     })),
-  //   }),
-  // ]);
+  const [education, certifications] = await Promise.all([
+    prisma.userEducation.createMany({
+      data: body.education.map((ed) => ({
+        ...ed,
+        userId: user.id,
+        startDate: startOfDay(new Date(ed.startDate)),
+        endDate: startOfDay(new Date(ed.endDate)),
+      })),
+    }),
+    prisma.userCertification.createMany({
+      data: body.certifications.map((cert) => ({
+        ...cert,
+        userId: user.id,
+        issueDate: startOfDay(new Date(cert.issueDate)),
+        expiresAt: cert.expiresAt ? startOfDay(new Date(cert.expiresAt)) : undefined,
+      })),
+    }),
+  ]);
 
   const questionarioPerfil = await cmsClient.get<IQuestionarioPerfilFindOne>(
     `questionario-perfil`,
@@ -88,11 +88,10 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     [key: number]: number
   });
 
-  console.log(score)
-
   return res.json({
-    // user,
-    // education,
-    // certifications,
+    user,
+    education,
+    certifications,
+    score,
   })
 }
