@@ -35,7 +35,6 @@ const Login: NextPageWithLayout = () => {
 
   return (
     <Flex
-      minH={'100vh'}
       align={'center'}
       justify={'center'}
       bg={'gray.brand'}>
@@ -76,11 +75,5 @@ const Login: NextPageWithLayout = () => {
     </Flex>
   )
 }
-
-Login.getLayout = function getLayout(page: ReactElement) {
-  return <>
-    {page}
-  </>
-};
 
 export default Login
