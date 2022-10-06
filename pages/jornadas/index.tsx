@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Link, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Link, Text, useToast } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -37,7 +37,7 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
         populate: 'image',
-        "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id)
+        "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id),
       }
     }),
     getAllJornadaSubscriptionsForUser({
@@ -56,7 +56,10 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
     }
   })
 
-  responseJornadas.data.data = responseJornadas.data.data.filter(x => !jornadasSubscription.includes(x.id))
+  responseJornadas.data.data = responseJornadas.data.data.filter(x =>
+    !jornadasSubscription.includes(x.id) &&
+    x.attributes.trilhas && x.attributes.trilhas.data.length > 0
+  )
 
   return {
     props: {
@@ -160,6 +163,20 @@ export default function StartPage({
         }
       </Flex>
     </Flex>}
+    {jornadasState.data.length === 0 && <>
+      <Flex
+        direction="column"
+        p={8}
+        gap={4}
+        w="lg"
+        border="1px"
+        borderColor="yellow.brand"
+        m={8}
+      >
+        <Heading>Parece que não há nenhuma jornada disponível no momento...</Heading>
+        <Text>Vamos avisá-lo quando uma nova jornada estiver disponível</Text>
+      </Flex>
+    </>}
     {jornadasState.data.length > 0 && <Flex
       direction="column"
       p={8}
