@@ -36,7 +36,7 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
   const [responseJornadas, subscriptions] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
-        populate: 'image',
+        populate: ['image', 'trilhas'],
         "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id),
       }
     }),

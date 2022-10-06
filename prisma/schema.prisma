@@ -20,7 +20,7 @@ model User {
   password        String
   bornDate        DateTime?
   profilePic      String?
-  selectedProfile Int
+  selectedProfile Int?
 
   JornadaSubscription JornadaSubscription[]
   AulaProgress        AulaProgress[]
