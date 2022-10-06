@@ -163,7 +163,7 @@ export default function StartPage({
         }
       </Flex>
     </Flex>}
-    {jornadasState.data.length === 0 && <>
+    {jornadasState.data.length === 0 && subscriptions.length === 0 && <>
       <Flex
         direction="column"
         p={8}
