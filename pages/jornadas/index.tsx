@@ -11,6 +11,7 @@ import prisma from "../../prisma/prisma";
 import cmsClient from "../../services/cmsClient";
 import { IJornada, IJornadasAll } from "../../types/CMS/Jornada";
 import { IPerfilUsuarioFindOne } from "../../types/CMS/PerfilUsuario";
+import { IVaga } from "../../types/CMS/Vaga";
 import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
 
 type ISubscriptionWithJornada = JornadaSubscription & {
@@ -36,7 +37,7 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
   const [responseJornadas, subscriptions] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
-        populate: ['image', 'trilhas'],
+        populate: ['image', 'trilhas', 'vagas'],
         "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id),
       }
     }),
@@ -105,6 +106,10 @@ export default function StartPage({
     })
   }, [changeSubmitting, jornadas.data, router, toast])
 
+  const vagas = jornadas.data
+    .filter(jornada => jornada.attributes.vagas && jornada.attributes.vagas?.data.length > 0)
+    .flatMap(jornada => jornada.attributes.vagas?.data.map(vaga => vaga))
+
   return <Flex
     direction="column"
     h="100vh"
@@ -125,6 +130,47 @@ export default function StartPage({
         <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">{perfil.data.attributes.name}</Heading>
       </Flex>}
     </Flex>
+    { vagas.length > 0 && <Flex
+      direction="row"
+      mx={8}
+      mt={4}
+      gap={4}
+      alignItems="center"
+      border="1px"
+      borderColor="yellow.brand"
+      p={4}
+      borderRadius="md"
+    >
+      <Heading fontSize={"xl"}>Vagas recomendas</Heading>
+      <Flex
+        gap={4}
+        wrap={"wrap"}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
+      >
+        {vagas
+          .map((x) => {
+            const vaga = x as unknown as IVaga;
+            return <Flex
+              key={vaga.id}
+              bg="yellow.brand"
+              color="gray.brand"
+              p={4}
+              borderRadius="md"
+              _hover={{
+                fontWeight: 'bold'
+              }}
+            >
+              <Link href={`/vagas/${vaga.id}`}>
+                {vaga.attributes.name}
+              </Link>
+            </Flex>
+          })
+        }
+      </Flex>
+    </Flex>}
     {subscriptions.length > 0 && <Flex
       direction="column"
       p={8}
