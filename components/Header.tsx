@@ -48,6 +48,10 @@ export default function HeaderV2({
       href: '/jornadas',
       role: 'user'
     }, {
+      title: 'Vagas',
+      href: '/vagas',
+      role: 'user'
+    },{
       title: 'Pessoas',
       href: '/admin/pessoas',
       role: 'admin'

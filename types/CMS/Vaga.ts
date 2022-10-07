@@ -5,6 +5,7 @@ export type IVaga = {
   attributes: {
     name: string;
     description: string;
+    shortDescription: string;
     jornadas?: IJornadasAll;
   };
 };
