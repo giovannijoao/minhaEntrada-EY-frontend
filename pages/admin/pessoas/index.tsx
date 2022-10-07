@@ -115,7 +115,7 @@ export default function AdminPage({
           </InputGroup>
           <Select placeholder="Buscar por vaga de interesse" {...searchFormMethods.register('vaga')}>
             {vagas.data.map(vaga => {
-              return <option key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
+              return <Box as="option" color="gray.brand" key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</Box>
             })}
           </Select>
           <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
