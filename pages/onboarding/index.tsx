@@ -1,17 +1,20 @@
-import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from "@chakra-ui/react";
+import { AddIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "@chakra-ui/icons";
+import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLabel, TagLeftIcon, TagRightIcon, Text, useDisclosure } from "@chakra-ui/react";
 import axios from "axios";
+import { CUIAutoComplete, Item as CUIAutoCompleteItem } from "chakra-ui-autocomplete";
 import format from "date-fns/format";
 import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { Controller, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import cmsClient from "../../services/cmsClient";
+import { IConhecimentosAll } from "../../types/CMS/Conhecimento";
 import { IQuestionarioPerfilFindOne } from "../../types/CMS/QuestionarioPerfil";
 
 const tabs = [
   '1. Dados pessoais',
   '2. Dados escolares e profissionais',
-  '3. Questionário de perfil',
+  '3. Meus Conhecimentos',
+  '4. Questionário de perfil',
 ]
 
 export type IOnBoardingForm = {
@@ -36,26 +39,35 @@ export type IOnBoardingForm = {
       questionId: number | string
       answerId?: string
     }[]
-  }
+  },
+  knowledgeItems: {
+    name: string;
+  }[]
 }
 
 export async function getServerSideProps() {
-  const questionarioPerfil = await cmsClient.get<IQuestionarioPerfilFindOne>(`questionario-perfil`, {
-    params: {
-      populate: ['questions.answers']
-    }
-  })
+  const [questionarioPerfil, conhecimentos] = await Promise.all([
+    cmsClient.get<IQuestionarioPerfilFindOne>(`questionario-perfil`, {
+      params: {
+        populate: ['questions.answers']
+      }
+    }),
+    cmsClient.get<IConhecimentosAll>(`conhecimentos`),
+  ])
   return {
     props: {
       questionarioPerfil: questionarioPerfil.data,
+      conhecimentos: conhecimentos.data,
     }, // will be passed to the page component as props
   }
 }
 
 export default function OnBoarding({
-  questionarioPerfil
+  questionarioPerfil,
+  conhecimentos,
 }: {
   questionarioPerfil: IQuestionarioPerfilFindOne
+  conhecimentos: IConhecimentosAll
 }) {
   const router = useRouter();
   const form = useForm<IOnBoardingForm>({
@@ -87,7 +99,8 @@ export default function OnBoarding({
         answers: questionarioPerfil.data.attributes.questions.map(question => ({
           questionId: question.id,
         }))
-      }
+      },
+      knowledgeItems: []
     }
   });
   const [tabIndex, setTabIndex] = useState(0)
@@ -254,6 +267,9 @@ export default function OnBoarding({
                 <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
                   Próxima Etapa
                 </Button>
+              </TabPanel>
+              <TabPanel>
+                <ConhecimentosForm conhecimentos={conhecimentos} />
               </TabPanel>
               <TabPanel>
                 <PerfilQuestions questionarioPerfil={questionarioPerfil} />
@@ -566,6 +582,52 @@ const PerfilQuestions = ({
       <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} type="submit">
         Finalizar
       </Button>
+    </Flex>
+  </>
+}
+
+const ConhecimentosForm = ({
+  conhecimentos
+}: {
+  conhecimentos: IConhecimentosAll
+}) => {
+  const form = useFormContext<IOnBoardingForm>()
+  const handleSelectedItemsChange = useCallback((selectedItems?: CUIAutoCompleteItem[]) => {
+    form.setValue('knowledgeItems', selectedItems?.map(item => ({
+      name: item.value,
+    })) || [])
+  }, [form])
+
+  const selectedItems = form.watch('knowledgeItems').map(item => ({
+    value: item.name,
+    label: item.name,
+  }))
+  return <>
+    <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
+      <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
+        <Flex justifyContent={"space-between"} w="full" direction="column">
+          <Heading fontSize="2xl">Meus Conhecimentos</Heading>
+        </Flex>
+        <Divider />
+        <Text>Selecione seus conhecimentos para mapear suas habilidades e competências</Text>
+        <Box
+          color="gray.brand"
+        >
+          <CUIAutoComplete
+            label=""
+            placeholder="Digite um conhecimento"
+            disableCreateItem={true}
+            items={conhecimentos.data.map(item => ({
+              label: item.attributes.name,
+              value: item.attributes.name
+            }))}
+            selectedItems={selectedItems}
+            onSelectedItemsChange={(changes) =>
+              handleSelectedItemsChange(changes.selectedItems)
+            }
+          />
+        </Box>
+      </Flex>
     </Flex>
   </>
 }
