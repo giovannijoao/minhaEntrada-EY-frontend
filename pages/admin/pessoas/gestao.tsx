@@ -39,12 +39,32 @@ export default function AdminPage({
     }
   });
 
+  const [data, setData] = useState<{
+    usersWithDeclaredKnowledge: {
+      id: string;
+      name: string;
+      email: string;
+      knowledgeCount: number;
+      percJornadasFinished: number;
+    }[]
+    usersThatFinishedJornadas: {
+      id: string;
+      name: string;
+      email: string;
+      percJornadasFinished: number;
+    }[]
+  }>({
+    usersWithDeclaredKnowledge: [],
+    usersThatFinishedJornadas: []
+  });
+
   const handleSubmit = useCallback(
     async (values: any) => {
-      const response = await axios.get('/api/admin/pessoas/gestao', {
+      const response = await axios.get('/api/admin/pessoas/summary', {
         params: values,
       })
-      // setData(response.data)
+      console.log(response.data)
+      setData(response.data)
     },
     [],
   )
@@ -93,10 +113,128 @@ export default function AdminPage({
         </Flex>
       </Flex>
     </FormProvider>
-    <Flex
+    {data.usersWithDeclaredKnowledge.length > 0 && <Flex
       p={8}
+      gap={4}
+      direction="column"
     >
-
-    </Flex>
+      <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
+      <Flex>
+        {data.usersWithDeclaredKnowledge.map(user => {
+          return <UserBox
+            key={`usersWithDeclaredKnowledge-${user.id}`}
+            user={user}
+            infoItems={[
+              {
+                value: user.knowledgeCount,
+                label: 'conhecimentos'
+              },
+              {
+                value: user.percJornadasFinished,
+                label: 'jornadas concluídas'
+              }
+            ]}
+          />
+        })}
+      </Flex>
+    </Flex>}
+    {data.usersThatFinishedJornadas.length > 0 && <Flex
+      p={8}
+      gap={4}
+      direction="column"
+    >
+      <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
+      <Flex>
+        {data.usersThatFinishedJornadas.map(user => {
+          return <UserBox
+            key={`usersThatFinishedJornadas-${user.id}`}
+            user={user}
+            infoItems={[
+              {
+                value: user.percJornadasFinished,
+                label: 'jornadas concluídas'
+              }
+            ]}
+          />
+        })}
+      </Flex>
+    </Flex>}
   </>
+}
+
+type IUser = {
+  id: string;
+  name: string;
+}
+
+type IInfoItems = {
+  value: any;
+  label: string;
+}
+
+function UserBox({
+  user,
+  infoItems
+}: {
+  user: IUser,
+  infoItems: IInfoItems[]
+}) {
+  return <Center>
+    <Box
+      maxW={'270px'}
+      w={'full'}
+      bg={'whiteAlpha.300'}
+      boxShadow={'2xl'}
+      rounded={'md'}
+      overflow={'hidden'}>
+      <Box
+        h={'60px'}
+        w={'full'}
+        bg="whiteAlpha.400"
+      />
+      <Flex justify={'center'} mt={-12}>
+        <Avatar
+          size={'xl'}
+          name={user.name}
+          css={{
+            border: '2px solid white',
+          }}
+        />
+      </Flex>
+
+      <Box p={6}>
+        <Stack spacing={0} align={'center'} mb={5}>
+          <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'} textAlign="center">
+            {user.name}
+          </Heading>
+        </Stack>
+
+        <Stack direction={'row'} justify={'center'} spacing={6}>
+          {infoItems.map(infoItem => {
+            return <Stack key={infoItem.label} spacing={0} align={'center'}>
+              <Text fontWeight={600}>{infoItem.value}</Text>
+              <Text fontSize={'sm'} color={'whiteAlpha.800'} textAlign="center">
+                {infoItem.label}
+              </Text>
+            </Stack>
+          })}
+        </Stack>
+
+        <Link href={`/admin/pessoas/${user.id}`}>
+          <Button
+            w={'full'}
+            mt={8}
+            bg={'gray.900'}
+            color={'white'}
+            rounded={'md'}
+            _hover={{
+              transform: 'translateY(-2px)',
+              boxShadow: 'lg',
+            }}>
+            Perfil
+          </Button>
+        </Link>
+      </Box>
+    </Box>
+  </Center>
 }
