@@ -51,6 +51,10 @@ export default function HeaderV2({
       title: 'Vagas',
       href: '/vagas',
       role: 'user'
+    }, {
+      title: 'Gestão de pessoas',
+      href: '/admin/pessoas/gestao',
+      role: 'admin'
     },{
       title: 'Buscar pessoas',
       href: '/admin/pessoas/busca',
