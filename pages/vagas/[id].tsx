@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Image, Link, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, Image, Link, List, ListIcon, ListItem, Text, UnorderedList, useToast } from "@chakra-ui/react";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
 import { sessionOptions } from "../../lib/session";
@@ -14,10 +14,13 @@ import axios from "axios";
 import { getAppliedVacancy } from "../../prisma/appliedVacancy";
 import { AppliedVacancy } from "@prisma/client";
 import { ErrorMessagesToast } from "../../utils/constants/ErrorMessagesToast";
+import { MdCheckCircle, MdRemoveCircle } from 'react-icons/md'
+import prisma from "../../prisma/prisma";
 
 type IProps = {
   vaga: IVagaFindOne
   appliedVacancy: AppliedVacancy
+  userKnowledgeItems: string[]
 }
 
 export const getServerSideProps = withIronSessionSsr(async ({
@@ -33,16 +36,22 @@ export const getServerSideProps = withIronSessionSsr(async ({
       }
     }
   }
+
   const vagaId = Number(params?.id as unknown as string);
-  const [responseVaga, appliedVacancy] = await Promise.all([
+  const [responseVaga, appliedVacancy, user] = await Promise.all([
     cmsClient.get<IVagaFindOne>(`vagas/${vagaId}`, {
       params: {
-        populate: ['jornadas', 'jornadas.image'],
+        populate: ['jornadas', 'jornadas.image', 'conhecimentos'],
       }
     }),
     getAppliedVacancy({
       vagaId,
       userId: req.session.user.id
+    }),
+    prisma.user.findUnique({
+      where: {
+        id: req.session.user.id
+      }
     })
   ])
 
@@ -54,6 +63,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
         created_at: appliedVacancy?.created_at.toISOString() || null,
         updated_at: appliedVacancy?.updated_at.toISOString() || null,
       },
+      userKnowledgeItems: user?.knowledgeItems || []
     },
   };
 }, sessionOptions)
@@ -61,6 +71,7 @@ export const getServerSideProps = withIronSessionSsr(async ({
 export default function StartPage({
   vaga,
   appliedVacancy,
+  userKnowledgeItems
 }: IProps) {
 
   const [isLoading, setIsLoading] = useState(false);
@@ -98,13 +109,30 @@ export default function StartPage({
       <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">{vaga.data.attributes.name}</Heading>
     </Flex>
     <Flex
-      direction="column"
+      direction="row"
       bgColor="whiteAlpha.300"
       flex={1}
       p={24}
       boxShadow="sm"
+      gap={8}
     >
-      <ReactMarkdown components={ChakraUIRenderer()}>{vaga.data.attributes.description}</ReactMarkdown>
+      <Flex
+        direction="column"
+      >
+        <ReactMarkdown components={ChakraUIRenderer()}>{vaga.data.attributes.description}</ReactMarkdown>
+      </Flex>
+      <Flex direction="column" gap={4}>
+        <Heading>Conhecimentos necessários</Heading>
+        <List spacing={3}>
+          {vaga.data.attributes.conhecimentos?.data.map(conhecimento => {
+            const isKnowledgePresentInUserKnowledge = userKnowledgeItems.includes(conhecimento.attributes.name);
+            return <ListItem key={conhecimento.id}>
+              <ListIcon as={isKnowledgePresentInUserKnowledge ? MdCheckCircle : MdRemoveCircle} color={isKnowledgePresentInUserKnowledge ? 'green.500' : 'red.500'} />
+              {conhecimento.attributes.name}
+            </ListItem>
+          })}
+        </List>
+      </Flex>
     </Flex>
     <Center
       p={8}

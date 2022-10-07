@@ -1,3 +1,4 @@
+import { IConhecimentosAll } from "./Conhecimento";
 import { IJornadasAll } from "./Jornada";
 
 export type IVaga = {
@@ -7,6 +8,7 @@ export type IVaga = {
     description: string;
     shortDescription: string;
     jornadas?: IJornadasAll;
+    conhecimentos?: IConhecimentosAll;
   };
 };
 
