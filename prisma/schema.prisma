@@ -21,6 +21,7 @@ model User {
   bornDate        DateTime?
   profilePic      String?
   selectedProfile Int?
+  knowledgeItems  String[]  @default([])
 
   JornadaSubscription JornadaSubscription[]
   AulaProgress        AulaProgress[]

@@ -268,8 +268,11 @@ export default function OnBoarding({
                   Próxima Etapa
                 </Button>
               </TabPanel>
-              <TabPanel>
+              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
                 <ConhecimentosForm conhecimentos={conhecimentos} />
+                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                  Próxima Etapa
+                </Button>
               </TabPanel>
               <TabPanel>
                 <PerfilQuestions questionarioPerfil={questionarioPerfil} />

@@ -24,6 +24,7 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     lastName,
     email,
     password: encryptedPassword,
+    knowledgeItems: body.knowledgeItems.map(x => x.name),
   });
 
   const [education, certifications] = await Promise.all([
