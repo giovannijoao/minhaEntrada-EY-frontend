@@ -66,7 +66,7 @@ export default function AdminPage({
 
   const handleSubmit = useCallback(
     async (values: any) => {
-      const response = await axios.get('/api/admin/pessoas', {
+      const response = await axios.get('/api/admin/pessoas/search', {
         params: values,
       })
       setData(response.data)
