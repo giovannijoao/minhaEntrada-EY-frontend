@@ -93,8 +93,8 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
           percJornadasFinished,
         };
       })
-      .sort((a, b) => (a < b ? -1 : 1))
-      .slice(0, 5);
+      .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? -1 : 1))
+      .slice(0, 4);
 
     const parsedUsersThatFinishedJornadas = usersWithDeclaredKnowledge
       .map((user) => {
@@ -110,8 +110,8 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
           percJornadasFinished,
         };
       })
-      .sort((a, b) => (a < b ? -1 : 1))
-      .slice(0, 5);
+      .sort((a, b) => (a.percJornadasFinished < b.percJornadasFinished ? -1 : 1))
+      .slice(0, 9);
 
     return res.json({
       usersWithDeclaredKnowledge: parsedUsersWithDeclaredKnowledge,

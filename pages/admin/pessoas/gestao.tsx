@@ -130,7 +130,7 @@ export default function AdminPage({
                 label: 'conhecimentos'
               },
               {
-                value: user.percJornadasFinished,
+                value: user.percJornadasFinished.toString().concat('%'),
                 label: 'jornadas concluídas'
               }
             ]}
@@ -151,7 +151,7 @@ export default function AdminPage({
             user={user}
             infoItems={[
               {
-                value: user.percJornadasFinished,
+                value: user.percJornadasFinished.toString().concat('%'),
                 label: 'jornadas concluídas'
               }
             ]}
