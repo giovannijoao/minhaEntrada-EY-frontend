@@ -121,7 +121,7 @@ export default function StartPage({
       >
         <ReactMarkdown components={ChakraUIRenderer()}>{vaga.data.attributes.description}</ReactMarkdown>
       </Flex>
-      <Flex direction="column" gap={4}>
+      {vaga.data.attributes.conhecimentos && vaga.data.attributes.conhecimentos.data.length > 0 && <Flex direction="column" gap={4}>
         <Heading>Conhecimentos necessários</Heading>
         <List spacing={3}>
           {vaga.data.attributes.conhecimentos?.data.map(conhecimento => {
@@ -132,7 +132,7 @@ export default function StartPage({
             </ListItem>
           })}
         </List>
-      </Flex>
+      </Flex>}
     </Flex>
     <Center
       p={8}
