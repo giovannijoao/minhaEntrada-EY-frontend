@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Box, Button, Center, Flex, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
@@ -9,6 +9,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { withAuthSsr } from "../../../lib/withAuth"
 import cmsClient from "../../../services/cmsClient"
 import { IVagaFindOne, IVagasAll } from "../../../types/CMS/Vaga"
+import { themeCustomColors } from "../../../contexts/themes/theme";
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const [responseVaga] = await Promise.all([
@@ -101,23 +102,31 @@ export default function AdminPage({
         <Flex
           w="xl"
           gap={2}
-          alignItems='center'
+          alignItems='end'
         >
-          <InputGroup>
-            <InputLeftElement
-              pointerEvents='none'
-            >
-              <SearchIcon color="white" />
-            </InputLeftElement>
-            <Input type='text' placeholder='Nome ou e-mail' {...searchFormMethods.register('search')} _placeholder={{
-              color: 'white'
-            }} />
-          </InputGroup>
-          <Select placeholder="Buscar por vaga de interesse" {...searchFormMethods.register('vaga')}>
-            {vagas.data.map(vaga => {
-              return <Box as="option" color="gray.brand" key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</Box>
-            })}
-          </Select>
+          <FormControl>
+            <FormLabel>Nome ou e-mail</FormLabel>
+            <InputGroup>
+              <InputLeftElement
+                pointerEvents='none'
+              >
+                <SearchIcon color="white" />
+              </InputLeftElement>
+              <Input type='text'{...searchFormMethods.register('search')} _placeholder={{
+                color: 'white'
+              }} />
+            </InputGroup>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Buscar por vaga</FormLabel>
+            <Select {...searchFormMethods.register('vaga')}>
+              {vagas.data.map(vaga => {
+                return <option style={{
+                  color: themeCustomColors.gray.brand
+                }} key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
+              })}
+            </Select>
+          </FormControl>
           <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
         </Flex>
       </Flex>

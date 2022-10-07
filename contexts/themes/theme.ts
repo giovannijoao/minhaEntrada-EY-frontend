@@ -4,32 +4,33 @@ const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
 };
+const themeCustomColors = {
+  yellow: {
+    brand: "#FFE600",
+  },
+  gray: {
+    brand: "#2E2E38",
+  },
+};
 const theme = extendTheme({
   styles: {
     global: {
       "html, body": {
         backgroundColor: "gray.brand",
         lineHeight: "tall",
-        color: 'white'
+        color: "white",
       },
-      "option": {
-        color: "white"
-      }
+      option: {
+        color: "white",
+      },
     },
   },
   config,
-  colors: {
-    yellow: {
-      brand: "#FFE600",
-    },
-    gray: {
-      brand: "#2E2E38",
-    },
-  },
+  colors: themeCustomColors,
 });
 
 // as default export
 export default theme
 
 // as named export
-export { theme }
+export { theme, themeCustomColors };
