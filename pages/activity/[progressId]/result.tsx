@@ -1,5 +1,5 @@
 import { ArrowForwardIcon, ChevronLeftIcon } from "@chakra-ui/icons";
-import { Button, Center, Flex, Heading, IconButton, Text, useToast } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, IconButton, Link, Text, useToast } from "@chakra-ui/react";
 import { AulaProgress, TrilhaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -194,6 +194,24 @@ export default function Page({
         aulaId: nextAula.id
       })}>Ir para próxima aula</Button>
     </Center>}
+    {!nextAula && <Center
+      m="auto"
+      mt={8}
+      w="xs"
+      flexDirection="column"
+      gap={4}
+      p={8}
+      bgColor="yellow.brand"
+      color="gray.brand"
+      borderRadius="md"
+      textAlign="center"
+    >
+        <Heading fontSize="lg">Próxima aula</Heading>
+        <Link href="/jornadas">
+          <Button colorScheme="orange" isLoading={isLoading} rightIcon={<ArrowForwardIcon />}>Ir para jornadas</Button>
+        </Link>
+      </Center>
+    }
 
 
   </Flex>
