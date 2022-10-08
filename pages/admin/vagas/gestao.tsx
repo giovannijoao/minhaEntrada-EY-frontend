@@ -95,7 +95,7 @@ export default function AdminPage({
       <IconButton onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
       <Flex direction="column">
         <Heading fontSize="3xl" fontWeight={"bold"}>
-          Gestão de pessoas
+          Gestão de vagas
         </Heading>
       </Flex>
     </Flex>
