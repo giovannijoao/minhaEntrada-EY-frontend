@@ -129,10 +129,10 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
     });
 
     return res.json({
-      metadata: [{
+      metadata: {
         parsedUsersWithDeclaredKnowledgeCount: withoutLimits ? -1 : parsedUsersWithDeclaredKnowledgeCount + 1,
         parsedUsersThatFinishedJornadasCount: withoutLimits ? -1 : parsedUsersThatFinishedJornadasCount + 1,
-      }],
+      },
       data: {
         parsedUsersWithDeclaredKnowledge,
         parsedUsersThatFinishedJornadas,
