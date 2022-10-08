@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Box, Button, Center, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, Fade, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
@@ -28,6 +28,12 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 
 type Props = {
   vagas: IVagasAll
+}
+
+const initialData = {
+  parsedUsersWithDeclaredKnowledge: [],
+  parsedUsersThatFinishedJornadas: [],
+  parsedJornadasStatics: []
 }
 
 export default function AdminPage({
@@ -63,18 +69,14 @@ export default function AdminPage({
         notFinished: number;
       }
     }[]
-  }>({
-    parsedUsersWithDeclaredKnowledge: [],
-    parsedUsersThatFinishedJornadas: [],
-    parsedJornadasStatics: []
-  });
+  }>(initialData);
 
   const handleSubmit = useCallback(
     async (values: any) => {
+      setData(initialData)
       const response = await axios.get('/api/admin/pessoas/summary', {
         params: values,
       })
-      console.log(response.data)
       setData(response.data)
     },
     [],
@@ -146,105 +148,110 @@ export default function AdminPage({
           <Heading fontSize="lg">{vagas.data.length} vagas criadas</Heading>
         </Flex>
       </Flex>
-      {data.parsedJornadasStatics.length > 0 && <Flex
-        bg="whiteAlpha.300"
-        pt={8}
-        pl={4}
-        gap={1}
-        direction="column"
-        w="full"
-        borderRadius="md"
-      >
-        <Flex ml={2}alignItems="center" gap={4}>
-          <Heading color="yellow.brand">{data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
-          <Heading fontSize="lg">Jornadas atreladas a vaga</Heading>
-        </Flex>
-        <Flex wrap="wrap" overflowX={"auto"}>
-          {
-            data.parsedJornadasStatics.map(jornada => {
-              return <Box
-                h={32}
-                w="3xs"
-                m={2}
-                key={`${jornada.id}`}
-                borderRadius="md"
-                bgColor="whiteAlpha.300"
-                boxShadow={"md"}
-                color="white"
-                position="relative"
-                bgImage={mediaUrl?.concat(jornada.image)}
-                backgroundSize={"cover"}
-              >
-                <Flex
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  bg={"blackAlpha.700"}
+      <Fade in={data.parsedJornadasStatics.length > 0}>
+        <Flex
+          bg="whiteAlpha.300"
+          pt={8}
+          pl={4}
+          gap={1}
+          direction="column"
+          w="full"
+          borderRadius="md"
+        >
+          <Flex ml={2}alignItems="center" gap={4}>
+            <Heading color="yellow.brand">{data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
+            <Heading fontSize="lg">Jornadas atreladas a vaga</Heading>
+          </Flex>
+          <Flex wrap="wrap" overflowX={"auto"}>
+            {
+              data.parsedJornadasStatics.map(jornada => {
+                return <Box
+                  h={32}
+                  w="3xs"
+                  m={2}
+                  key={`${jornada.id}`}
                   borderRadius="md"
-                  display="flex"
-                  justifyContent={"flex-end"}
-                  py={4}
-                  px={4}
-                  direction="column"
+                  bgColor="whiteAlpha.300"
+                  boxShadow={"md"}
+                  color="white"
+                  position="relative"
+                  bgImage={mediaUrl?.concat(jornada.image)}
+                  backgroundSize={"cover"}
                 >
-                  <Text>Jornada de</Text>
-                  <Heading fontSize="xl">{jornada.name}</Heading>
-                </Flex>
-              </Box>
-            })
-          }
+                  <Flex
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    right={0}
+                    bottom={0}
+                    bg={"blackAlpha.700"}
+                    borderRadius="md"
+                    display="flex"
+                    justifyContent={"flex-end"}
+                    py={4}
+                    px={4}
+                    direction="column"
+                  >
+                    <Text>Jornada de</Text>
+                    <Heading fontSize="xl">{jornada.name}</Heading>
+                  </Flex>
+                </Box>
+              })
+            }
+          </Flex>
         </Flex>
-      </Flex>}
+      </Fade>
     </Flex>
-    {data.parsedUsersWithDeclaredKnowledge.length > 0 && <Flex
-      p={8}
-      gap={4}
-      direction="column"
-    >
-      <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
-      <Flex>
-        {data.parsedUsersWithDeclaredKnowledge.map(user => {
-          return <UserBox
-            key={`usersWithDeclaredKnowledge-${user.id}`}
-            user={user}
-            infoItems={[
-              {
-                value: user.knowledgeCount,
-                label: 'conhecimentos'
-              },
-              {
-                value: user.percJornadasFinished.toString().concat('%'),
-                label: 'jornadas concluídas'
-              }
-            ]}
-          />
-        })}
+    <Fade in={data.parsedUsersWithDeclaredKnowledge.length > 0}>
+      <Flex
+        p={8}
+        gap={4}
+        direction="column"
+      >
+        <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
+        <Flex>
+          {data.parsedUsersWithDeclaredKnowledge.map(user => {
+            return <UserBox
+              key={`usersWithDeclaredKnowledge-${user.id}`}
+              user={user}
+              infoItems={[
+                {
+                  value: user.knowledgeCount,
+                  label: 'conhecimentos'
+                },
+                {
+                  value: user.percJornadasFinished.toString().concat('%'),
+                  label: 'jornadas concluídas'
+                }
+              ]}
+            />
+          })}
+        </Flex>
       </Flex>
-    </Flex>}
-    {data.parsedUsersThatFinishedJornadas.length > 0 && <Flex
-      p={8}
-      gap={4}
-      direction="column"
-    >
-      <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
-      <Flex>
-        {data.parsedUsersThatFinishedJornadas.map(user => {
-          return <UserBox
-            key={`usersThatFinishedJornadas-${user.id}`}
-            user={user}
-            infoItems={[
-              {
-                value: user.percJornadasFinished.toString().concat('%'),
-                label: 'jornadas concluídas'
-              }
-            ]}
-          />
-        })}
+    </Fade>
+    <Fade in={data.parsedUsersThatFinishedJornadas.length > 0}>
+      <Flex
+        p={8}
+        gap={4}
+        direction="column"
+      >
+        <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
+        <Flex>
+          {data.parsedUsersThatFinishedJornadas.map(user => {
+            return <UserBox
+              key={`usersThatFinishedJornadas-${user.id}`}
+              user={user}
+              infoItems={[
+                {
+                  value: user.percJornadasFinished.toString().concat('%'),
+                  label: 'jornadas concluídas'
+                }
+              ]}
+            />
+          })}
+        </Flex>
       </Flex>
-    </Flex>}
-
+    </Fade>
   </>
 }
 
