@@ -12,7 +12,7 @@ const parsedUsersWithDeclaredKnowledgeCount = 4;
 const parsedUsersThatFinishedJornadasCount = 9;
 async function vagas(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { vaga: vagaId } = req.query;
+    const { vaga: vagaId, withoutLimits } = req.query;
     const vaga = await cmsClient.get<IVagaFindOne>(`vagas/${vagaId}`, {
       params: {
         populate: ["jornadas.image", "conhecimentos"],
@@ -98,7 +98,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
         };
       })
       .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? -1 : 1))
-      .slice(0, parsedUsersWithDeclaredKnowledgeCount);
+      .slice(0, withoutLimits ? undefined : parsedUsersWithDeclaredKnowledgeCount);
 
     const parsedUsersThatFinishedJornadas = usersWithDeclaredKnowledge
       .map((user) => {
@@ -117,7 +117,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
       .sort((a, b) =>
         a.percJornadasFinished < b.percJornadasFinished ? -1 : 1
       )
-      .slice(0, parsedUsersThatFinishedJornadasCount);
+      .slice(0, withoutLimits ? undefined : parsedUsersThatFinishedJornadasCount);
 
     const parsedJornadasStatics = vaga.data.data.attributes.jornadas?.data.map(jornada => {
       return {
@@ -129,11 +129,15 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
     });
 
     return res.json({
-      parsedUsersWithDeclaredKnowledge,
-      parsedUsersWithDeclaredKnowledgeCount: parsedUsersWithDeclaredKnowledgeCount + 1,
-      parsedUsersThatFinishedJornadas,
-      parsedUsersThatFinishedJornadasCount: parsedUsersThatFinishedJornadasCount + 1,
-      parsedJornadasStatics,
+      metadata: [{
+        parsedUsersWithDeclaredKnowledgeCount: parsedUsersWithDeclaredKnowledgeCount + 1,
+        parsedUsersThatFinishedJornadasCount: parsedUsersThatFinishedJornadasCount + 1,
+      }],
+      data: {
+        parsedUsersWithDeclaredKnowledge,
+        parsedUsersThatFinishedJornadas,
+        parsedJornadasStatics,
+      }
     });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });

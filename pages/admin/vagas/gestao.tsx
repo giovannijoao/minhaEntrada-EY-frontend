@@ -1,10 +1,10 @@
 import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Box, Button, Center, Fade, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Center, Fade, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useId } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
-import { useCallback, useReducer, useState } from "react"
+import { useCallback, useReducer, useState, useEffect, useMemo, Fragment } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { withAuthSsr } from "../../../lib/withAuth"
 import cmsClient from "../../../services/cmsClient"
@@ -31,23 +31,20 @@ type Props = {
 }
 
 const initialData = {
-  parsedUsersWithDeclaredKnowledge: [],
-  parsedUsersThatFinishedJornadas: [],
-  parsedJornadasStatics: []
+  metadata: {},
+  data: {
+    parsedUsersWithDeclaredKnowledge: [],
+    parsedUsersThatFinishedJornadas: [],
+    parsedJornadasStatics: []
+  }
 }
 
-export default function AdminPage({
-  vagas,
-}: Props) {
-  const router = useRouter();
-  const searchFormMethods = useForm({
-    defaultValues: {
-      vaga: '',
-    }
-  });
-
-  const [data, setData] = useState<{
+type IData = {
+  metadata: {
     parsedUsersWithDeclaredKnowledgeCount?: number;
+    parsedUsersThatFinishedJornadasCount?: number;
+  }
+  data: {
     parsedUsersWithDeclaredKnowledge: {
       id: string;
       name: string;
@@ -55,7 +52,6 @@ export default function AdminPage({
       knowledgeCount: number;
       percJornadasFinished: number;
     }[]
-    parsedUsersThatFinishedJornadasCount?: number;
     parsedUsersThatFinishedJornadas: {
       id: string;
       name: string;
@@ -67,18 +63,54 @@ export default function AdminPage({
       name: string;
       image: string;
     }[]
-  }>(initialData);
+  }
+}
+
+type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
+
+export default function AdminPage({
+  vagas,
+}: Props) {
+  const router = useRouter();
+  const searchFormMethods = useForm({
+    defaultValues: {
+      vaga: '',
+    }
+  });
+  const vagaId = searchFormMethods.watch('vaga');
+  const { isOpen: isOpenDeclaredKnowledge, onOpen: onOpenDeclaredKnowledge, onClose: onCloseDeclaredKnowledge } = useDisclosure()
+
+  const [data, setData] = useState<IData>(initialData);
+
+  const fetchData = useCallback(async (values: {
+    vaga: string
+  }) => {
+    const response = await axios.get('/api/admin/vagas/summary', {
+      params: values,
+    })
+    return response.data as IData;
+  }, []);
 
   const handleSubmit = useCallback(
     async (values: any) => {
       setData(initialData)
-      const response = await axios.get('/api/admin/vagas/summary', {
-        params: values,
-      })
-      setData(response.data)
+      const response = await fetchData(values);
+      setData(response)
     },
-    [],
+    [fetchData],
   )
+
+  const fetchDataAndSelect = useCallback(async ({
+    property
+  }: {
+    property: keyof PropType<IData, 'data'>
+  }) => {
+    const response = await fetchData({
+      vaga: vagaId
+    });
+    type Property = typeof property;
+    return response.data[property] as IData["data"][Property];
+  }, [fetchData, vagaId])
 
   return <>
     <Flex
@@ -117,7 +149,7 @@ export default function AdminPage({
         <FormProvider {...searchFormMethods}>
           <Flex as="form"
             onSubmit={searchFormMethods.handleSubmit(handleSubmit)}
-            >
+          >
             <Flex
               gap={2}
               alignItems='end'
@@ -147,7 +179,7 @@ export default function AdminPage({
           <Heading fontSize="lg">{vagas.data.length} vagas criadas</Heading>
         </Flex>
       </Flex>
-      <Fade in={data.parsedJornadasStatics.length > 0}>
+      <Fade in={data.data.parsedJornadasStatics.length > 0}>
         <Flex
           bg="whiteAlpha.300"
           pt={8}
@@ -157,13 +189,13 @@ export default function AdminPage({
           w="full"
           borderRadius="md"
         >
-          <Flex ml={2}alignItems="center" gap={4}>
-            <Heading color="yellow.brand">{data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
+          <Flex ml={2} alignItems="center" gap={4}>
+            <Heading color="yellow.brand">{data.data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
             <Heading fontSize="lg">Jornadas atreladas a vaga</Heading>
           </Flex>
           <Flex wrap="wrap" overflowX={"auto"}>
             {
-              data.parsedJornadasStatics.map(jornada => {
+              data.data.parsedJornadasStatics.map(jornada => {
                 return <Box
                   h={32}
                   w="3xs"
@@ -201,7 +233,7 @@ export default function AdminPage({
         </Flex>
       </Fade>
     </Flex>
-    <Fade in={data.parsedUsersWithDeclaredKnowledge.length > 0}>
+    <Fade in={data.data.parsedUsersWithDeclaredKnowledge.length > 0}>
       <Flex
         w="full"
         p={8}
@@ -218,10 +250,10 @@ export default function AdminPage({
           p={3}
           borderRadius="lg"
         >
-          Mostrando até {data.parsedUsersWithDeclaredKnowledgeCount} resultados
+          Mostrando até {data.metadata.parsedUsersWithDeclaredKnowledgeCount} resultados
           <Button bg="gray.brand" color="yellow.brand" _hover={{
             bg: 'whiteAlpha.200'
-          }}>Ver todos</Button>
+          }} onClick={onOpenDeclaredKnowledge}>Ver todos</Button>
         </Flex>
       </Flex>
       <Flex
@@ -229,7 +261,7 @@ export default function AdminPage({
         direction="column"
       >
         <Flex>
-          {data.parsedUsersWithDeclaredKnowledge.map(user => {
+          {data.data.parsedUsersWithDeclaredKnowledge.map(user => {
             return <UserBox
               key={`usersWithDeclaredKnowledge-${user.id}`}
               user={user}
@@ -248,7 +280,7 @@ export default function AdminPage({
         </Flex>
       </Flex>
     </Fade>
-    <Fade in={data.parsedUsersThatFinishedJornadas.length > 0}>
+    <Fade in={data.data.parsedUsersThatFinishedJornadas.length > 0}>
       <Flex
         w="full"
         p={8}
@@ -265,7 +297,7 @@ export default function AdminPage({
           p={3}
           borderRadius="lg"
         >
-          Mostrando até {data.parsedUsersThatFinishedJornadasCount} resultados
+          Mostrando até {data.metadata.parsedUsersThatFinishedJornadasCount} resultados
           <Button bg="gray.brand" color="yellow.brand" _hover={{
             bg: 'whiteAlpha.200'
           }}>Ver todos</Button>
@@ -276,7 +308,7 @@ export default function AdminPage({
         direction="column"
       >
         <Flex>
-          {data.parsedUsersThatFinishedJornadas.map(user => {
+          {data.data.parsedUsersThatFinishedJornadas.map(user => {
             return <UserBox
               key={`usersThatFinishedJornadas-${user.id}`}
               user={user}
@@ -291,6 +323,36 @@ export default function AdminPage({
         </Flex>
       </Flex>
     </Fade>
+    <ModalMore
+      isOpen={isOpenDeclaredKnowledge}
+      onClose={onCloseDeclaredKnowledge}
+      title={"Candidatos com perfil declarado adequado"}
+      fetchData={() => fetchDataAndSelect({
+        property: "parsedUsersWithDeclaredKnowledge"
+      })}
+      renderRow={(d: IData["data"]["parsedUsersWithDeclaredKnowledge"][number]) => {
+        return <Tr>
+          <Td>{d.name}</Td>
+          <Td>{d.email}</Td>
+          <Td>{d.knowledgeCount}</Td>
+          <Td>{d.percJornadasFinished}%</Td>
+        </Tr>
+      }}
+      columns={[
+        {
+          title: 'Nome'
+        },
+        {
+          title: 'Email'
+        },
+        {
+          title: 'Conhecimentos'
+        },
+        {
+          title: 'P.J.C'
+        }
+      ]}
+    />
   </>
 }
 
@@ -369,4 +431,71 @@ function UserBox({
       </Box>
     </Box>
   </Center>
+}
+
+function ModalMore({
+  isOpen,
+  onClose,
+  title,
+  columns,
+  fetchData,
+  renderRow,
+}: {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  columns: {
+    title: string;
+    isNumeric?: boolean;
+  }[],
+  fetchData: () => Promise<any[]>;
+  renderRow: (d: any) => React.ReactElement
+}) {
+
+  const id = useId();
+
+  const [data, setData] = useState<Awaited<ReturnType<typeof fetchData>>>([] as Awaited<ReturnType<typeof fetchData>>);
+
+  useEffect(() => {
+    async function exec() {
+      const result = await fetchData();
+      setData(result);
+    }
+    if (isOpen) {
+      exec();
+    }
+  }, [isOpen, fetchData])
+
+  const rows = useMemo(() => {
+    return data.map((d, i) => <Fragment key={`${id}-${i}`}>
+      {renderRow(d)}
+    </Fragment>)
+  }, [data, id, renderRow]);
+
+  return <>
+    <Modal isOpen={isOpen} onClose={onClose} size={'4xl'}>
+      <ModalOverlay />
+      <ModalContent bg="gray.brand" >
+        <ModalHeader>{title}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <TableContainer>
+            <Table variant='simple'>
+              <Thead>
+                <Tr>
+                  {columns.map(column => {
+                    return <Th color="yellow.brand" key={column.title} isNumeric={column.isNumeric}>{column.title}</Th>
+                  })}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {rows}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  </>
+
 }
