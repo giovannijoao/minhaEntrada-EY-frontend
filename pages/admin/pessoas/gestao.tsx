@@ -97,8 +97,14 @@ export default function AdminPage({
         </Heading>
       </Flex>
     </Flex>
-    <Flex gap={4} px={8} pt={8}>
+    <Flex gap={4} px={8} pt={8}
+      direction={{
+        base: 'column',
+        md: 'row'
+      }}
+    >
       <Flex
+        minW="xs"
         direction="column"
         p={8}
         boxShadow="lg"
@@ -106,13 +112,13 @@ export default function AdminPage({
         borderRadius="md"
         bgColor="whiteAlpha.300"
         justifyContent={"space-evenly"}
+        gap={4}
       >
         <FormProvider {...searchFormMethods}>
           <Flex as="form"
             onSubmit={searchFormMethods.handleSubmit(handleSubmit)}
             >
             <Flex
-              w="xs"
               gap={2}
               alignItems='end'
             >
