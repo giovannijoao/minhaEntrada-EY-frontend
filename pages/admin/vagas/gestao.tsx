@@ -222,7 +222,9 @@ export default function AdminPage({
           borderRadius="lg"
         >
           Mostrando até {data.parsedUsersWithDeclaredKnowledgeCount} resultados
-          <Button bg="gray.brand" color="yellow.brand">Ver todos</Button>
+          <Button bg="gray.brand" color="yellow.brand" _hover={{
+            bg: 'whiteAlpha.200'
+          }}>Ver todos</Button>
         </Flex>
       </Flex>
       <Flex
@@ -267,7 +269,9 @@ export default function AdminPage({
           borderRadius="lg"
         >
           Mostrando até {data.parsedUsersThatFinishedJornadasCount} resultados
-          <Button bg="gray.brand" color="yellow.brand">Ver todos</Button>
+          <Button bg="gray.brand" color="yellow.brand" _hover={{
+            bg: 'whiteAlpha.200'
+          }}>Ver todos</Button>
         </Flex>
       </Flex>
       <Flex
