@@ -79,11 +79,13 @@ export default function AdminPage({
   });
   const vagaId = searchFormMethods.watch('vaga');
   const { isOpen: isOpenDeclaredKnowledge, onOpen: onOpenDeclaredKnowledge, onClose: onCloseDeclaredKnowledge } = useDisclosure()
+  const { isOpen: isOpenJourneyMore, onOpen: onOpenJourneyMore, onClose: onCloseJourneyMore } = useDisclosure()
 
   const [data, setData] = useState<IData>(initialData);
 
   const fetchData = useCallback(async (values: {
     vaga: string
+    withoutLimits?: boolean;
   }) => {
     const response = await axios.get('/api/admin/vagas/summary', {
       params: values,
@@ -106,7 +108,8 @@ export default function AdminPage({
     property: keyof PropType<IData, 'data'>
   }) => {
     const response = await fetchData({
-      vaga: vagaId
+      vaga: vagaId,
+      withoutLimits: true,
     });
     type Property = typeof property;
     return response.data[property] as IData["data"][Property];
@@ -300,7 +303,7 @@ export default function AdminPage({
           Mostrando até {data.metadata.parsedUsersThatFinishedJornadasCount} resultados
           <Button bg="gray.brand" color="yellow.brand" _hover={{
             bg: 'whiteAlpha.200'
-          }}>Ver todos</Button>
+          }} onClick={onOpenJourneyMore}>Ver todos</Button>
         </Flex>
       </Flex>
       <Flex
@@ -347,6 +350,32 @@ export default function AdminPage({
         },
         {
           title: 'Conhecimentos'
+        },
+        {
+          title: 'P.J.C'
+        }
+      ]}
+    />
+    <ModalMore
+      isOpen={isOpenJourneyMore}
+      onClose={onCloseJourneyMore}
+      title={"Candidatos que trilharam as jornadas da vaga"}
+      fetchData={() => fetchDataAndSelect({
+        property: "parsedUsersThatFinishedJornadas"
+      })}
+      renderRow={(d: IData["data"]["parsedUsersThatFinishedJornadas"][number]) => {
+        return <Tr>
+          <Td>{d.name}</Td>
+          <Td>{d.email}</Td>
+          <Td>{d.percJornadasFinished}%</Td>
+        </Tr>
+      }}
+      columns={[
+        {
+          title: 'Nome'
+        },
+        {
+          title: 'Email'
         },
         {
           title: 'P.J.C'
