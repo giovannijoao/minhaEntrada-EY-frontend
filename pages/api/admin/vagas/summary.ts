@@ -7,7 +7,10 @@ import { getAllUsers, getUsersStats } from "../../../../prisma/user";
 import cmsClient from "../../../../services/cmsClient";
 import { IVagaFindOne } from "../../../../types/CMS/Vaga";
 
-async function pessoas(req: NextApiRequest, res: NextApiResponse) {
+
+const parsedUsersWithDeclaredKnowledgeCount = 4;
+const parsedUsersThatFinishedJornadasCount = 9;
+async function vagas(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { vaga: vagaId } = req.query;
     const vaga = await cmsClient.get<IVagaFindOne>(`vagas/${vagaId}`, {
@@ -98,7 +101,7 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
         };
       })
       .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? -1 : 1))
-      .slice(0, 4);
+      .slice(0, parsedUsersWithDeclaredKnowledgeCount);
 
     const parsedUsersThatFinishedJornadas = usersWithDeclaredKnowledge
       .map((user) => {
@@ -114,8 +117,10 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
           percJornadasFinished,
         };
       })
-      .sort((a, b) => (a.percJornadasFinished < b.percJornadasFinished ? -1 : 1))
-      .slice(0, 9);
+      .sort((a, b) =>
+        a.percJornadasFinished < b.percJornadasFinished ? -1 : 1
+      )
+      .slice(0, parsedUsersThatFinishedJornadasCount);
 
     const parsedJornadasStatics = vaga.data.data.attributes.jornadas?.data.map(jornada => {
       const statics = {
@@ -137,7 +142,9 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
 
     return res.json({
       parsedUsersWithDeclaredKnowledge,
+      parsedUsersWithDeclaredKnowledgeCount: parsedUsersWithDeclaredKnowledgeCount + 1,
       parsedUsersThatFinishedJornadas,
+      parsedUsersThatFinishedJornadasCount: parsedUsersThatFinishedJornadasCount + 1,
       parsedJornadasStatics,
     });
   } catch (error) {
@@ -145,4 +152,4 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withSessionRoute(pessoas, "admin");
+export default withSessionRoute(vagas, "admin");

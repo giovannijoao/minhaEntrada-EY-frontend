@@ -47,6 +47,7 @@ export default function AdminPage({
   });
 
   const [data, setData] = useState<{
+    parsedUsersWithDeclaredKnowledgeCount?: number;
     parsedUsersWithDeclaredKnowledge: {
       id: string;
       name: string;
@@ -54,6 +55,7 @@ export default function AdminPage({
       knowledgeCount: number;
       percJornadasFinished: number;
     }[]
+    parsedUsersThatFinishedJornadasCount?: number;
     parsedUsersThatFinishedJornadas: {
       id: string;
       name: string;
@@ -74,7 +76,7 @@ export default function AdminPage({
   const handleSubmit = useCallback(
     async (values: any) => {
       setData(initialData)
-      const response = await axios.get('/api/admin/pessoas/summary', {
+      const response = await axios.get('/api/admin/vagas/summary', {
         params: values,
       })
       setData(response.data)
@@ -204,11 +206,29 @@ export default function AdminPage({
     </Flex>
     <Fade in={data.parsedUsersWithDeclaredKnowledge.length > 0}>
       <Flex
+        w="full"
         p={8}
-        gap={4}
-        direction="column"
+        my={4}
+        bg="blackAlpha.500"
+        alignItems={"center"}
+        justifyContent="space-between"
       >
         <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
+        <Flex
+          bg="blackAlpha.600"
+          gap={6}
+          alignItems="center"
+          p={3}
+          borderRadius="lg"
+        >
+          Mostrando até {data.parsedUsersWithDeclaredKnowledgeCount} resultados
+          <Button bg="gray.brand" color="yellow.brand">Ver todos</Button>
+        </Flex>
+      </Flex>
+      <Flex
+        px={8}
+        direction="column"
+      >
         <Flex>
           {data.parsedUsersWithDeclaredKnowledge.map(user => {
             return <UserBox
@@ -231,11 +251,29 @@ export default function AdminPage({
     </Fade>
     <Fade in={data.parsedUsersThatFinishedJornadas.length > 0}>
       <Flex
+        w="full"
         p={8}
-        gap={4}
-        direction="column"
+        my={4}
+        bg="blackAlpha.500"
+        alignItems={"center"}
+        justifyContent="space-between"
       >
         <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
+        <Flex
+          bg="blackAlpha.600"
+          gap={6}
+          alignItems="center"
+          p={3}
+          borderRadius="lg"
+        >
+          Mostrando até {data.parsedUsersThatFinishedJornadasCount} resultados
+          <Button bg="gray.brand" color="yellow.brand">Ver todos</Button>
+        </Flex>
+      </Flex>
+      <Flex
+        px={8}
+        direction="column"
+      >
         <Flex>
           {data.parsedUsersThatFinishedJornadas.map(user => {
             return <UserBox
