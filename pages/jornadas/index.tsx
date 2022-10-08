@@ -28,25 +28,26 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 
   const selectedProfile = user?.selectedProfile;
 
+  const subscriptions = await getAllJornadaSubscriptionsForUser({
+    userId: req.session.user.id
+  })
+
   const perfil = await cmsClient.get<IPerfilUsuarioFindOne>(`/perfil-usuarios/${selectedProfile}`, {
     params: {
       populate: 'jornadas'
     }
   })
 
-  const [responseJornadas, subscriptions] = await Promise.all([
+  const jornadasSubscription = subscriptions.map(x => x.jornadaId);
+  const [responseJornadas] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
         populate: ['image', 'trilhas', 'vagas'],
-        "filters[id][$in]": perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id),
+        "filters[id][$in]": Array.from(new Set([...perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id), ...jornadasSubscription])),
       }
-    }),
-    getAllJornadaSubscriptionsForUser({
-      userId: req.session.user.id
     }),
   ])
 
-  const jornadasSubscription = subscriptions.map(x => x.jornadaId);
 
   const parsedSubscription = subscriptions.map(subscription => {
     const { created_at, updated_at, ...restSub } = subscription;
