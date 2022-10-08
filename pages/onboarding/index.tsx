@@ -1,5 +1,5 @@
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLabel, TagLeftIcon, TagRightIcon, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLabel, TagLeftIcon, TagRightIcon, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { CUIAutoComplete, Item as CUIAutoCompleteItem } from "chakra-ui-autocomplete";
 import format from "date-fns/format";
@@ -567,14 +567,11 @@ const PerfilQuestions = ({
                 name={`perfil.answers.${i}.answerId`}
                 render={({ field }) => {
                   return <RadioGroup flex={1} {...field}>
-                    <Stack m="auto" direction="row" flexWrap={'wrap'} gap={4} spacing={"8"} divider={<StackDivider visibility={{
-                      base: 'hidden',
-                      md: 'visible'
-                    }} borderColor='gray.200' />}>
+                    <VStack m="auto" direction="row" alignItems={"start"}>
                       {question.answers.map(answer => {
                         return <Radio key={`${question.id}-${answer.id}`} value={answer.id.toString()}>{answer.text}</Radio>
                       })}
-                    </Stack>
+                    </VStack>
                   </RadioGroup>
                 }}
               />
