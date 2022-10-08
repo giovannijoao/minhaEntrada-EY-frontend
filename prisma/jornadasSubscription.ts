@@ -52,8 +52,21 @@ export const updateJornadaSubscription = async ({
   return jornadaSubscription;
 };
 
-export const getJornadasStaticsIsFinished = async () => {
+type getJornadasStaticsIsFinished = {
+  jornadasIds?: number[];
+};
+
+export const getJornadasStaticsIsFinished = async ({
+  jornadasIds = undefined,
+}: getJornadasStaticsIsFinished = {}) => {
   return prisma.jornadaSubscription.groupBy({
+    ...jornadasIds && ({
+      where: {
+        jornadaId: {
+          in: jornadasIds
+        }
+      }
+    }),
     by: ["jornadaId", "isFinished"],
     _count: {
       _all: true,

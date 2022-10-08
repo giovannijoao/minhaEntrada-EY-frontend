@@ -10,6 +10,7 @@ import { withAuthSsr } from "../../../lib/withAuth"
 import cmsClient from "../../../services/cmsClient"
 import { IVagaFindOne, IVagasAll } from "../../../types/CMS/Vaga"
 import { themeCustomColors } from "../../../contexts/themes/theme";
+import { mediaUrl } from "../../../config"
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const [responseVaga] = await Promise.all([
@@ -40,22 +41,32 @@ export default function AdminPage({
   });
 
   const [data, setData] = useState<{
-    usersWithDeclaredKnowledge: {
+    parsedUsersWithDeclaredKnowledge: {
       id: string;
       name: string;
       email: string;
       knowledgeCount: number;
       percJornadasFinished: number;
     }[]
-    usersThatFinishedJornadas: {
+    parsedUsersThatFinishedJornadas: {
       id: string;
       name: string;
       email: string;
       percJornadasFinished: number;
     }[]
+    parsedJornadasStatics: {
+      id: number;
+      name: string;
+      image: string;
+      statics: {
+        finished: number;
+        notFinished: number;
+      }
+    }[]
   }>({
-    usersWithDeclaredKnowledge: [],
-    usersThatFinishedJornadas: []
+    parsedUsersWithDeclaredKnowledge: [],
+    parsedUsersThatFinishedJornadas: [],
+    parsedJornadasStatics: []
   });
 
   const handleSubmit = useCallback(
@@ -86,41 +97,109 @@ export default function AdminPage({
         </Heading>
       </Flex>
     </Flex>
-    <FormProvider {...searchFormMethods}>
-      <Flex as="form"
-        onSubmit={searchFormMethods.handleSubmit(handleSubmit)}
+    <Flex gap={4} px={8} pt={8}>
+      <Flex
+        direction="column"
         p={8}
-        bg="whiteAlpha.300"
-        boxShadow="md"
+        boxShadow="lg"
         alignItems="flex-start"
-        >
+        borderRadius="md"
+        bgColor="whiteAlpha.300"
+        justifyContent={"space-evenly"}
+      >
+        <FormProvider {...searchFormMethods}>
+          <Flex as="form"
+            onSubmit={searchFormMethods.handleSubmit(handleSubmit)}
+            >
+            <Flex
+              w="xs"
+              gap={2}
+              alignItems='end'
+            >
+              <FormControl>
+                <FormLabel>Selecionar vaga</FormLabel>
+                <Select {...searchFormMethods.register('vaga')}>
+                  {vagas.data.map(vaga => {
+                    return <option style={{
+                      color: themeCustomColors.gray.brand
+                    }} key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
+                  })}
+                </Select>
+              </FormControl>
+              <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
+            </Flex>
+          </Flex>
+        </FormProvider>
         <Flex
-          w="xs"
-          gap={2}
-          alignItems='end'
+          p={2}
+          bg="blackAlpha.500"
+          w="full"
+          borderRadius="lg"
+          pl={4}
         >
-          <FormControl>
-            <FormLabel>Selecionar vaga</FormLabel>
-            <Select {...searchFormMethods.register('vaga')}>
-              {vagas.data.map(vaga => {
-                return <option style={{
-                  color: themeCustomColors.gray.brand
-                }} key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
-              })}
-            </Select>
-          </FormControl>
-          <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
+          <Heading fontSize="lg">{vagas.data.length} vagas criadas</Heading>
         </Flex>
       </Flex>
-    </FormProvider>
-    {data.usersWithDeclaredKnowledge.length > 0 && <Flex
+      {data.parsedJornadasStatics.length > 0 && <Flex
+        bg="whiteAlpha.300"
+        pt={8}
+        pl={4}
+        gap={1}
+        direction="column"
+        w="full"
+        borderRadius="md"
+      >
+        <Flex ml={2}alignItems="center" gap={4}>
+          <Heading color="yellow.brand">{data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
+          <Heading fontSize="lg">Jornadas atreladas a vaga</Heading>
+        </Flex>
+        <Flex wrap="wrap" overflowX={"auto"}>
+          {
+            data.parsedJornadasStatics.map(jornada => {
+              return <Box
+                h={32}
+                w="3xs"
+                m={2}
+                key={`${jornada.id}`}
+                borderRadius="md"
+                bgColor="whiteAlpha.300"
+                boxShadow={"md"}
+                color="white"
+                position="relative"
+                bgImage={mediaUrl?.concat(jornada.image)}
+                backgroundSize={"cover"}
+              >
+                <Flex
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  bg={"blackAlpha.700"}
+                  borderRadius="md"
+                  display="flex"
+                  justifyContent={"flex-end"}
+                  py={4}
+                  px={4}
+                  direction="column"
+                >
+                  <Text>Jornada de</Text>
+                  <Heading fontSize="xl">{jornada.name}</Heading>
+                </Flex>
+              </Box>
+            })
+          }
+        </Flex>
+      </Flex>}
+    </Flex>
+    {data.parsedUsersWithDeclaredKnowledge.length > 0 && <Flex
       p={8}
       gap={4}
       direction="column"
     >
       <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
       <Flex>
-        {data.usersWithDeclaredKnowledge.map(user => {
+        {data.parsedUsersWithDeclaredKnowledge.map(user => {
           return <UserBox
             key={`usersWithDeclaredKnowledge-${user.id}`}
             user={user}
@@ -138,14 +217,14 @@ export default function AdminPage({
         })}
       </Flex>
     </Flex>}
-    {data.usersThatFinishedJornadas.length > 0 && <Flex
+    {data.parsedUsersThatFinishedJornadas.length > 0 && <Flex
       p={8}
       gap={4}
       direction="column"
     >
       <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
       <Flex>
-        {data.usersThatFinishedJornadas.map(user => {
+        {data.parsedUsersThatFinishedJornadas.map(user => {
           return <UserBox
             key={`usersThatFinishedJornadas-${user.id}`}
             user={user}
@@ -159,6 +238,7 @@ export default function AdminPage({
         })}
       </Flex>
     </Flex>}
+
   </>
 }
 

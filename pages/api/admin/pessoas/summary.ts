@@ -1,6 +1,7 @@
 import { Prisma, User } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { withSessionRoute } from "../../../../lib/withAuth";
+import { getJornadasStaticsIsFinished } from "../../../../prisma/jornadasSubscription";
 import prisma from "../../../../prisma/prisma";
 import { getAllUsers, getUsersStats } from "../../../../prisma/user";
 import cmsClient from "../../../../services/cmsClient";
@@ -11,7 +12,7 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
     const { vaga: vagaId } = req.query;
     const vaga = await cmsClient.get<IVagaFindOne>(`vagas/${vagaId}`, {
       params: {
-        populate: ["jornadas", "conhecimentos"],
+        populate: ["jornadas.image", "conhecimentos"],
       },
     });
 
@@ -19,9 +20,9 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
       vaga.data.data.attributes.conhecimentos?.data.map(
         (x) => x.attributes.name
       ) || [];
-    const jornadas =
+    const jornadasIds =
       vaga.data.data.attributes.jornadas?.data.map((x) => x.id) || [];
-    const [usersWithDeclaredKnowledge, usersThatFinishedJornadas] =
+    const [usersWithDeclaredKnowledge, usersThatFinishedJornadas, jornadasStatics] =
       await Promise.all([
         prisma.user.findMany({
           where: {
@@ -38,7 +39,7 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
             JornadaSubscription: {
               where: {
                 jornadaId: {
-                  in: jornadas,
+                  in: jornadasIds,
                 },
                 isFinished: true,
               },
@@ -60,13 +61,16 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
             JornadaSubscription: {
               where: {
                 jornadaId: {
-                  in: jornadas,
+                  in: jornadasIds,
                 },
                 isFinished: true,
               },
             },
           },
         }),
+        getJornadasStaticsIsFinished({
+          jornadasIds
+        })
       ]);
 
     const parseUser = (user: User) => ({
@@ -81,10 +85,10 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
           conhecimentos.includes(x)
         );
         const jornadasConcluidas = user.JornadaSubscription.filter((jornada) =>
-          jornadas.includes(jornada.jornadaId)
+          jornadasIds.includes(jornada.jornadaId)
         );
         const percJornadasFinished = (
-          jornadasConcluidas.length / jornadas.length
+          jornadasConcluidas.length / jornadasIds.length
         ).toPrecision(1);
         const userInfo = parseUser(user);
         return {
@@ -99,10 +103,10 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
     const parsedUsersThatFinishedJornadas = usersWithDeclaredKnowledge
       .map((user) => {
         const jornadasConcluidas = user.JornadaSubscription.filter((jornada) =>
-          jornadas.includes(jornada.jornadaId)
+          jornadasIds.includes(jornada.jornadaId)
         );
         const percJornadasFinished = (
-          jornadasConcluidas.length / jornadas.length
+          jornadasConcluidas.length / jornadasIds.length
         ).toPrecision(1);
         const userInfo = parseUser(user);
         return {
@@ -113,9 +117,28 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
       .sort((a, b) => (a.percJornadasFinished < b.percJornadasFinished ? -1 : 1))
       .slice(0, 9);
 
+    const parsedJornadasStatics = vaga.data.data.attributes.jornadas?.data.map(jornada => {
+      const statics = {
+        finished: jornadasStatics.find(
+          (x) => x.jornadaId === jornada.id && x.isFinished === true
+        )?._count || 0,
+        notFinished: jornadasStatics.find(
+          (x) => x.jornadaId === jornada.id && x.isFinished === false
+        )?._count || 0,
+      };
+      return {
+        id: jornada.id,
+        name: jornada.attributes.name,
+        image:
+          jornada.attributes.image.data?.attributes.formats.small.url,
+        statics,
+      };
+    });
+
     return res.json({
-      usersWithDeclaredKnowledge: parsedUsersWithDeclaredKnowledge,
-      usersThatFinishedJornadas: parsedUsersThatFinishedJornadas,
+      parsedUsersWithDeclaredKnowledge,
+      parsedUsersThatFinishedJornadas,
+      parsedJornadasStatics,
     });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
