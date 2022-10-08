@@ -134,12 +134,17 @@ export default function AdminPage({
     </FormProvider>
     <Flex
       p={8}
+      wrap="wrap"
+      gap={2}
+      justifyContent="space-around"
+      alignItems="stretch"
     >
       {data.users.map(user => {
         const trilhaStat = data.stats.trilhasStats.find(x => x.userId === user.id);
         const jornadaStat = data.stats.jornadasStats.find(x => x.userId === user.id);
         return <Center
           key={user.id}
+          h="full"
         >
           <Box
             maxW={'270px'}
