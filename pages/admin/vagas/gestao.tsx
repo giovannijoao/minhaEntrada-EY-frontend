@@ -186,7 +186,7 @@ export default function AdminPage({
         <Flex
           bg="whiteAlpha.300"
           pt={8}
-          pl={4}
+          px={4}
           gap={1}
           direction="column"
           w="full"
