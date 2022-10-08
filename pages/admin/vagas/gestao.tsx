@@ -66,10 +66,6 @@ export default function AdminPage({
       id: number;
       name: string;
       image: string;
-      statics: {
-        finished: number;
-        notFinished: number;
-      }
     }[]
   }>(initialData);
 
@@ -131,7 +127,8 @@ export default function AdminPage({
                 <Select {...searchFormMethods.register('vaga')}>
                   {vagas.data.map(vaga => {
                     return <option style={{
-                      color: themeCustomColors.gray.brand
+                      backgroundColor: themeCustomColors.gray.brand,
+                      color: 'white'
                     }} key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
                   })}
                 </Select>

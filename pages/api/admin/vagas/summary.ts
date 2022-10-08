@@ -25,7 +25,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
       ) || [];
     const jornadasIds =
       vaga.data.data.attributes.jornadas?.data.map((x) => x.id) || [];
-    const [usersWithDeclaredKnowledge, usersThatFinishedJornadas, jornadasStatics] =
+    const [usersWithDeclaredKnowledge, usersThatFinishedJornadas] =
       await Promise.all([
         prisma.user.findMany({
           where: {
@@ -70,9 +70,6 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
               },
             },
           },
-        }),
-        getJornadasStaticsIsFinished({
-          jornadasIds
         })
       ]);
 
@@ -123,20 +120,11 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
       .slice(0, parsedUsersThatFinishedJornadasCount);
 
     const parsedJornadasStatics = vaga.data.data.attributes.jornadas?.data.map(jornada => {
-      const statics = {
-        finished: jornadasStatics.find(
-          (x) => x.jornadaId === jornada.id && x.isFinished === true
-        )?._count || 0,
-        notFinished: jornadasStatics.find(
-          (x) => x.jornadaId === jornada.id && x.isFinished === false
-        )?._count || 0,
-      };
       return {
         id: jornada.id,
         name: jornada.attributes.name,
         image:
           jornada.attributes.image.data?.attributes.formats.small.url,
-        statics,
       };
     });
 
