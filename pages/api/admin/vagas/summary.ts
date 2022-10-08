@@ -56,9 +56,6 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
                 vagaId: Number(vagaId),
               },
             },
-            knowledgeItems: {
-              hasSome: conhecimentos,
-            },
           },
           include: {
             JornadaSubscription: {
@@ -100,7 +97,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
       .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? -1 : 1))
       .slice(0, withoutLimits ? undefined : parsedUsersWithDeclaredKnowledgeCount);
 
-    const parsedUsersThatFinishedJornadas = usersWithDeclaredKnowledge
+    const parsedUsersThatFinishedJornadas = usersThatFinishedJornadas
       .map((user) => {
         const jornadasConcluidas = user.JornadaSubscription.filter((jornada) =>
           jornadasIds.includes(jornada.jornadaId)
@@ -117,7 +114,10 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
       .sort((a, b) =>
         a.percJornadasFinished < b.percJornadasFinished ? -1 : 1
       )
-      .slice(0, withoutLimits ? undefined : parsedUsersThatFinishedJornadasCount);
+      .slice(
+        0,
+        withoutLimits ? undefined : parsedUsersThatFinishedJornadasCount
+      );
 
     const parsedJornadasStatics = vaga.data.data.attributes.jornadas?.data.map(jornada => {
       return {
