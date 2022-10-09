@@ -73,10 +73,10 @@ export default function OnBoarding({
   const form = useForm<IOnBoardingForm>({
     defaultValues: {
       // 1. Dados pessoais
-      firstName: "João",
-      lastName: "Oliveira",
+      firstName: "Agatha Carla",
+      lastName: "Nina Farias",
       birthDate: "2000-07-04",
-      email: `joao-${(Math.random() * 1000).toString()}@gmail.com`,
+      email: `agatha-${(Math.random() * 1000).toFixed(0)}@gmail.com`,
       phoneNumber: "11912345678",
       password: "teste",
       passwordConfirm: "teste",
