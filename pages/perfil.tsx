@@ -1,5 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast, VStack } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useCallback } from "react";
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
@@ -9,6 +9,8 @@ import cmsClient from "../services/cmsClient";
 import { withAuthSsr } from "../lib/withAuth";
 import prisma from "../prisma/prisma";
 import { GetServerSidePropsContext } from "next";
+import { MdSave } from "react-icons/md";
+import axios from "axios";
 
 
 const tabs = [
@@ -463,9 +465,26 @@ const ConhecimentosForm = ({
     value: item.name,
     label: item.name,
   }))
+
+  const toast = useToast();
+
+  const handleSave = useCallback(async () => {
+    const knowledgeItems = form.getValues().knowledgeItems;
+    const result = await axios.post('/api/user/update-knowledge', {
+      knowledgeItems: knowledgeItems.map(x => x.name)
+    })
+    // TODO: Add progress and error treatment
+    if (result.data.success) {
+      toast({
+        status: `success`,
+        title: `Conhecimentos atualizados!`
+      })
+    }
+  }, [form, toast])
+
   return <>
-    <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
-      <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
+    <Flex p={8} direction="column" w="full" h="full" alignSelf={"stretch"} gap={4} boxShadow="md" bg="blackAlpha.500">
+      <Flex direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full" direction="column">
           <Heading fontSize="2xl">Meus Conhecimentos</Heading>
         </Flex>
@@ -489,6 +508,9 @@ const ConhecimentosForm = ({
           />
         </Box>
       </Flex>
+      <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<MdSave />} onClick={handleSave}>
+        Salvar
+      </Button>
     </Flex>
   </>
 }
