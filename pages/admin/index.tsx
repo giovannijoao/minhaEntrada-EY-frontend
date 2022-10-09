@@ -35,6 +35,7 @@ export default function AdminPage() {
             bgColor="yellow.brand"
             borderRadius="md"
             color="gray.brand"
+            boxShadow={"3xl"}
           >
             <Link href={link.href}><Heading fontSize="lg" textAlign="center">{link.title}</Heading></Link>
           </Center>

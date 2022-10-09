@@ -43,6 +43,10 @@ export const headerLinks = [{
   href: '/vagas',
   role: 'user'
 }, {
+  title: 'Meu Perfil',
+  href: '/perfil',
+  role: 'user'
+}, {
   title: 'Gestão de vagas',
   href: '/admin/vagas/gestao',
   role: 'admin'

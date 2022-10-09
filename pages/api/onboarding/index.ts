@@ -10,7 +10,7 @@ import { IQuestionarioPerfilFindOne } from "../../../types/CMS/QuestionarioPerfi
 
 export default async function onboardingProcess(req: NextApiRequest, res: NextApiResponse) {
   const body = req.body as IOnBoardingForm;
-  const { firstName, lastName, email, password } = body;
+  const { firstName, lastName, email, password, bornDate, phoneNumber } = body;
 
   const verifyUserAlreadyExist = await getUserByEmail(email);
   if (verifyUserAlreadyExist)
@@ -24,7 +24,9 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     lastName,
     email,
     password: encryptedPassword,
-    knowledgeItems: body.knowledgeItems.map(x => x.name),
+    knowledgeItems: body.knowledgeItems.map((x) => x.name),
+    bornDate,
+    phoneNumber
   });
 
   const [education, certifications] = await Promise.all([

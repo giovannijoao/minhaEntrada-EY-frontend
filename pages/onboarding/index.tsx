@@ -20,7 +20,7 @@ const tabs = [
 export type IOnBoardingForm = {
   firstName: string;
   lastName: string;
-  birthDate: string;
+  bornDate: string;
   email: string;
   phoneNumber: string;
   password: string;
@@ -75,7 +75,7 @@ export default function OnBoarding({
       // 1. Dados pessoais
       firstName: "Agatha Carla",
       lastName: "Nina Farias",
-      birthDate: "2000-07-04",
+      bornDate: "2000-07-04",
       email: `agatha-${(Math.random() * 1000).toFixed(0)}@gmail.com`,
       phoneNumber: "11912345678",
       password: "teste",
@@ -111,7 +111,7 @@ export default function OnBoarding({
       result = await form.trigger([
         "firstName",
         "lastName",
-        "birthDate",
+        "bornDate",
         "email",
         "phoneNumber",
         "password",
@@ -196,11 +196,11 @@ export default function OnBoarding({
                         {errors["lastName"].message}
                       </FormErrorMessage>}
                     </FormControl>
-                    <FormControl isInvalid={!form.formState.dirtyFields["birthDate"] && !!errors["birthDate"]}>
+                    <FormControl isInvalid={!form.formState.dirtyFields["bornDate"] && !!errors["bornDate"]}>
                       <FormLabel>Data Nascimento</FormLabel>
-                      <Input type='date' id="birthDate" {...form.register('birthDate', { required: "Campo obrigatório" })} />
-                      {errors["birthDate"] && <FormErrorMessage>
-                        {errors["birthDate"].message}
+                      <Input type='date' id="bornDate" {...form.register('bornDate', { required: "Campo obrigatório" })} />
+                      {errors["bornDate"] && <FormErrorMessage>
+                        {errors["bornDate"].message}
                       </FormErrorMessage>}
                     </FormControl>
                   </Flex>
