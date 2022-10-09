@@ -1,7 +1,7 @@
 import { AddIcon } from "@chakra-ui/icons";
 import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast, VStack } from "@chakra-ui/react";
 import { format } from "date-fns";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { IConhecimentosAll } from "../types/CMS/Conhecimento";
 import { CUIAutoComplete, Item as CUIAutoCompleteItem } from "chakra-ui-autocomplete";
@@ -11,6 +11,7 @@ import prisma from "../prisma/prisma";
 import { GetServerSidePropsContext } from "next";
 import { MdSave } from "react-icons/md";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 
 const tabs = [
@@ -110,9 +111,24 @@ export default function Perfil({
   parsedUser: IUserProfileForm
   conhecimentos: IConhecimentosAll
 }) {
+  const router = useRouter();
+  const [tabIndex, setTabIndex] = useState(0)
   const form = useForm<IUserProfileForm>({
     defaultValues: parsedUser
   });
+
+  useEffect(() => {
+    const tab = router.query.tab;
+    if (tab) {
+      setTabIndex(Number(tab))
+    }
+  }, [router])
+
+  const handleTabsChange = (index: number) => {
+    setTabIndex(index)
+  }
+
+
   return <>
     <Flex
       h={36}
@@ -123,7 +139,7 @@ export default function Perfil({
     >
       <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Perfil</Heading>
     </Flex>
-    <Tabs>
+    <Tabs index={tabIndex} onChange={handleTabsChange}>
       <TabList>
         {tabs.map(item => {
           return <Tab key={item} sx={{
