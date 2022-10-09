@@ -230,9 +230,9 @@ const EducationForm = () => {
       <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Formação Academica</Heading>
-          <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
+          {/* <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
             Adicionar
-          </Button>
+          </Button> */}
         </Flex>
         <Divider />
         <Flex direction="column" gap={2}>
@@ -357,9 +357,9 @@ const CertificationForm = () => {
       <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Certificados e Licenças</Heading>
-          <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
+          {/* <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
             Adicionar
-          </Button>
+          </Button> */}
         </Flex>
         <Divider />
         <Flex direction="column" gap={2}>
