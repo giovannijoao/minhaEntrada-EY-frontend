@@ -161,10 +161,11 @@ export default function StartPage({
               p={4}
               borderRadius="md"
               _hover={{
-                fontWeight: 'bold'
+                transition: "0.2s",
+                filter: "opacity(90%)"
               }}
             >
-              <Link href={`/vagas/${vaga.id}`}>
+              <Link style={{ textDecoration: 'none' }}  href={`/vagas/${vaga.id}`}>
                 {vaga.attributes.name}
               </Link>
             </Flex>

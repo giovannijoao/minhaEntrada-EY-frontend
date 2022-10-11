@@ -139,7 +139,10 @@ export default function StartPage({
             boxShadow="lg"
           >
             <Text fontWeight={"bold"}>Ingresse na jornada para entrar nas trilhas</Text>
-            <Button bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
+            <Button _hover={{ 
+              transition: "0.2s",
+              boxShadow: "0px 1px 4px 1px black" 
+              }} bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
           </Flex>
         </>
       }
@@ -199,7 +202,7 @@ export default function StartPage({
       >
         {vagas.data.map(vaga => {
           return <Link
-            variant={'default'}
+            variant={'card-hover'}
             style={{textDecoration: 'none'}}
             key={vaga.id.toString().concat('-vaga')}
             href={`/vagas/${vaga.id}`}
