@@ -12,7 +12,28 @@ const themeCustomColors = {
     brand: "#2E2E38",
   },
 };
+const hoverVariants = {
+  variants: {
+    'default': {
+      transition: "0.3s",
+      _hover: {
+        filter: "opacity(75%)",
+      }
+    },
+    'card-hover': {
+      transition: "0.3s",
+      _hover: {
+        filter: "opacity(95%)",
+        boxShadow: "1px 3px 5px 2px black"
+      }
+    }
+  }
+}
 const theme = extendTheme({
+  components: {
+    Link: hoverVariants,
+    Button: hoverVariants
+  },
   styles: {
     global: {
       "html, body": {
@@ -25,6 +46,7 @@ const theme = extendTheme({
       },
     },
   },
+  
   config,
   colors: themeCustomColors,
 });

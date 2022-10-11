@@ -1,4 +1,5 @@
-import { Button, Flex, Heading, Link, SimpleGrid, Text, useToast } from "@chakra-ui/react";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
+import { Button, Flex, Heading, IconButton, Link, SimpleGrid, Text, useToast } from "@chakra-ui/react";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -53,10 +54,12 @@ export default function StartPage({
     <Flex
       h={36}
       p={8}
-      justifyContent="center"
+      alignItems="center"
       backgroundColor="yellow.brand"
-      direction="column"
+      direction="row"
+      gap={6}
     >
+      <IconButton onClick={router.back} fontSize="2xl" color={"gray.brand"} icon={<ChevronLeftIcon />} aria-label="Voltar" />
       <Heading fontSize="3xl" color="gray.brand">Vagas</Heading>
     </Flex>
     <SimpleGrid

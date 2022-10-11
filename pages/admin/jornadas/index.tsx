@@ -46,12 +46,9 @@ export default function AdminPage({
       gap={6}
       color={"gray.brand"}
     >
-      <IconButton onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
-      <Flex direction="column">
-        <Heading fontSize="3xl" fontWeight={"bold"}>
-          Jornadas
-        </Heading>
-      </Flex>
+      <Heading fontSize="3xl" fontWeight={"bold"}>
+        Jornadas
+      </Heading>
     </Flex>
     {jornadas.data.length > 0 && <Flex
       direction="column"
@@ -68,26 +65,27 @@ export default function AdminPage({
       >
         {
           jornadas.data.map(jornada => {
-            return <Box
+            return <Link
+              variant={'card-hover'} 
               w="2xs"
               key={jornada.id.toString().concat('-jornada')}
               borderRadius="md"
               bgColor="whiteAlpha.300"
               boxShadow={"md"}
               color="white"
-              p={4}
-            >
-              {jornada.attributes.image?.data?.attributes.formats.small.url  && <Image
-                w={"100%"}
-                h={36}
-                src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
-                fit={"cover"}
-                borderRadius="md"
-                aria-label={jornada.attributes.image?.data?.attributes.caption} />}
+              p={4} 
+              href={`/admin/jornadas/${jornada.id}`}>
+                {jornada.attributes.image?.data?.attributes.formats.small.url  && <Image
+                  w={"100%"}
+                  h={36}
+                  src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
+                  fit={"cover"}
+                  borderRadius="md"
+                  aria-label={jornada.attributes.image?.data?.attributes.caption} />}
               <Flex direction={"column"} gap={2}>
-                <Link href={`/admin/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
+                <Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading>
               </Flex>
-            </Box>
+            </Link>
           })
         }
       </Flex>

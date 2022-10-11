@@ -1,4 +1,4 @@
-import { Flex, Heading, IconButton, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stat, StatGroup, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, IconButton, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stat, StatGroup, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react";
 import { TrilhaSubscription } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
@@ -10,7 +10,7 @@ import { IJornadaFindOne } from "../../../types/CMS/Jornada";
 import { ITrilha, ITrilhasAll } from "../../../types/CMS/Trilha";
 import { IoIosPeople } from 'react-icons/io'
 import axios from "axios";
-import { SearchIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons";
 import { getJornadasStaticsIsFinished } from "../../../prisma/jornadasSubscription";
 
 export const getServerSideProps = withAuthSsr(async ({
@@ -77,7 +77,6 @@ export default function StartPage({
   trilhaStatics,
   jornadaStatics,
 }: IProps) {
-
   const router = useRouter();
   const [selectedTrilhaId, setSelectedTrilhaId] = useState<number>();
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -92,14 +91,18 @@ export default function StartPage({
       <Flex
         h={36}
         p={8}
-        justifyContent="center"
+        gap={6}
+        alignItems="center"
         backgroundColor="yellow.brand"
-        direction="column"
+        direction="row"
       >
-        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Jornada de</Heading>
-        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
-          {jornada.data.attributes.name}
-        </Heading>
+        <IconButton fontSize="2xl" color={"gray.brand"} onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
+        <Flex direction="column">
+          <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Jornada de</Heading>
+          <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
+            {jornada.data.attributes.name}
+          </Heading>
+        </Flex>
       </Flex>
       <Flex
         direction="column"
@@ -170,10 +173,12 @@ export default function StartPage({
                     <StatNumber>0</StatNumber>
                   </Stat>
                 </StatGroup>
-                <IconButton variant="outline" icon={<IoIosPeople />} aria-label="Ver pessoas" size="lg" onClick={() => {
-                  setSelectedTrilhaId(trilha.id)
-                  onOpen()
-                }} />
+                <Flex w={'100%'} justifyContent={"end"}>
+                  <IconButton variant="default" color={'gray.brand'} icon={<IoIosPeople />} aria-label="Ver pessoas" size="lg" onClick={() => {
+                    setSelectedTrilhaId(trilha.id)
+                    onOpen()
+                  }}  />
+                </Flex>      
               </Flex>
             })
           }

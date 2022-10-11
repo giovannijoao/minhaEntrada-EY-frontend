@@ -125,12 +125,9 @@ export default function AdminPage({
       gap={6}
       color={"gray.brand"}
     >
-      <IconButton onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
-      <Flex direction="column">
-        <Heading fontSize="3xl" fontWeight={"bold"}>
-          Gestão de vagas
-        </Heading>
-      </Flex>
+      <Heading fontSize="3xl" fontWeight={"bold"}>
+        Gestão de vagas
+      </Heading>
     </Flex>
     <Flex gap={4} px={8} pt={8}
       direction={{
@@ -168,7 +165,7 @@ export default function AdminPage({
                   })}
                 </Select>
               </FormControl>
-              <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
+              <IconButton variant={'default'} aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
             </Flex>
           </Flex>
         </FormProvider>
@@ -192,7 +189,7 @@ export default function AdminPage({
           w="full"
           borderRadius="md"
         >
-          <Flex ml={2} alignItems="center" gap={4}>
+          <Flex ml={2} mr={6} alignItems="center" gap={4}>
             <Heading color="yellow.brand">{data.data.parsedJornadasStatics.length.toString().padStart(2, '0')}</Heading>
             <Heading fontSize="lg">Jornadas atreladas a vaga</Heading>
           </Flex>
