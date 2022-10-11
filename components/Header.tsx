@@ -26,6 +26,44 @@ const NavLink = ({ children, link }: {
   </Link>
 );
 
+export const headerLinks = [{
+  title: 'Entrar',
+  href: '/login',
+  role: 'unauthenticated'
+}, {
+  title: 'Criar conta',
+  href: '/onboarding',
+  role: 'unauthenticated'
+}, {
+  title: 'Jornadas',
+  href: '/jornadas',
+  role: 'user'
+}, {
+  title: 'Vagas',
+  href: '/vagas',
+  role: 'user'
+}, {
+  title: 'Meu Perfil',
+  href: '/perfil',
+  role: 'user'
+}, {
+  title: 'Meus conhecimentos',
+  href: '/perfil?tab=2',
+  role: 'user'
+}, {
+  title: 'Gestão de vagas',
+  href: '/admin/vagas/gestao',
+  role: 'admin'
+}, {
+  title: 'Buscar pessoas',
+  href: '/admin/pessoas/busca',
+  role: 'admin'
+}, {
+  title: 'Jornadas',
+  href: '/admin/jornadas',
+  role: 'admin'
+}]
+
 export default function HeaderV2({
   role,
 }: {
@@ -35,36 +73,7 @@ export default function HeaderV2({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const Links = useMemo(() => {
-    const links = [{
-      title: 'Entrar',
-      href: '/login',
-      role: 'unauthenticated'
-    }, {
-      title: 'Criar conta',
-      href: '/onboarding',
-      role: 'unauthenticated'
-    }, {
-      title: 'Jornadas',
-      href: '/jornadas',
-      role: 'user'
-    }, {
-      title: 'Vagas',
-      href: '/vagas',
-      role: 'user'
-    }, {
-      title: 'Gestão de vagas',
-      href: '/admin/vagas/gestao',
-      role: 'admin'
-    },{
-      title: 'Buscar pessoas',
-      href: '/admin/pessoas/busca',
-      role: 'admin'
-    }, {
-      title: 'Jornadas',
-      href: '/admin/jornadas',
-      role: 'admin'
-    }]
-    return links.filter(x => {
+    return headerLinks.filter(x => {
       if (x.role === "unauthenticated" && !user?.isLoggedIn) return true;
       let result = x.role === role
       if (result && x.role === "user") result = result && !!user?.isLoggedIn;

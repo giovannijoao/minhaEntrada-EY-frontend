@@ -183,7 +183,7 @@ export default function AdminPage({
         <Flex
           bg="whiteAlpha.300"
           pt={8}
-          pl={4}
+          px={4}
           gap={1}
           direction="column"
           w="full"
@@ -258,26 +258,25 @@ export default function AdminPage({
       </Flex>
       <Flex
         px={8}
-        direction="column"
+        direction="row"
+        gap={4}
       >
-        <Flex>
-          {data.data.parsedUsersWithDeclaredKnowledge.map(user => {
-            return <UserBox
-              key={`usersWithDeclaredKnowledge-${user.id}`}
-              user={user}
-              infoItems={[
-                {
-                  value: user.knowledgeCount,
-                  label: 'conhecimentos'
-                },
-                {
-                  value: user.percJornadasFinished.toString().concat('%'),
-                  label: 'jornadas concluídas'
-                }
-              ]}
-            />
-          })}
-        </Flex>
+        {data.data.parsedUsersWithDeclaredKnowledge.map(user => {
+          return <UserBox
+            key={`usersWithDeclaredKnowledge-${user.id}`}
+            user={user}
+            infoItems={[
+              {
+                value: user.knowledgeCount,
+                label: 'conhecimentos'
+              },
+              {
+                value: user.percJornadasFinished.toString().concat('%'),
+                label: 'jornadas concluídas'
+              }
+            ]}
+          />
+        })}
       </Flex>
     </Fade>
     <Fade in={data.data.parsedUsersThatFinishedJornadas.length > 0}>
@@ -305,22 +304,22 @@ export default function AdminPage({
       </Flex>
       <Flex
         px={8}
-        direction="column"
+        direction="row"
+        gap={4}
+        wrap="wrap"
       >
-        <Flex>
-          {data.data.parsedUsersThatFinishedJornadas.map(user => {
-            return <UserBox
-              key={`usersThatFinishedJornadas-${user.id}`}
-              user={user}
-              infoItems={[
-                {
-                  value: user.percJornadasFinished.toString().concat('%'),
-                  label: 'jornadas concluídas'
-                }
-              ]}
-            />
-          })}
-        </Flex>
+        {data.data.parsedUsersThatFinishedJornadas.map(user => {
+          return <UserBox
+            key={`usersThatFinishedJornadas-${user.id}`}
+            user={user}
+            infoItems={[
+              {
+                value: user.percJornadasFinished.toString().concat('%'),
+                label: 'jornadas concluídas'
+              }
+            ]}
+          />
+        })}
       </Flex>
     </Fade>
     <ModalMore
@@ -401,8 +400,8 @@ function UserBox({
 }) {
   return <Center>
     <Box
-      maxW={'270px'}
-      w={'full'}
+      alignSelf="stretch"
+      w="3xs"
       bg={'whiteAlpha.300'}
       boxShadow={'2xl'}
       rounded={'md'}

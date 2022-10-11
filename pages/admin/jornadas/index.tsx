@@ -66,6 +66,7 @@ export default function AdminPage({
         {
           jornadas.data.map(jornada => {
             return <Link
+              style={{ textDecoration: 'none' }}
               variant={'card-hover'} 
               w="2xs"
               key={jornada.id.toString().concat('-jornada')}

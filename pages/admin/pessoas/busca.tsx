@@ -128,12 +128,17 @@ export default function AdminPage({
     </FormProvider>
     <Flex
       p={8}
+      wrap="wrap"
+      gap={2}
+      justifyContent="space-around"
+      alignItems="stretch"
     >
       {data.users.map(user => {
         const trilhaStat = data.stats.trilhasStats.find(x => x.userId === user.id);
         const jornadaStat = data.stats.jornadasStats.find(x => x.userId === user.id);
         return <Center
           key={user.id}
+          h="full"
         >
           <Box
             maxW={'270px'}
@@ -179,7 +184,7 @@ export default function AdminPage({
                 </Stack>
               </Stack>
 
-              <Link href={`/admin/pessoas/${user.id}`}>
+              <Link style={{textDecoration: 'none'}} href={`/admin/pessoas/${user.id}`}>
                 <Button
                   w={'full'}
                   mt={8}
@@ -187,7 +192,7 @@ export default function AdminPage({
                   color={'white'}
                   rounded={'md'}
                   _hover={{
-                    transform: 'translateY(-2px)',
+                    transform: 'translateY(-1px)',
                     boxShadow: 'lg',
                   }}>
                   Perfil

@@ -84,9 +84,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
         const jornadasConcluidas = user.JornadaSubscription.filter((jornada) =>
           jornadasIds.includes(jornada.jornadaId)
         );
-        const percJornadasFinished = (
-          jornadasConcluidas.length / jornadasIds.length
-        ).toPrecision(1);
+        const percJornadasFinished = (jornadasConcluidas.length / jornadasIds.length) * 100
         const userInfo = parseUser(user);
         return {
           ...userInfo,
@@ -94,7 +92,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
           percJornadasFinished,
         };
       })
-      .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? -1 : 1))
+      .sort((a, b) => (a.knowledgeCount < b.knowledgeCount ? 1 : -1))
       .slice(0, withoutLimits ? undefined : parsedUsersWithDeclaredKnowledgeCount);
 
     const parsedUsersThatFinishedJornadas = usersThatFinishedJornadas
@@ -102,9 +100,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
         const jornadasConcluidas = user.JornadaSubscription.filter((jornada) =>
           jornadasIds.includes(jornada.jornadaId)
         );
-        const percJornadasFinished = (
-          jornadasConcluidas.length / jornadasIds.length
-        ).toPrecision(1);
+        const percJornadasFinished = (jornadasConcluidas.length / jornadasIds.length) * 100
         const userInfo = parseUser(user);
         return {
           ...userInfo,
@@ -112,7 +108,7 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
         };
       })
       .sort((a, b) =>
-        a.percJornadasFinished < b.percJornadasFinished ? -1 : 1
+        a.percJornadasFinished < b.percJornadasFinished ? 1 : -1
       )
       .slice(
         0,

@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
-import { Avatar, Badge, Box, Center, Flex, Heading, IconButton, SimpleGrid, StackDivider, Stat, StatGroup, StatLabel, StatNumber, Text, VStack } from "@chakra-ui/react"
+import { Avatar, Badge, Box, Center, Flex, Heading, HStack, IconButton, SimpleGrid, Stack, StackDivider, Stat, StatGroup, StatLabel, StatNumber, Tag, Text, VStack } from "@chakra-ui/react"
 import { AppliedVacancy, JornadaSubscription, TrilhaSubscription, User } from "@prisma/client"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
@@ -78,7 +78,6 @@ export default function AdminPage({
 
   return <>
     <Flex
-      h={36}
       p={8}
       alignItems="center"
       backgroundColor="yellow.brand"
@@ -97,6 +96,9 @@ export default function AdminPage({
         <Heading fontSize="xl" fontWeight={"light"}>
           {user.email}
         </Heading>
+        <HStack wrap="wrap" mt={2}>
+          {user.knowledgeItems.map(x => <Tag key={x} bg="gray.brand" color="yellow.brand">{x}</Tag>)}
+        </HStack>
       </Flex>
     </Flex>
     <SimpleGrid p={8} gap={4} columns={{

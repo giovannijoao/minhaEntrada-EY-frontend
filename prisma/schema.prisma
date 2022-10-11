@@ -22,6 +22,7 @@ model User {
   profilePic      String?
   selectedProfile Int?
   knowledgeItems  String[]  @default([])
+  phoneNumber     String?
 
   JornadaSubscription JornadaSubscription[]
   AulaProgress        AulaProgress[]
