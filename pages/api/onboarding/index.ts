@@ -25,7 +25,7 @@ export default async function onboardingProcess(req: NextApiRequest, res: NextAp
     email,
     password: encryptedPassword,
     knowledgeItems: body.knowledgeItems.map((x) => x.name),
-    bornDate,
+    bornDate: new Date(bornDate.split('-') as any),
     phoneNumber
   });
 
