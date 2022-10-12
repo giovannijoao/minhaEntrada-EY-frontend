@@ -62,6 +62,9 @@ export async function getServerSideProps() {
   }
 }
 
+const Leite = require('leite')
+const leite = new Leite()
+
 export default function OnBoarding({
   questionarioPerfil,
   conhecimentos,
@@ -73,10 +76,10 @@ export default function OnBoarding({
   const form = useForm<IOnBoardingForm>({
     defaultValues: {
       // 1. Dados pessoais
-      firstName: "Agatha Carla",
-      lastName: "Nina Farias",
+      firstName: leite.pessoa.primeiroNome(),
+      lastName: leite.pessoa.sobrenome(),
       bornDate: "2000-07-04",
-      email: `agatha-${(Math.random() * 1000).toFixed(0)}@gmail.com`,
+      email: `${leite.pessoa.usuario()}@gmail.com`,
       phoneNumber: "11912345678",
       password: "teste",
       passwordConfirm: "teste",
@@ -586,12 +589,12 @@ const PerfilQuestions = ({
         </Stack>
       </Flex>
       <Button
-        _hover={{ filter:"opacity(70%)" }} 
-        isLoading={isLoading} 
-        bg="yellow.brand" 
+        _hover={{ filter:"opacity(70%)" }}
+        isLoading={isLoading}
+        bg="yellow.brand"
         color="gray.brand"
-        mx="auto" 
-        rightIcon={<ChevronRightIcon />} 
+        mx="auto"
+        rightIcon={<ChevronRightIcon />}
         type="submit"
       >
         Finalizar
