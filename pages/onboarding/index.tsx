@@ -126,9 +126,13 @@ export default function OnBoarding({
   const handleTabsChange = (index: number) => {
     setTabIndex(index)
   }
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = useCallback(async (values: IOnBoardingForm) => {
+    setIsLoading(true);
+    console.log("Entrou");
     const result = await axios.post('/api/onboarding', values)
+
     // TODO: Add progress and error treatment
     if (result.data.success) {
       await axios.post('/api/users/sign-in', {
@@ -252,7 +256,7 @@ export default function OnBoarding({
                     </FormControl>
                   </Flex>
                 </Flex>
-                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
                   Próxima Etapa
                 </Button>
               </TabPanel>
@@ -264,18 +268,18 @@ export default function OnBoarding({
                   <EducationForm />
                   <CertificationForm />
                 </Flex>
-                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
                   Próxima Etapa
                 </Button>
               </TabPanel>
               <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
                 <ConhecimentosForm conhecimentos={conhecimentos} />
-                <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
                   Próxima Etapa
                 </Button>
               </TabPanel>
               <TabPanel>
-                <PerfilQuestions questionarioPerfil={questionarioPerfil} />
+                <PerfilQuestions questionarioPerfil={questionarioPerfil} isLoading={isLoading} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -325,7 +329,7 @@ const EducationForm = () => {
       <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Formação Academica</Heading>
-          <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
+          <Button variant={'default'} size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddEducationModal}>
             Adicionar
           </Button>
         </Flex>
@@ -402,7 +406,7 @@ const EducationForm = () => {
             </Flex>
           </ModalBody>
           <ModalFooter>
-            <Button bg="yellow.brand" color="gray.brand" type="submit">Adicionar</Button>
+            <Button variant={'default'} bg="yellow.brand" color="gray.brand" type="submit">Adicionar</Button>
           </ModalFooter>
         </form>
       </ModalContent>
@@ -452,7 +456,7 @@ const CertificationForm = () => {
       <Flex p={8} boxShadow="md" bg="blackAlpha.500" direction="column" gap={4}>
         <Flex justifyContent={"space-between"} w="full">
           <Heading fontSize="2xl">Certificados e Licenças</Heading>
-          <Button size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
+          <Button variant={'default'} size="sm" bg="yellow.brand" color="gray.brand" rightIcon={<AddIcon />} onClick={onOpenAddCertificationModal}>
             Adicionar
           </Button>
         </Flex>
@@ -536,7 +540,7 @@ const CertificationForm = () => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button bg="yellow.brand" color="gray.brand" type="submit">Adicionar</Button>
+            <Button variant={'default'} bg="yellow.brand" color="gray.brand" type="submit">Adicionar</Button>
           </ModalFooter>
         </form>
       </ModalContent>
@@ -545,9 +549,11 @@ const CertificationForm = () => {
 }
 
 const PerfilQuestions = ({
-  questionarioPerfil
+  questionarioPerfil,
+  isLoading
 }: {
-  questionarioPerfil: IQuestionarioPerfilFindOne
+  questionarioPerfil: IQuestionarioPerfilFindOne,
+  isLoading: boolean
 }) => {
   return <>
     <Flex direction="column" w="full" h="full" alignSelf={"stretch"} gap={4}>
@@ -579,7 +585,15 @@ const PerfilQuestions = ({
           })}
         </Stack>
       </Flex>
-      <Button bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} type="submit">
+      <Button
+        _hover={{ filter:"opacity(70%)" }} 
+        isLoading={isLoading} 
+        bg="yellow.brand" 
+        color="gray.brand"
+        mx="auto" 
+        rightIcon={<ChevronRightIcon />} 
+        type="submit"
+      >
         Finalizar
       </Button>
     </Flex>

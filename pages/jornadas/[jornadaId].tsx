@@ -1,5 +1,5 @@
-import { CheckCircleIcon } from "@chakra-ui/icons";
-import { Button, Center, Flex, Heading, Link, Text, Toast, useToast } from "@chakra-ui/react";
+import { CheckCircleIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import { Button, Center, Flex, Heading, IconButton, Link, Text, Toast, useToast } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -105,18 +105,21 @@ export default function StartPage({
     direction="column"
     h="100vh"
   >
-
     <Flex
       h={36}
       p={8}
-      justifyContent="center"
+      alignItems="center"
       backgroundColor="yellow.brand"
-      direction="column"
+      direction="row"
+      gap={6}
     >
-      <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Jornada de</Heading>
-      <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
-        {jornada.data.attributes.name}
-      </Heading>
+      <IconButton fontSize="2xl" color={"gray.brand"} onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
+      <Flex direction="column">
+        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Jornada de</Heading>
+        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
+          {jornada.data.attributes.name}
+        </Heading>    
+      </Flex>
     </Flex>
     <Flex
       direction="column"
@@ -136,7 +139,10 @@ export default function StartPage({
             boxShadow="lg"
           >
             <Text fontWeight={"bold"}>Ingresse na jornada para entrar nas trilhas</Text>
-            <Button bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
+            <Button _hover={{ 
+              transition: "0.2s",
+              boxShadow: "0px 1px 4px 1px black" 
+              }} bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
           </Flex>
         </>
       }
@@ -148,16 +154,20 @@ export default function StartPage({
         {
           trilhas.data.map(trilha => {
             const isFinished = finishedTrilhas.find(x => x === trilha.id);
-            return <Center
+            return <Link
+              href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}
               minW={32}
-              h={32}
               key={trilha.id.toString().concat('-trilha')}
               bg={trilha.attributes.color || 'yellow.brand'}
               borderRadius="md"
               color="gray.brand"
               p={8}
               position="relative"
-
+              _hover={{
+                transition: '0.3s',
+                filter: "opacity(95%)",
+                boxShadow: "1px 3px 5px 2px black"
+              }}
             >
               {
                 isFinished && <CheckCircleIcon
@@ -168,13 +178,13 @@ export default function StartPage({
                   w={8}
                 />
               }
-              {subscription.id && <Link href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}>
-                <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
-              </Link>}
+              {subscription.id &&
+                <Heading fontSize="2xl">{trilha.attributes.name}</Heading>
+              }
               {!subscription.id && <>
-                <Heading mt={2} fontSize="xl">{trilha.attributes.name}</Heading>
+                <Heading fontSize="2xl">{trilha.attributes.name}</Heading>
               </>}
-            </Center>
+            </Link>
           })
         }
       </Flex>
@@ -192,10 +202,13 @@ export default function StartPage({
       >
         {vagas.data.map(vaga => {
           return <Link
+            variant={'card-hover'}
+            style={{textDecoration: 'none'}}
             key={vaga.id.toString().concat('-vaga')}
             href={`/vagas/${vaga.id}`}
           >
             <Button
+              _hover={{ filter: "opacity(100%)" }} 
               p={4}
               bgColor='yellow.brand'
               color="gray.brand"

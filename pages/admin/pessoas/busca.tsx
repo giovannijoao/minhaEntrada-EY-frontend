@@ -84,12 +84,9 @@ export default function AdminPage({
       gap={6}
       color={"gray.brand"}
     >
-      <IconButton onClick={router.back} icon={<ChevronLeftIcon />} aria-label="Voltar" />
-      <Flex direction="column">
-        <Heading fontSize="3xl" fontWeight={"bold"}>
-          Buscar pessoas
-        </Heading>
-      </Flex>
+      <Heading fontSize="3xl" fontWeight={"bold"}>
+        Buscar pessoas
+      </Heading>
     </Flex>
     <FormProvider {...searchFormMethods}>
       <Flex as="form"
@@ -121,14 +118,11 @@ export default function AdminPage({
             <FormLabel>Buscar por vaga</FormLabel>
             <Select {...searchFormMethods.register('vaga')}>
               {vagas.data.map(vaga => {
-                return <option style={{
-                  backgroundColor: themeCustomColors.gray.brand,
-                  color: 'white'
-                }} key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
+                return <option key={vaga.id.toString().concat('-vaga')} value={vaga.id}>{vaga.attributes.name}</option>
               })}
             </Select>
           </FormControl>
-          <IconButton aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
+          <IconButton variant={'default'} aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
         </Flex>
       </Flex>
     </FormProvider>
@@ -190,7 +184,7 @@ export default function AdminPage({
                 </Stack>
               </Stack>
 
-              <Link href={`/admin/pessoas/${user.id}`}>
+              <Link style={{textDecoration: 'none'}} href={`/admin/pessoas/${user.id}`}>
                 <Button
                   w={'full'}
                   mt={8}
@@ -198,7 +192,7 @@ export default function AdminPage({
                   color={'white'}
                   rounded={'md'}
                   _hover={{
-                    transform: 'translateY(-2px)',
+                    transform: 'translateY(-1px)',
                     boxShadow: 'lg',
                   }}>
                   Perfil

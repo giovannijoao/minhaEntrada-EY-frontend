@@ -161,10 +161,11 @@ export default function StartPage({
               p={4}
               borderRadius="md"
               _hover={{
-                fontWeight: 'bold'
+                transition: "0.2s",
+                filter: "opacity(90%)"
               }}
             >
-              <Link href={`/vagas/${vaga.id}`}>
+              <Link style={{ textDecoration: 'none' }}  href={`/vagas/${vaga.id}`}>
                 {vaga.attributes.name}
               </Link>
             </Flex>
@@ -188,7 +189,10 @@ export default function StartPage({
       >
         {
           subscriptions.map(subscription => {
-            return <Box
+            return <Link
+              href={`/jornadas/${subscription.jornada.id}`}
+              variant='card-hover' 
+              style={{ textDecoration: 'none'}}
               w="2xs"
               key={subscription.id.toString().concat('-sub')}
               borderRadius="md"
@@ -204,8 +208,8 @@ export default function StartPage({
                 fit={"cover"}
                 borderRadius="md"
                 aria-label={subscription.jornada.attributes.image.data.attributes.caption} />}
-              <Link href={`/jornadas/${subscription.jornada.id}`}><Heading mt={2} fontSize="xl">{subscription.jornada.attributes.name}</Heading></Link>
-            </Box>
+              <Heading mt={2} fontSize="xl">{subscription.jornada.attributes.name}</Heading>
+            </Link>
           })
         }
       </Flex>
@@ -257,8 +261,24 @@ export default function StartPage({
                 borderRadius="md"
                 aria-label={jornada.attributes.image?.data.attributes.caption} />}
               <Flex direction={"column"} gap={2}>
-                <Link href={`/jornadas/${jornada.id}`}><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
-                <Button size="xs" bg="yellow.brand" color='gray.brand' isLoading={jornada.isSubmitting} onClick={() => handleIngressar(jornada.id)}>Ingressar</Button>
+                <Link 
+                  href={`/jornadas/${jornada.id}`}
+                  _hover={{
+                    filter: "opacity(80%)",
+                    boxShadow: 'lg'
+                  }} 
+                ><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
+                <Button 
+                  size="xs" 
+                  bg="yellow.brand" 
+                  color='gray.brand' 
+                  isLoading={jornada.isSubmitting} 
+                  onClick={() => handleIngressar(jornada.id)}
+                  _hover={{
+                    filter: "opacity(80%)",
+                    boxShadow: 'lg'
+                  }}
+                  >Ingressar</Button>
               </Flex>
             </Box>
           })

@@ -107,7 +107,7 @@ export default function OnBoardingWelcome({
             <Text fontSize="xs">O perfil selecionado de acordo com suas respostas foi:</Text>
             <Flex direction="column" gap={4} border="1px" borderColor="yellow.brand" p={8} borderRadius="md">
               <Heading fontSize="2xl" color="yellow.brand">{firstPerfil.name}</Heading>
-              <Button bg="yellow.brand" color="gray.brand" type="submit" onClick={() => {
+              <Button variant={'default'} bg="yellow.brand" color="gray.brand" type="submit" onClick={() => {
                 handleContinue(firstPerfil.id)
               }}>Continuar</Button>
             </Flex>
