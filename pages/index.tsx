@@ -93,7 +93,7 @@ export default function Home({
         base: "full",
         md: "md"
       }} textAlign="center">
-        <Heading fontSize="xl">Entre uma vaga</Heading>
+        <Heading fontSize="xl">Entre em uma vaga</Heading>
       </VStack>
     </Stack>
 
