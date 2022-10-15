@@ -89,6 +89,12 @@ export default function Home({
        }} textAlign="center">
         <Heading fontSize="xl">Aprenda com trilhas</Heading>
       </VStack>
+      <VStack w={{
+        base: "full",
+        md: "md"
+      }} textAlign="center">
+        <Heading fontSize="xl">Entre uma vaga</Heading>
+      </VStack>
     </Stack>
 
     <VStack w="full" p={{
