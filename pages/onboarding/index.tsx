@@ -151,143 +151,149 @@ export default function OnBoarding({
   return <>
     <Flex
       direction="column"
-      h="100vh"
+      bgImage="undraw_login_re_4vu2.svg"
+      bgSize={"contain"}
+      w="full"
+      h="full"
+      bgRepeat={"space"}
     >
-      <Flex
-        h={36}
-        p={8}
-        justifyContent="center"
-        backgroundColor="yellow.brand"
-        direction="column"
-      >
-        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
-        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos começar preenchendo alguns dados</Heading>
-      </Flex>
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <Tabs
-            m={4}
-            index={tabIndex} onChange={handleTabsChange}
-          >
-            <TabList>
-              {tabs.map(item => {
-                return <Tab key={item} sx={{
-                  _selected: {
-                    color: 'yellow.brand'
-                  }
-                }}>{item}</Tab>
-              })}
-            </TabList>
+      <Box w="full" h="full" bg="blackAlpha.800">
+        <Flex
+          h={36}
+          p={8}
+          justifyContent="center"
+          backgroundColor="yellow.brand"
+          direction="column"
+        >
+          <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
+          <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos começar preenchendo alguns dados</Heading>
+        </Flex>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <Tabs
+              m={4}
+              index={tabIndex} onChange={handleTabsChange}
+            >
+              <TabList>
+                {tabs.map(item => {
+                  return <Tab key={item} sx={{
+                    _selected: {
+                      color: 'yellow.brand'
+                    }
+                  }}>{item}</Tab>
+                })}
+              </TabList>
 
-            <TabPanels>
-              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
-                <Flex direction="column" w={{
-                  base: 'full',
-                  md: "4xl"
-                }} mx={'auto'} gap={4}>
-                  <Flex gap={8} direction={{
-                    base: 'column',
-                    md: 'row'
-                  }}>
-                    <FormControl isInvalid={!form.formState.dirtyFields["firstName"] && !!errors["firstName"]}>
-                      <FormLabel>Primeiro Nome</FormLabel>
-                      <Input type='text' id="firstName" {...form.register('firstName', { required: "Campo obrigatório" })} />
-                      {errors["firstName"] && <FormErrorMessage>
-                        {errors["firstName"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                    <FormControl isInvalid={!form.formState.dirtyFields["lastName"] && !!errors["lastName"]}>
-                      <FormLabel>Último Nome</FormLabel>
-                      <Input type='text' id="lastName" {...form.register('lastName', { required: "Campo obrigatório" })} />
-                      {errors["lastName"] && <FormErrorMessage>
-                        {errors["lastName"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                    <FormControl isInvalid={!form.formState.dirtyFields["bornDate"] && !!errors["bornDate"]}>
-                      <FormLabel>Data Nascimento</FormLabel>
-                      <Input type='date' id="bornDate" {...form.register('bornDate', { required: "Campo obrigatório" })} />
-                      {errors["bornDate"] && <FormErrorMessage>
-                        {errors["bornDate"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                  </Flex>
-                  <Flex gap={8} direction={{
-                    base: 'column',
-                    md: 'row'
-                  }}>
-                    <FormControl isInvalid={!form.formState.dirtyFields["email"] && !!errors["email"]}>
-                      <FormLabel>Email</FormLabel>
-                      <Input type='email' id="email" {...form.register('email', { required: "Campo obrigatório" })} />
-                      {errors["email"] && <FormErrorMessage>
-                        {errors["email"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                    <FormControl isInvalid={!form.formState.dirtyFields["phoneNumber"] && !!errors["phoneNumber"]}>
-                      <FormLabel>Telefone Celular</FormLabel>
-                      <Input type='number' id="phoneNumber" {...form.register('phoneNumber', { required: "Campo obrigatório" })} />
-                      {errors["phoneNumber"] && <FormErrorMessage>
-                        {errors["phoneNumber"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                  </Flex>
-                  <Flex gap={8} direction={{
-                    base: 'column',
-                    md: 'row'
-                  }}>
-                    <FormControl isInvalid={!form.formState.dirtyFields["password"] && !!errors["password"]}>
-                      <FormLabel>Senha</FormLabel>
-                      <Input type='password' id="password" {...form.register('password', { required: "Campo obrigatório" })} />
-                      {errors["password"] && <FormErrorMessage>
-                        {errors["password"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
-                    <FormControl isInvalid={!!errors["passwordConfirm"]}>
-                      <FormLabel>Confirme a senha</FormLabel>
-                      <Input type='password' id="passwordConfirm" {...form.register('passwordConfirm', {
-                        validate: (val) => {
-                          console.log(148, val)
-                          const password = form.watch('password');
-                          if (password !== val) {
-                            console.log(150, password, val)
-                            return "As senhas não conferem"
+              <TabPanels>
+                <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
+                  <Flex direction="column" w={{
+                    base: 'full',
+                    md: "4xl"
+                  }} mx={'auto'} gap={4}>
+                    <Flex gap={8} direction={{
+                      base: 'column',
+                      md: 'row'
+                    }}>
+                      <FormControl isInvalid={!form.formState.dirtyFields["firstName"] && !!errors["firstName"]}>
+                        <FormLabel>Primeiro Nome</FormLabel>
+                        <Input type='text' id="firstName" {...form.register('firstName', { required: "Campo obrigatório" })} />
+                        {errors["firstName"] && <FormErrorMessage>
+                          {errors["firstName"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                      <FormControl isInvalid={!form.formState.dirtyFields["lastName"] && !!errors["lastName"]}>
+                        <FormLabel>Último Nome</FormLabel>
+                        <Input type='text' id="lastName" {...form.register('lastName', { required: "Campo obrigatório" })} />
+                        {errors["lastName"] && <FormErrorMessage>
+                          {errors["lastName"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                      <FormControl isInvalid={!form.formState.dirtyFields["bornDate"] && !!errors["bornDate"]}>
+                        <FormLabel>Data Nascimento</FormLabel>
+                        <Input type='date' id="bornDate" {...form.register('bornDate', { required: "Campo obrigatório" })} />
+                        {errors["bornDate"] && <FormErrorMessage>
+                          {errors["bornDate"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                    </Flex>
+                    <Flex gap={8} direction={{
+                      base: 'column',
+                      md: 'row'
+                    }}>
+                      <FormControl isInvalid={!form.formState.dirtyFields["email"] && !!errors["email"]}>
+                        <FormLabel>Email</FormLabel>
+                        <Input type='email' id="email" {...form.register('email', { required: "Campo obrigatório" })} />
+                        {errors["email"] && <FormErrorMessage>
+                          {errors["email"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                      <FormControl isInvalid={!form.formState.dirtyFields["phoneNumber"] && !!errors["phoneNumber"]}>
+                        <FormLabel>Telefone Celular</FormLabel>
+                        <Input type='number' id="phoneNumber" {...form.register('phoneNumber', { required: "Campo obrigatório" })} />
+                        {errors["phoneNumber"] && <FormErrorMessage>
+                          {errors["phoneNumber"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                    </Flex>
+                    <Flex gap={8} direction={{
+                      base: 'column',
+                      md: 'row'
+                    }}>
+                      <FormControl isInvalid={!form.formState.dirtyFields["password"] && !!errors["password"]}>
+                        <FormLabel>Senha</FormLabel>
+                        <Input type='password' id="password" {...form.register('password', { required: "Campo obrigatório" })} />
+                        {errors["password"] && <FormErrorMessage>
+                          {errors["password"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                      <FormControl isInvalid={!!errors["passwordConfirm"]}>
+                        <FormLabel>Confirme a senha</FormLabel>
+                        <Input type='password' id="passwordConfirm" {...form.register('passwordConfirm', {
+                          validate: (val) => {
+                            console.log(148, val)
+                            const password = form.watch('password');
+                            if (password !== val) {
+                              console.log(150, password, val)
+                              return "As senhas não conferem"
+                            }
                           }
-                        }
-                      })} />
-                      {errors["passwordConfirm"] && <FormErrorMessage>
-                        {errors["passwordConfirm"].message}
-                      </FormErrorMessage>}
-                    </FormControl>
+                        })} />
+                        {errors["passwordConfirm"] && <FormErrorMessage>
+                          {errors["passwordConfirm"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                    </Flex>
                   </Flex>
-                </Flex>
-                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
-                  Próxima Etapa
-                </Button>
-              </TabPanel>
-              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
-                <Flex direction={{
-                  base: 'column',
-                  md: 'row'
-                }} gap={6}>
-                  <EducationForm />
-                  <CertificationForm />
-                </Flex>
-                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
-                  Próxima Etapa
-                </Button>
-              </TabPanel>
-              <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
-                <ConhecimentosForm conhecimentos={conhecimentos} />
-                <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
-                  Próxima Etapa
-                </Button>
-              </TabPanel>
-              <TabPanel>
-                <PerfilQuestions questionarioPerfil={questionarioPerfil} isLoading={isLoading} />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </form>
-      </FormProvider>
+                  <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                    Próxima Etapa
+                  </Button>
+                </TabPanel>
+                <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
+                  <Flex direction={{
+                    base: 'column',
+                    md: 'row'
+                  }} gap={6}>
+                    <EducationForm />
+                    <CertificationForm />
+                  </Flex>
+                  <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                    Próxima Etapa
+                  </Button>
+                </TabPanel>
+                <TabPanel display={"flex"} flexDirection="column" alignItems={"center"} gap={8}>
+                  <ConhecimentosForm conhecimentos={conhecimentos} />
+                  <Button variant={'default'} bg="yellow.brand" color="gray.brand" mx="auto" rightIcon={<ChevronRightIcon />} onClick={handleNext}>
+                    Próxima Etapa
+                  </Button>
+                </TabPanel>
+                <TabPanel>
+                  <PerfilQuestions questionarioPerfil={questionarioPerfil} isLoading={isLoading} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </form>
+        </FormProvider>
+      </Box>
     </Flex>
   </>
 }

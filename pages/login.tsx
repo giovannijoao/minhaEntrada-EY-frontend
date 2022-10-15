@@ -37,41 +37,47 @@ const Login: NextPageWithLayout = () => {
     <Flex
       align={'center'}
       justify={'center'}
-      bg={'gray.brand'}>
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>Faça login na conta</Heading>
-        </Stack>
-        <Box
-          as="form"
-          rounded={'lg'}
-          bg={'gray.700'}
-          boxShadow={'lg'}
-          p={8}
-          onSubmit={handleSubmit(handleFormEvent)}
-          >
-          <Stack spacing={4}>
-            <FormControl id="email">
-              <FormLabel>Email address</FormLabel>
-              <Input type="email" {...register('email')} />
-            </FormControl>
-            <FormControl id="password">
-              <FormLabel>Password</FormLabel>
-              <Input type="password" {...register('password')} />
-            </FormControl>
-            <Stack spacing={10}>
-              <Button
-                type="submit"
-                bg={'yellow.brand'}
-                color={'gray.brand'}
-                isLoading={isLoading}
-                >
-                Entrar
-              </Button>
-            </Stack>
+      bgImage="undraw_login_re_4vu2.svg"
+      bgSize={"cover"}
+      w="full"
+      h="full"
+    >
+      <Box w="full" h="full" bg="blackAlpha.700">
+        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+          <Stack align={'center'}>
+            <Heading fontSize={'4xl'}>Faça login na conta</Heading>
           </Stack>
-        </Box>
-      </Stack>
+          <Box
+            as="form"
+            rounded={'lg'}
+            bg={'gray.700'}
+            boxShadow={'lg'}
+            p={8}
+            onSubmit={handleSubmit(handleFormEvent)}
+            >
+            <Stack spacing={4}>
+              <FormControl id="email">
+                <FormLabel>Email address</FormLabel>
+                <Input type="email" {...register('email')} />
+              </FormControl>
+              <FormControl id="password">
+                <FormLabel>Password</FormLabel>
+                <Input type="password" {...register('password')} />
+              </FormControl>
+              <Stack spacing={10}>
+                <Button
+                  type="submit"
+                  bg={'yellow.brand'}
+                  color={'gray.brand'}
+                  isLoading={isLoading}
+                  >
+                  Entrar
+                </Button>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
+      </Box>
     </Flex>
   )
 }
