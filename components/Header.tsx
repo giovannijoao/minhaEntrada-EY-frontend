@@ -89,10 +89,10 @@ export default function HeaderV2({
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Flex alignItems="center" gap={4}>
+            <Link href="/" alignItems="center" gap={4} display="flex" flexDirection="row">
               <Icon as={GiStonePath} color='yellow.brand' h={8} w={8} />
               <Heading fontSize={"2xl"} color="yellow.brand">minhaEntrada EY</Heading>
-            </Flex>
+            </Link>
             <HStack
               as={'nav'}
               spacing={4}
