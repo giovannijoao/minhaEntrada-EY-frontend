@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
 import { Avatar, Badge, Box, Center, Flex, Heading, HStack, IconButton, SimpleGrid, Stack, StackDivider, Stat, StatGroup, StatLabel, StatNumber, Tag, Text, VStack } from "@chakra-ui/react"
 import { AppliedVacancy, JornadaSubscription, TrilhaSubscription, User } from "@prisma/client"
+import { format } from "date-fns"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
 import { mediaUrl } from "../../../config"
@@ -16,7 +17,10 @@ import { IVaga } from "../../../types/CMS/Vaga"
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
   const id = context.params?.id as string;
   const [user, trilhasSubscription, jornadasSubscription, vacancies] = await Promise.all([
-    getUser(id),
+    getUser(id).then(user => ({
+      ...user,
+      bornDate: null,
+    })),
     getTrilhaSubscriptionsForUser({
       userId: id
     }).then(res => res.map(x => {
