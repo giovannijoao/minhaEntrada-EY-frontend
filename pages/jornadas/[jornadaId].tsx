@@ -118,7 +118,7 @@ export default function StartPage({
         <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Jornada de</Heading>
         <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">
           {jornada.data.attributes.name}
-        </Heading>    
+        </Heading>
       </Flex>
     </Flex>
     <Flex
@@ -139,9 +139,9 @@ export default function StartPage({
             boxShadow="lg"
           >
             <Text fontWeight={"bold"}>Ingresse na jornada para entrar nas trilhas</Text>
-            <Button _hover={{ 
+            <Button _hover={{
               transition: "0.2s",
-              boxShadow: "0px 1px 4px 1px black" 
+              boxShadow: "0px 1px 4px 1px black"
               }} bg="yellow.brand" color="gray.brand" isLoading={isLoading} onClick={handleIngressar}>Ingressar</Button>
           </Flex>
         </>
@@ -154,7 +154,8 @@ export default function StartPage({
         {
           trilhas.data.map(trilha => {
             const isFinished = finishedTrilhas.find(x => x === trilha.id);
-            return <Link
+            const Component = subscription.id ? Link : Flex;
+            return <Component
               href={`/jornadas/s/${subscription.id}/trilhas/${trilha.id}`}
               minW={32}
               key={trilha.id.toString().concat('-trilha')}
@@ -184,7 +185,7 @@ export default function StartPage({
               {!subscription.id && <>
                 <Heading fontSize="2xl">{trilha.attributes.name}</Heading>
               </>}
-            </Link>
+            </Component>
           })
         }
       </Flex>
@@ -208,7 +209,7 @@ export default function StartPage({
             href={`/vagas/${vaga.id}`}
           >
             <Button
-              _hover={{ filter: "opacity(100%)" }} 
+              _hover={{ filter: "opacity(100%)" }}
               p={4}
               bgColor='yellow.brand'
               color="gray.brand"
