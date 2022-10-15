@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Link, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Link, Text, useToast, VStack } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -191,7 +191,7 @@ export default function StartPage({
           subscriptions.map(subscription => {
             return <Link
               href={`/jornadas/${subscription.jornada.id}`}
-              variant='card-hover' 
+              variant='card-hover'
               style={{ textDecoration: 'none'}}
               w="2xs"
               key={subscription.id.toString().concat('-sub')}
@@ -233,7 +233,11 @@ export default function StartPage({
       p={8}
       gap={4}
     >
-      <Heading>Todas as jornadas</Heading>
+      <VStack alignItems="flex-start" spacing={0.1}>
+        <Heading>Jornadas recomendadas</Heading>
+        <Text fontWeight={"light"} fontStyle="italic">Com base em seu perfil</Text>
+      </VStack>
+
       <Flex
         gap={4}
         wrap={"wrap"}
@@ -261,18 +265,18 @@ export default function StartPage({
                 borderRadius="md"
                 aria-label={jornada.attributes.image?.data.attributes.caption} />}
               <Flex direction={"column"} gap={2}>
-                <Link 
+                <Link
                   href={`/jornadas/${jornada.id}`}
                   _hover={{
                     filter: "opacity(80%)",
                     boxShadow: 'lg'
-                  }} 
+                  }}
                 ><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
-                <Button 
-                  size="xs" 
-                  bg="yellow.brand" 
-                  color='gray.brand' 
-                  isLoading={jornada.isSubmitting} 
+                <Button
+                  size="xs"
+                  bg="yellow.brand"
+                  color='gray.brand'
+                  isLoading={jornada.isSubmitting}
                   onClick={() => handleIngressar(jornada.id)}
                   _hover={{
                     filter: "opacity(80%)",
