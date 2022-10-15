@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Box, Divider, Flex, Grid, Heading, HStack, Icon, Image, SimpleGrid, Stack, Text, useBreakpointValue, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { Box, Button, Center, Divider, Flex, Grid, Heading, HStack, Icon, Image, Link, SimpleGrid, Stack, Text, useBreakpointValue, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import { GetServerSidePropsResult } from "next";
 import { IoMdPeople } from "react-icons/io";
 import cmsClient from "../services/cmsClient";
@@ -80,13 +80,13 @@ export default function Home({
       <VStack w={{
         base: "full",
         md: "md"
-       }} textAlign="center">
+      }} textAlign="center">
         <Heading fontSize="xl">Inscreva-se em uma jornada</Heading>
       </VStack>
       <VStack w={{
         base: "full",
         md: "md"
-       }} textAlign="center">
+      }} textAlign="center">
         <Heading fontSize="xl">Aprenda com trilhas</Heading>
       </VStack>
       <VStack w={{
@@ -145,5 +145,43 @@ export default function Home({
         }
       </SimpleGrid>
     </VStack>
+    <Stack
+      w="full"
+      flexDirection={{
+        base: 'column',
+        md: 'row'
+      }}
+      gap={`4`}
+      bg="yellow.brand"
+      p={8}
+    >
+      <Image
+        h={"sm"}
+        aria-label="Conheça a plataforma"
+        src="undraw_portfolio_re_qwm5.svg"
+      />
+      <Center
+        h="full"
+      >
+        <VStack gap={8}>
+          <VStack mx={'50%'}>
+            <Heading textAlign="center" color="gray.brand">Cresça profissionalmente a partir de hoje!</Heading>
+          </VStack>
+          <VStack>
+            <Link href="/login" ><Button w="md" bg="gray.brand" color="yellow.brand" _hover={{
+              transition: "0.2s",
+              filter: "opacity(95%)",
+              boxShadow: "1px 3px 5px 2px black"
+            }}>Fazer login</Button></Link>
+            <Link href="/onboarding" ><Button w="md" bg="gray.brand" color="yellow.brand" _hover={{
+              transition: "0.2s",
+              filter: "opacity(95%)",
+              boxShadow: "1px 3px 5px 2px black"
+            }}>Cadastrar</Button></Link>
+          </VStack>
+        </VStack>
+
+      </Center>
+    </Stack>
   </VStack>
 }
