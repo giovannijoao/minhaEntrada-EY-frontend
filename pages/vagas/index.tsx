@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { Button, Flex, Heading, IconButton, Link, SimpleGrid, Text, useToast } from "@chakra-ui/react";
+import { Button, Flex, Heading, HStack, IconButton, Image, Link, SimpleGrid, Text, useToast } from "@chakra-ui/react";
 import { withIronSessionSsr } from "iron-session/next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -57,10 +57,16 @@ export default function StartPage({
       alignItems="center"
       backgroundColor="yellow.brand"
       direction="row"
-      gap={6}
     >
-      <IconButton onClick={router.back} fontSize="2xl" color={"gray.brand"} icon={<ChevronLeftIcon />} aria-label="Voltar" />
-      <Heading fontSize="3xl" color="gray.brand">Vagas</Heading>
+      <HStack w="full" gap={6}>
+        <IconButton onClick={router.back} fontSize="2xl" color={"gray.brand"} icon={<ChevronLeftIcon />} aria-label="Voltar" />
+        <Heading fontSize="3xl" color="gray.brand">Vagas</Heading>
+      </HStack>
+      <Image
+        aria-label="Área de vagas"
+        src="undraw_job_hunt_re_q203.svg"
+        h="full"
+      />
     </Flex>
     <SimpleGrid
       m={8}
