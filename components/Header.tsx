@@ -89,7 +89,7 @@ export default function HeaderV2({
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Link href="/" alignItems="center" gap={4} display="flex" flexDirection="row">
+            <Link href={role === "admin" ? '/admin' : '/'} alignItems="center" gap={4} display="flex" flexDirection="row">
               <Icon as={GiStonePath} color='yellow.brand' h={8} w={8} />
               <Heading fontSize={"2xl"} color="yellow.brand">minhaEntrada EY</Heading>
             </Link>
@@ -102,7 +102,7 @@ export default function HeaderV2({
               ))}
             </HStack>
           </HStack>
-          {user?.isLoggedIn && <Flex alignItems={'center'}>
+          {user?.isLoggedIn && <Flex alignItems={'center'} zIndex={99}>
             <Stack direction={'row'} spacing={7}>
               <Menu>
                 <MenuButton
