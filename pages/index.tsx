@@ -104,7 +104,7 @@ export default function Home({
       <Heading textAlign={"center"}>Jornadas para crescimento profissional</Heading>
       <SimpleGrid
         w="full"
-        minChildWidth={"300px"}
+        minChildWidth={"200px"}
         spacing={8}
         p={8}
       >
