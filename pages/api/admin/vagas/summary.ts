@@ -8,8 +8,8 @@ import cmsClient from "../../../../services/cmsClient";
 import { IVagaFindOne } from "../../../../types/CMS/Vaga";
 
 
-const parsedUsersWithDeclaredKnowledgeCount = 4;
-const parsedUsersThatFinishedJornadasCount = 9;
+const parsedUsersWithDeclaredKnowledgeCount = 5;
+const parsedUsersThatFinishedJornadasCount = 10;
 async function vagas(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { vaga: vagaId, withoutLimits } = req.query;
@@ -126,8 +126,8 @@ async function vagas(req: NextApiRequest, res: NextApiResponse) {
 
     return res.json({
       metadata: {
-        parsedUsersWithDeclaredKnowledgeCount: withoutLimits ? -1 : parsedUsersWithDeclaredKnowledgeCount + 1,
-        parsedUsersThatFinishedJornadasCount: withoutLimits ? -1 : parsedUsersThatFinishedJornadasCount + 1,
+        parsedUsersWithDeclaredKnowledgeCount: withoutLimits ? -1 : parsedUsersWithDeclaredKnowledgeCount,
+        parsedUsersThatFinishedJornadasCount: withoutLimits ? -1 : parsedUsersThatFinishedJornadasCount,
       },
       data: {
         parsedUsersWithDeclaredKnowledge,
