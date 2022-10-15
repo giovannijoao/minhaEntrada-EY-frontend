@@ -154,7 +154,8 @@ export default function StartPage({
         {vagas
           .map((x) => {
             const vaga = x as unknown as IVaga;
-            return <Flex
+            return <Link
+              variant='card-hover'
               key={vaga.id}
               bg="yellow.brand"
               color="gray.brand"
@@ -162,13 +163,13 @@ export default function StartPage({
               borderRadius="md"
               _hover={{
                 transition: "0.2s",
-                filter: "opacity(90%)"
+                filter: "opacity(95%)",
+                boxShadow: "1px 3px 5px 2px black"
               }}
+              href={`/vagas/${vaga.id}`}
             >
-              <Link style={{ textDecoration: 'none' }}  href={`/vagas/${vaga.id}`}>
-                {vaga.attributes.name}
-              </Link>
-            </Flex>
+              {vaga.attributes.name}
+            </Link>
           })
         }
       </Flex>
