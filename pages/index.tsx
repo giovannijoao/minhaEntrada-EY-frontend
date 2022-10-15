@@ -56,7 +56,7 @@ export default function Home({
         base: 'full',
         md: 'md'
       }} textAlign={"center"}>
-        <Heading color="gray.brand">Bem vindo a sua nova forma de se especializar e canditar-se!</Heading>
+        <Heading color="gray.brand">Bem vindo a sua nova forma de se especializar e candidatar-se!</Heading>
       </VStack>
     </Flex>
     <Stack
