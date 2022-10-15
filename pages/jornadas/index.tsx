@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Image, Link, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, HStack, Image, Link, Text, useToast, VStack } from "@chakra-ui/react";
 import { JornadaSubscription } from "@prisma/client";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
@@ -116,20 +116,35 @@ export default function StartPage({
     h="100vh"
   >
     <Flex
-      h={36}
       p={8}
       justifyContent="center"
       backgroundColor="yellow.brand"
       direction="row"
     >
-      <Flex direction="column" grow={2}>
-        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
-        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
-      </Flex>
-      { perfil && <Flex direction="column" grow={1} alignItems="flex-end">
-        <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Seu Perfil:</Heading>
-        <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">{perfil.data.attributes.name}</Heading>
-      </Flex>}
+      <HStack w="full">
+        <VStack w="full" alignItems={"flex-start"}>
+          <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
+          <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
+          { perfil && <Flex
+            direction="row"
+            alignItems="center"
+            gap={2}
+            p={4}
+            bg="gray.brand"
+            w="fit-content"
+            borderRadius="lg"
+            mt={2}
+          >
+            <Heading fontSize="md" fontWeight={"light"} color="yellow.brand">Seu Perfil:</Heading>
+            <Heading fontSize="lg" color="yellow.brand">{perfil.data.attributes.name}</Heading>
+          </Flex>}
+        </VStack>
+        <Image
+          aria-label="Área de jornadas"
+          src="undraw_projections_re_ulc6.svg"
+          h={36}
+        />
+      </HStack>
     </Flex>
     { vagas.length > 0 && <Flex
       direction="row"
