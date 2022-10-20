@@ -1,5 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast, VStack } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useCallback, useState, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
@@ -36,6 +36,7 @@ type IUserProfileForm = {
   email: string;
   phoneNumber: string | null;
   education: IEducation[];
+  gender: string | null;
   certifications: {
     name: string;
     organization: string;
@@ -79,6 +80,7 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
     bornDate: user.bornDate ? format(user.bornDate, `yyyy-MM-dd`) : "",
     email: user.email,
     phoneNumber: user.phoneNumber,
+    gender: user.gender,
     // 2. Dados escolares e profissionais
     education: user.UserEducation.map(ed => {
       return {
@@ -196,9 +198,19 @@ const DadosPessoais = () => {
         <FormLabel>Último Nome</FormLabel>
         <Input type='text' {...register('lastName') }/>
       </FormControl>
+    </HStack>
+    <HStack w="full">
       <FormControl isReadOnly={true}>
         <FormLabel>Data Nascimento</FormLabel>
         <Input type='date' {...register('bornDate') }/>
+      </FormControl>
+      <FormControl isReadOnly={true}>
+        <FormLabel>Data Nascimento</FormLabel>
+        <Select isReadOnly={true} {...register('gender')}>
+          <option value="male">Masculino</option>
+          <option value="female">Feminino</option>
+          <option value="not-informed">Prefiro não informar</option>
+        </Select>
       </FormControl>
     </HStack>
     <HStack w="full">

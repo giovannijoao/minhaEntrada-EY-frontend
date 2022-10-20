@@ -1,5 +1,5 @@
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "@chakra-ui/icons";
-import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLabel, TagLeftIcon, TagRightIcon, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, Stack, StackDivider, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, TagLabel, TagLeftIcon, TagRightIcon, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { CUIAutoComplete, Item as CUIAutoCompleteItem } from "chakra-ui-autocomplete";
 import format from "date-fns/format";
@@ -26,6 +26,7 @@ export type IOnBoardingForm = {
   password: string;
   passwordConfirm: string;
   education: IEducation[];
+  gender: string;
   certifications: {
     name: string;
     organization: string;
@@ -83,6 +84,7 @@ export default function OnBoarding({
       phoneNumber: "11912345678",
       password: "teste",
       passwordConfirm: "teste",
+      gender: ["male", "female", "not-informed"][Math.floor((Math.random() * 3))],
       // 2. Dados escolares e profissionais
       education: [{
         school: "FIAP",
@@ -119,6 +121,7 @@ export default function OnBoarding({
         "phoneNumber",
         "password",
         "passwordConfirm",
+        "gender"
       ], {
         shouldFocus: true
       })
@@ -208,11 +211,27 @@ export default function OnBoarding({
                           {errors["lastName"].message}
                         </FormErrorMessage>}
                       </FormControl>
+                    </Flex>
+                    <Flex gap={8} direction={{
+                      base: 'column',
+                      md: 'row'
+                    }}>
                       <FormControl isInvalid={!form.formState.dirtyFields["bornDate"] && !!errors["bornDate"]}>
                         <FormLabel>Data Nascimento</FormLabel>
                         <Input type='date' id="bornDate" {...form.register('bornDate', { required: "Campo obrigatório" })} />
                         {errors["bornDate"] && <FormErrorMessage>
                           {errors["bornDate"].message}
+                        </FormErrorMessage>}
+                      </FormControl>
+                      <FormControl isInvalid={!form.formState.dirtyFields["gender"] && !!errors["gender"]}>
+                        <FormLabel>Gênero</FormLabel>
+                        <Select {...form.register('gender', { required: "Campo obrigatório" })}>
+                          <option value="male">Masculino</option>
+                          <option value="female">Feminino</option>
+                          <option value="not-informed">Prefiro não informar</option>
+                        </Select>
+                        {errors["gender"] && <FormErrorMessage>
+                          {errors["gender"].message}
                         </FormErrorMessage>}
                       </FormControl>
                     </Flex>
