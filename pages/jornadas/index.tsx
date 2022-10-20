@@ -107,9 +107,11 @@ export default function StartPage({
     })
   }, [changeSubmitting, jornadas.data, router, toast])
 
-  const vagas = jornadas.data
+  const vagasIds = Array.from(new Set(jornadas.data
     .filter(jornada => jornada.attributes.vagas && jornada.attributes.vagas?.data.length > 0)
-    .flatMap(jornada => jornada.attributes.vagas?.data.map(vaga => vaga))
+    .flatMap(jornada => jornada.attributes.vagas?.data.map(vaga => vaga.id))))
+
+  const vagas = vagasIds.map(vagaId => jornadas.data.flatMap(jornada => jornada.attributes.vagas?.data).find(v => v?.id === vagaId));
 
   return <Flex
     direction="column"
