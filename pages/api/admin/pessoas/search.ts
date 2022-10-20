@@ -7,44 +7,60 @@ async function pessoas(req: NextApiRequest, res: NextApiResponse) {
   try {
     let filters: Prisma.UserWhereInput = {
       AND: [
-        ...req.query.search ? [{
-            OR: [
+        ...(req.query.search
+          ? [
               {
-                firstName: {
-                  contains: req.query.search as string,
-                },
+                OR: [
+                  {
+                    firstName: {
+                      contains: req.query.search as string,
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: req.query.search as string,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: req.query.search as string,
+                    },
+                  },
+                ],
               },
+            ]
+          : []),
+        ...(req.query.gender
+          ? [
               {
-                lastName: {
-                  contains: req.query.search as string,
-                },
-              },
-              {
-                email: {
-                  contains: req.query.search as string,
+                gender: {
+                  equals: req.query.gender as string,
                 },
               },
             ]
-          }] : [],
-        ...req.query.gender ? [{
-            gender: {
-              equals: req.query.gender as string
-            }
-          }] : [],
-        ...req.query.knowledgeItems ? [{
-              knowledgeItems: {
-                hasSome: req.query.knowledgeItems
-              }
-          }] : []
-      ]
+          : []),
+        ...(req.query["knowledgeItems[]"]
+          ? [
+              {
+                knowledgeItems: {
+                  hasSome: req.query["knowledgeItems[]"],
+                },
+              },
+            ]
+          : []),
+        ...(req.query.vaga
+          ? [
+              {
+                AppliedVacancy: {
+                  some: {
+                    vagaId: Number(req.query.vaga),
+                  },
+                },
+              },
+            ]
+          : []),
+      ],
     };
-    if (req.query.vaga) {
-      filters.AppliedVacancy = {
-        some: {
-          vagaId: Number(req.query.vaga),
-        }
-      }
-    }
     const [users, stats] = await Promise.all([
       getAllUsers({
         filters,
