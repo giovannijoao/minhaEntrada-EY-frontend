@@ -5,26 +5,39 @@ import { getAllUsers, getUsersStats } from "../../../../prisma/user";
 
 async function pessoas(req: NextApiRequest, res: NextApiResponse) {
   try {
-    let filters: Prisma.UserWhereInput = {};
-    if (req.query.search) {
-      filters.OR = [
-        {
-          firstName: {
-            contains: req.query.search as string,
-          },
-        },
-        {
-          lastName: {
-            contains: req.query.search as string,
-          },
-        },
-        {
-          email: {
-            contains: req.query.search as string,
-          },
-        },
-      ];
-    }
+    let filters: Prisma.UserWhereInput = {
+      AND: [
+        ...req.query.search ? [{
+            OR: [
+              {
+                firstName: {
+                  contains: req.query.search as string,
+                },
+              },
+              {
+                lastName: {
+                  contains: req.query.search as string,
+                },
+              },
+              {
+                email: {
+                  contains: req.query.search as string,
+                },
+              },
+            ]
+          }] : [],
+        ...req.query.gender ? [{
+            gender: {
+              equals: req.query.gender as string
+            }
+          }] : [],
+        ...req.query.knowledgeItems ? [{
+              knowledgeItems: {
+                hasSome: req.query.knowledgeItems
+              }
+          }] : []
+      ]
+    };
     if (req.query.vaga) {
       filters.AppliedVacancy = {
         some: {

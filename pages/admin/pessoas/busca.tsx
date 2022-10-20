@@ -1,42 +1,55 @@
-import { ChevronLeftIcon, SearchIcon } from "@chakra-ui/icons"
-import { Avatar, Box, Button, Center, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
+import { SearchIcon } from "@chakra-ui/icons"
+import { Avatar, Box, Button, Center, Flex, FormControl, FormLabel, Heading, HStack, IconButton, Input, InputGroup, InputLeftElement, Link, Select, Stack, Text } from "@chakra-ui/react"
 import { User } from "@prisma/client"
 import axios from "axios"
 import { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
-import { useCallback, useReducer, useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { useCallback, useState } from "react"
+import { Controller, FormProvider, useForm } from "react-hook-form"
 import { withAuthSsr } from "../../../lib/withAuth"
 import cmsClient from "../../../services/cmsClient"
-import { IVagaFindOne, IVagasAll } from "../../../types/CMS/Vaga"
-import { themeCustomColors } from "../../../contexts/themes/theme";
+import { IConhecimentosAll } from "../../../types/CMS/Conhecimento"
+import { IVagasAll } from "../../../types/CMS/Vaga"
+import {
+  AutoComplete,
+  AutoCompleteInput,
+  AutoCompleteItem,
+  AutoCompleteList,
+  AutoCompleteTag,
+} from "@choc-ui/chakra-autocomplete";
 
 export const getServerSideProps = withAuthSsr(async (context: GetServerSidePropsContext) => {
-  const [responseVaga] = await Promise.all([
+  const [responseVaga, conhecimentos] = await Promise.all([
     cmsClient.get<IVagasAll>(`vagas`, {
       params: {}
-    })
+    }),
+    cmsClient.get<IConhecimentosAll>(`conhecimentos`),
   ])
   return {
     props: {
       vagas: responseVaga.data,
-      role: context.req.session.role
+      role: context.req.session.role,
+      conhecimentos: conhecimentos.data,
     }
   }
 }, 'admin')
 
 type Props = {
   vagas: IVagasAll
+  conhecimentos: IConhecimentosAll
 }
 
 export default function AdminPage({
   vagas,
+  conhecimentos,
 }: Props) {
   const router = useRouter();
   const searchFormMethods = useForm({
     defaultValues: {
       search: '',
       vaga: '',
+      gender: '',
+      knowledgeItems: []
     }
   });
 
@@ -73,7 +86,6 @@ export default function AdminPage({
     },
     [],
   )
-
   return <>
     <Flex
       h={36}
@@ -95,11 +107,12 @@ export default function AdminPage({
         bg="whiteAlpha.300"
         boxShadow="md"
         alignItems="flex-start"
-        >
-        <Flex
-          w="xl"
+        direction="column"
+        gap={4}
+      >
+        <HStack
           gap={2}
-          alignItems='end'
+          alignItems='center'
         >
           <FormControl>
             <FormLabel>Nome ou e-mail</FormLabel>
@@ -122,8 +135,52 @@ export default function AdminPage({
               })}
             </Select>
           </FormControl>
-          <IconButton variant={'default'} aria-label="Pesquisar" type="submit" icon={<SearchIcon />} bg="yellow.brand" color="gray.brand" />
-        </Flex>
+          <FormControl>
+            <FormLabel>Gênero</FormLabel>
+            <Select {...searchFormMethods.register('gender')}>
+              <option value="male">Masculino</option>
+              <option value="female">Feminino</option>
+              <option value="not-informed">Não informado</option>
+            </Select>
+          </FormControl>
+          <FormControl>
+            <FormLabel color="white">Conhecimentos</FormLabel>
+            <Controller
+              control={searchFormMethods.control}
+              name="knowledgeItems"
+              render={({
+                field: { value, onChange }
+              }) => {
+                return <AutoComplete openOnFocus multiple onChange={onChange}>
+                  <AutoCompleteInput color="white" w="lg">
+                    {({ tags }) =>
+                      tags.map((tag, tid) => (
+                        <AutoCompleteTag
+                          key={tid}
+                          label={tag.label}
+                          onRemove={tag.onRemove}
+                        />
+                      ))
+                    }
+                  </AutoCompleteInput>
+                  <AutoCompleteList>
+                    {conhecimentos.data.map((conhecimento, cid) => (
+                      <AutoCompleteItem
+                        color="white"
+                        key={`option-${cid}`}
+                        value={conhecimento.attributes.name}
+                        textTransform="capitalize"
+                      >
+                        {conhecimento.attributes.name}
+                      </AutoCompleteItem>
+                    ))}
+                  </AutoCompleteList>
+                </AutoComplete>
+              }}
+            />
+          </FormControl>
+        </HStack>
+        <Button variant={'default'} aria-label="Pesquisar" type="submit" leftIcon={<SearchIcon />} bg="yellow.brand" color="gray.brand">Pesquisar</Button>
       </Flex>
     </FormProvider>
     <Flex
@@ -184,7 +241,7 @@ export default function AdminPage({
                 </Stack>
               </Stack>
 
-              <Link style={{textDecoration: 'none'}} href={`/admin/pessoas/${user.id}`}>
+              <Link style={{ textDecoration: 'none' }} href={`/admin/pessoas/${user.id}`}>
                 <Button
                   w={'full'}
                   mt={8}

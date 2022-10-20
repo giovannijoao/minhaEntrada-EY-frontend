@@ -303,6 +303,18 @@
     "@chakra-ui/react-context" "2.0.4"
     "@chakra-ui/shared-utils" "2.0.2"
 
+"@chakra-ui/layout@^2.1.5":
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/layout/-/layout-2.1.9.tgz#3e9cc7b5915e033907367e40fc97d218efa5f777"
+  integrity sha512-ztsavtirtdtjxdqIkGR6fVcrffHp6hs1twRFO/dK14FGXrX3Nn9mi3J1fr1ITBHJq6y5B3yFEj0LHN2fO8dYyw==
+  dependencies:
+    "@chakra-ui/breakpoint-utils" "2.0.4"
+    "@chakra-ui/icon" "3.0.11"
+    "@chakra-ui/object-utils" "2.0.4"
+    "@chakra-ui/react-children-utils" "2.0.3"
+    "@chakra-ui/react-context" "2.0.4"
+    "@chakra-ui/shared-utils" "2.0.2"
+
 "@chakra-ui/lazy-utils@2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@chakra-ui/lazy-utils/-/lazy-utils-2.0.2.tgz#d85f9afc60c2434ba76376fd4b23a7a0a1341e14"
@@ -461,6 +473,11 @@
   resolved "https://registry.yarnpkg.com/@chakra-ui/react-children-utils/-/react-children-utils-2.0.2.tgz#8676ce88573ad1824989399db8a1ec7e51afc0d0"
   integrity sha512-mRTGAZ3DBXB3hgVwS2DVJe3Nlc0qGvMN0PAo4tD/3fj2op2IwspLcYPAWC5D/rI2xj2JlwE6szAtbvxdAfLCNw==
 
+"@chakra-ui/react-children-utils@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/react-children-utils/-/react-children-utils-2.0.3.tgz#406b984c653befd6c99636fcefb55bd01d436a7d"
+  integrity sha512-tPQjLEEuAw/DYLRw0cNs/g8tcdhZ3r21Sr9dTAzoyvfk0vbZ24gCXRElltW2GZLiFA63mAidzhPmc+yQF3Wtgg==
+
 "@chakra-ui/react-context@2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@chakra-ui/react-context/-/react-context-2.0.4.tgz#1b6ab260d44d9073c95b975b7d1643f011e65e02"
@@ -588,7 +605,7 @@
   resolved "https://registry.yarnpkg.com/@chakra-ui/react-use-update-effect/-/react-use-update-effect-2.0.4.tgz#522bc58b943fffe540a91f7a096d42e4a91b9748"
   integrity sha512-F/I9LVnGAQyvww+x7tQb47wCwjhMYjpxtM1dTg1U3oCEXY0yF1Ts3NJLUAlsr3nAW6epJIwWx61niC7KWpam1w==
 
-"@chakra-ui/react-utils@2.0.8":
+"@chakra-ui/react-utils@2.0.8", "@chakra-ui/react-utils@^2.0.5":
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/@chakra-ui/react-utils/-/react-utils-2.0.8.tgz#1db4e920386f4afbf44fe9dd8aaaf6f22eefb371"
   integrity sha512-OSHHBKZlJWTi2NZcPnBx1PyZvLQY+n5RPBtcri7/89EDdAwz2NdEhp2Dz1yQRctOSCF1kB/rnCYDP1U0oRk9RQ==
@@ -745,7 +762,7 @@
     "@chakra-ui/react-use-merge-refs" "2.0.4"
     "@chakra-ui/react-use-safe-layout-effect" "2.0.2"
 
-"@chakra-ui/tag@2.0.11":
+"@chakra-ui/tag@2.0.11", "@chakra-ui/tag@^2.0.8":
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/@chakra-ui/tag/-/tag-2.0.11.tgz#14702adf5d1456dbbb84ea7a4b314953b92c323f"
   integrity sha512-iJJcX+4hl+6Se/8eCRzG+xxDwZfiYgc4Ly/8s93M0uW2GLb+ybbfSE2DjeKSyk3mQVeGzuxGkBfDHH2c2v26ew==
@@ -816,7 +833,7 @@
     framesync "5.3.0"
     lodash.mergewith "4.6.2"
 
-"@chakra-ui/utils@2.0.11":
+"@chakra-ui/utils@2.0.11", "@chakra-ui/utils@^2.0.8":
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/@chakra-ui/utils/-/utils-2.0.11.tgz#8e773f900a8356bd10c48b59151a781dba1c7b70"
   integrity sha512-4ZQdK6tbOuTrUCsAQBHWo7tw5/Q6pBV93ZbVpats61cSWMFGv32AIQw9/hA4un2zDeSWN9ZMVLNjAY2Dq/KQOA==
@@ -830,6 +847,17 @@
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/@chakra-ui/visually-hidden/-/visually-hidden-2.0.11.tgz#b2eb236e803451b39cdfcce3c5ab52e773c066a3"
   integrity sha512-e+5amYvnsmEQdiWH4XMyvrtGTdwz//+48vwj5CsNWWcselzkwqodmciy5rIrT71/SCQDOtmgnL7ZWAUOffxfsQ==
+
+"@choc-ui/chakra-autocomplete@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@choc-ui/chakra-autocomplete/-/chakra-autocomplete-5.1.2.tgz#1886488dc079a7347a4bcf61cd31365ff945b17b"
+  integrity sha512-o38xzV6gQNHnkHhTzrSTbMVn/91lssQizfMLLfO8uUq3nBGRSylM4WRm9O1q6Jqh93hioBcBHwCn9oxIb5VO9w==
+  dependencies:
+    "@chakra-ui/layout" "^2.1.5"
+    "@chakra-ui/react-utils" "^2.0.5"
+    "@chakra-ui/tag" "^2.0.8"
+    "@chakra-ui/utils" "^2.0.8"
+    react-nanny "2.14.0"
 
 "@ctrl/tinycolor@^3.4.0":
   version "3.4.1"
@@ -3529,6 +3557,11 @@ react-markdown@^8.0.3:
     unified "^10.0.0"
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
+
+react-nanny@2.14.0:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/react-nanny/-/react-nanny-2.14.0.tgz#c53afa8cd9612ca0eee57a35e0d38b65f76445a4"
+  integrity sha512-lX+SNWlpbIhN4h3zJQAtRqr7AXwldmgKxJ8e+eChFvMQISsZmHaR2SJujb3u1S6fpC5pUnYKsdbtwZXUG/4Qjw==
 
 react-player@^2.10.1:
   version "2.11.0"
