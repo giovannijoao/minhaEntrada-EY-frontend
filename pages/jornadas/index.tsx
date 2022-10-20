@@ -39,11 +39,17 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
   })
 
   const jornadasSubscription = subscriptions.map(x => x.jornadaId);
-  const [responseJornadas] = await Promise.all([
+  const [responseJornadasPerfil, responseJornadasOthersPerfil] = await Promise.all([
     cmsClient.get<IJornadasAll>('jornadas', {
       params: {
         populate: ['image', 'trilhas', 'vagas'],
         "filters[id][$in]": Array.from(new Set([...perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id), ...jornadasSubscription])),
+      }
+    }),
+    cmsClient.get<IJornadasAll>('jornadas', {
+      params: {
+        populate: ['image', 'trilhas', 'vagas', 'perfil_usuarios'],
+        "filters[id][$notIn]": Array.from(new Set([...perfil.data.data.attributes.jornadas.data.map(jornada => jornada.id), ...jornadasSubscription])),
       }
     }),
   ])
@@ -51,21 +57,22 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 
   const parsedSubscription = subscriptions.map(subscription => {
     const { created_at, updated_at, ...restSub } = subscription;
-    const jornada = responseJornadas.data.data.find(x => x.id === subscription.jornadaId) as IJornada;
+    const jornada = responseJornadasPerfil.data.data.find(x => x.id === subscription.jornadaId) as IJornada;
     return {
       ...restSub,
       jornada,
     }
   })
 
-  responseJornadas.data.data = responseJornadas.data.data.filter(x =>
+  responseJornadasPerfil.data.data = responseJornadasPerfil.data.data.filter(x =>
     !jornadasSubscription.includes(x.id) &&
     x.attributes.trilhas && x.attributes.trilhas.data.length > 0
   )
 
   return {
     props: {
-      jornadas: responseJornadas.data,
+      jornadasPerfil: responseJornadasPerfil.data,
+      othersJornadas: responseJornadasOthersPerfil.data,
       subscriptions: parsedSubscription,
       perfil: perfil.data,
     },
@@ -73,15 +80,18 @@ export const getServerSideProps = withAuthSsr(async (context: GetServerSideProps
 })
 
 export default function StartPage({
-  jornadas,
+  jornadasPerfil,
+  othersJornadas,
   subscriptions,
   perfil,
 }: {
-  jornadas: IJornadasAll,
+  jornadasPerfil: IJornadasAll,
+  othersJornadas: IJornadasAll,
   subscriptions: ISubscriptionWithJornada[]
   perfil: IPerfilUsuarioFindOne
 }) {
-  const [jornadasState, setJornadasState] = useState<IJornadasAll>(jornadas);
+  const [jornadasState, setJornadasState] = useState<IJornadasAll>(jornadasPerfil);
+  const [otherJornadasState, setOtherJornadasState] = useState<IJornadasAll>(othersJornadas);
   const toast = useToast();
   const router = useRouter()
 
@@ -91,9 +101,9 @@ export default function StartPage({
   }, [jornadasState])
 
   const handleIngressar = useCallback(async (jornadaId: number) => {
-    const jornada = jornadas.data.filter(jornada => jornada.id==jornadaId)[0];
+    const jornada = jornadasPerfil.data.filter(jornada => jornada.id == jornadaId)[0];
     changeSubmitting(jornada)
-    await axios.post('/api/jornadas/ingress',{
+    await axios.post('/api/jornadas/ingress', {
       jornadaId
     }).then(resp => {
       router.reload()
@@ -105,13 +115,13 @@ export default function StartPage({
         status: "error"
       })
     })
-  }, [changeSubmitting, jornadas.data, router, toast])
+  }, [changeSubmitting, jornadasPerfil.data, router, toast])
 
-  const vagasIds = Array.from(new Set(jornadas.data
+  const vagasIds = Array.from(new Set(jornadasPerfil.data
     .filter(jornada => jornada.attributes.vagas && jornada.attributes.vagas?.data.length > 0)
     .flatMap(jornada => jornada.attributes.vagas?.data.map(vaga => vaga.id))))
 
-  const vagas = vagasIds.map(vagaId => jornadas.data.flatMap(jornada => jornada.attributes.vagas?.data).find(v => v?.id === vagaId));
+  const vagas = vagasIds.map(vagaId => jornadasPerfil.data.flatMap(jornada => jornada.attributes.vagas?.data).find(v => v?.id === vagaId));
 
   return <Flex
     direction="column"
@@ -127,7 +137,7 @@ export default function StartPage({
         <VStack w="full" alignItems={"flex-start"}>
           <Heading fontSize="2xl" fontWeight={"light"} color="gray.brand">Bem vindo!</Heading>
           <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">Vamos estudar?</Heading>
-          { perfil && <Flex
+          {perfil && <Flex
             direction="row"
             alignItems="center"
             gap={2}
@@ -148,7 +158,7 @@ export default function StartPage({
         />
       </HStack>
     </Flex>
-    { vagas.length > 0 && <Flex
+    {vagas.length > 0 && <Flex
       direction="row"
       mx={8}
       mt={4}
@@ -210,7 +220,7 @@ export default function StartPage({
             return <Link
               href={`/jornadas/${subscription.jornada.id}`}
               variant='card-hover'
-              style={{ textDecoration: 'none'}}
+              style={{ textDecoration: 'none' }}
               w="2xs"
               key={subscription.id.toString().concat('-sub')}
               borderRadius="md"
@@ -275,7 +285,7 @@ export default function StartPage({
               color="white"
               p={4}
             >
-              {jornada.attributes.image?.data?.attributes.formats.small.url  && <Image
+              {jornada.attributes.image?.data?.attributes.formats.small.url && <Image
                 w={"100%"}
                 h={36}
                 src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
@@ -300,7 +310,57 @@ export default function StartPage({
                     filter: "opacity(80%)",
                     boxShadow: 'lg'
                   }}
-                  >Ingressar</Button>
+                >Ingressar</Button>
+              </Flex>
+            </Box>
+          })
+        }
+      </Flex>
+    </Flex>}
+    {otherJornadasState.data.length > 0 && <Flex
+      direction="column"
+      p={8}
+      gap={4}
+    >
+      <VStack alignItems="flex-start" spacing={0.1}>
+        <Heading>Jornadas de outros perfis</Heading>
+        <Text fontWeight={"light"} fontStyle="italic">Entre nas jornadas para conhecer mais sobre</Text>
+      </VStack>
+
+      <Flex
+        gap={4}
+        wrap={"wrap"}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
+      >
+        {
+          otherJornadasState.data.map(jornada => {
+            return <Box
+              w="2xs"
+              key={jornada.id.toString().concat('-jornada')}
+              borderRadius="md"
+              bgColor="whiteAlpha.300"
+              boxShadow={"md"}
+              color="white"
+              p={4}
+            >
+              {jornada.attributes.image?.data?.attributes.formats.small.url && <Image
+                w={"100%"}
+                h={36}
+                src={mediaUrl?.concat(jornada.attributes.image.data.attributes.formats.small.url)}
+                fit={"cover"}
+                borderRadius="md"
+                aria-label={jornada.attributes.image?.data.attributes.caption} />}
+              <Flex direction={"column"} gap={2}>
+                <Link
+                  href={`/jornadas/${jornada.id}`}
+                  _hover={{
+                    filter: "opacity(80%)",
+                    boxShadow: 'lg'
+                  }}
+                ><Heading mt={2} fontSize="xl">{jornada.attributes.name}</Heading></Link>
               </Flex>
             </Box>
           })
