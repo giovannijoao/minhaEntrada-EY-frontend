@@ -110,7 +110,6 @@ export default function StartPage({
         mx={8}
         p={8}
         gap={4}
-        w="sm"
         border="2px"
         borderColor={"yellow.brand"}
         boxShadow="md"
@@ -178,7 +177,7 @@ export default function StartPage({
                     setSelectedTrilhaId(trilha.id)
                     onOpen()
                   }}  />
-                </Flex>      
+                </Flex>
               </Flex>
             })
           }
