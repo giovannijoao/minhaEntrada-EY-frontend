@@ -78,7 +78,10 @@ export default function StartPage({
     >
       {vagas.data.map(vaga => {
         return <Flex key={vaga.id}
-          direction="row"
+          direction={{
+            base: 'column',
+            md: "row"
+          }}
           minH={36}
           border="1px"
           borderColor="yellow.brand"
@@ -86,13 +89,19 @@ export default function StartPage({
           gap={4}
         >
           <Flex
-            w="2xs"
+            w={{
+              base: 'full',
+              md: "2xs"
+            }}
             bg="yellow.brand"
             color="gray.brand"
             justifyContent="center"
             alignItems="center"
             boxShadow="md"
-            m={-1}
+            m={{
+              base: 0,
+              md: -1
+            }}
             borderRadius="md"
             flex={1}
           >
