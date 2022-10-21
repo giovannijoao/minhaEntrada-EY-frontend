@@ -90,7 +90,7 @@ async function answerRoute(req: NextApiRequest, res: NextApiResponse) {
           },
         }),
       ]);
-      finalGrade = grade._avg.finalGrade
+      finalGrade = grade._avg.finalGrade ? Math.round(grade._avg.finalGrade) : null;
       hasEmblema = !!emblemaData.data.data[0];
       emblema = emblemaData.data.data[0];
     }
