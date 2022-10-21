@@ -110,11 +110,15 @@ export default function AdminPage({
         direction="column"
         gap={4}
       >
-        <HStack
+        <Stack
+          direction={{
+            base: 'column',
+            md: 'row'
+          }}
           gap={2}
           alignItems='center'
         >
-          <FormControl>
+          <FormControl flex={1}>
             <FormLabel>Nome ou e-mail</FormLabel>
             <InputGroup>
               <InputLeftElement
@@ -127,7 +131,7 @@ export default function AdminPage({
               }} />
             </InputGroup>
           </FormControl>
-          <FormControl>
+          <FormControl flex={1}>
             <FormLabel>Buscar por vaga</FormLabel>
             <Select {...searchFormMethods.register('vaga')}>
               {vagas.data.map(vaga => {
@@ -135,7 +139,7 @@ export default function AdminPage({
               })}
             </Select>
           </FormControl>
-          <FormControl>
+          <FormControl flex={1}>
             <FormLabel>Gênero</FormLabel>
             <Select {...searchFormMethods.register('gender')}>
               <option value="male">Masculino</option>
@@ -143,7 +147,7 @@ export default function AdminPage({
               <option value="not-informed">Não informado</option>
             </Select>
           </FormControl>
-          <FormControl>
+          <FormControl flex={2}>
             <FormLabel color="white">Conhecimentos</FormLabel>
             <Controller
               control={searchFormMethods.control}
@@ -152,7 +156,7 @@ export default function AdminPage({
                 field: { value, onChange }
               }) => {
                 return <AutoComplete openOnFocus multiple onChange={onChange}>
-                  <AutoCompleteInput color="white" w="lg">
+                  <AutoCompleteInput color="white">
                     {({ tags }) =>
                       tags.map((tag, tid) => (
                         <AutoCompleteTag
@@ -179,7 +183,7 @@ export default function AdminPage({
               }}
             />
           </FormControl>
-        </HStack>
+        </Stack>
         <Button variant={'default'} aria-label="Pesquisar" type="submit" leftIcon={<SearchIcon />} bg="yellow.brand" color="gray.brand">Pesquisar</Button>
       </Flex>
     </FormProvider>
