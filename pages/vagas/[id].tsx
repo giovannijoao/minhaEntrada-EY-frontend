@@ -109,10 +109,16 @@ export default function StartPage({
       <Heading fontSize="3xl" fontWeight={"bold"} color="gray.brand">{vaga.data.attributes.name}</Heading>
     </Flex>
     <Flex
-      direction="row"
+      direction={{
+        base: "column",
+        md: "row"
+      }}
       bgColor="whiteAlpha.300"
       flex={1}
-      p={24}
+      p={{
+        base: 8,
+        md: 24
+      }}
       boxShadow="sm"
       gap={8}
     >
