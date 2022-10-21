@@ -238,7 +238,7 @@ export default function TrilhaPage({
           flex={1}
         >
           {
-            trilha.data.attributes.aulas?.data.map(aula => {
+            trilha.data.attributes.aulas?.data.sort((a, b) => a.attributes.createdAt < b.attributes.createdAt ? -1 : 1).map(aula => {
               const p = progress?.find(p => p.aulaId === aula.id);
               const Icon = (p?.hasActivity ? p.isActivityFinished : p?.isClassFinished) ? CheckCircleIcon : TimeIcon;
               return <Flex

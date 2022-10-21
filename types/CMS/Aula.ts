@@ -24,6 +24,7 @@ export type IAula = {
     description: string;
     duration: string;
     atividade?: IAtividadeFindOne
+    createdAt: string;
   } & IAulaExtends;
 };
 
