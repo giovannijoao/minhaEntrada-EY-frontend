@@ -148,7 +148,13 @@ export default function StartPage({
       }
       <Flex
         gap={4}
-        wrap={"wrap"}
+        wrap={{
+          md: "wrap"
+        }}
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
         justifyContent="flex-start"
       >
         {
