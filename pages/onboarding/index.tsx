@@ -174,7 +174,7 @@ export default function OnBoarding({
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <Tabs
-              m={4}
+              mt={4}
               index={tabIndex} onChange={handleTabsChange}
             >
               <TabList>
