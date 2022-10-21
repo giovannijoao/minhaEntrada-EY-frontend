@@ -241,6 +241,10 @@ export default function AdminPage({
         bg="blackAlpha.500"
         alignItems={"center"}
         justifyContent="space-between"
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
       >
         <Heading fontSize="lg">Principais candidatos com perfil declarado adequado</Heading>
         <Flex
@@ -260,6 +264,8 @@ export default function AdminPage({
         px={8}
         direction="row"
         gap={4}
+        wrap={"wrap"}
+        justifyContent="center"
       >
         {data.data.parsedUsersWithDeclaredKnowledge.map(user => {
           return <UserBox
@@ -287,6 +293,10 @@ export default function AdminPage({
         bg="blackAlpha.500"
         alignItems={"center"}
         justifyContent="space-between"
+        direction={{
+          base: 'column',
+          md: 'row'
+        }}
       >
         <Heading fontSize="lg">Principais candidatos que trilharam as jornadas da vaga</Heading>
         <Flex
@@ -306,7 +316,8 @@ export default function AdminPage({
         px={8}
         direction="row"
         gap={4}
-        wrap="wrap"
+        wrap={"wrap"}
+        justifyContent="center"
       >
         {data.data.parsedUsersThatFinishedJornadas.map(user => {
           return <UserBox
