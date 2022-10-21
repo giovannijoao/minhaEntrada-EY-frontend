@@ -161,26 +161,26 @@ export default function Home({
         src="undraw_portfolio_re_qwm5.svg"
       />
       <Center
+        w="full"
         h="full"
       >
         <VStack gap={8}>
           <VStack mx={'50%'}>
             <Heading textAlign="center" color="gray.brand">Cresça profissionalmente a partir de hoje!</Heading>
           </VStack>
-          <VStack>
-            <Link href="/login" ><Button w="md" bg="gray.brand" color="yellow.brand" _hover={{
+          <VStack w="xs">
+            <Link href="/login" w="full"><Button w="full" bg="gray.brand" color="yellow.brand" _hover={{
               transition: "0.2s",
               filter: "opacity(95%)",
               boxShadow: "1px 3px 5px 2px black"
             }}>Fazer login</Button></Link>
-            <Link href="/onboarding" ><Button w="md" bg="gray.brand" color="yellow.brand" _hover={{
+            <Link href="/onboarding" w="full"><Button w="full" bg="gray.brand" color="yellow.brand" _hover={{
               transition: "0.2s",
               filter: "opacity(95%)",
               boxShadow: "1px 3px 5px 2px black"
             }}>Cadastrar</Button></Link>
           </VStack>
         </VStack>
-
       </Center>
     </Stack>
   </VStack>
