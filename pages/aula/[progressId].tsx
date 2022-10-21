@@ -81,7 +81,7 @@ export default function TrilhaPage({
       isClassFinished: true,
       hasActivity: !!aula.data.attributes.atividade?.data,
     })
-    if (aula.data.attributes.atividade?.data) 
+    if (aula.data.attributes.atividade?.data)
       toast({
         title: 'Aula finalizada',
         description: 'Hora de fazer as atividades'
@@ -98,7 +98,6 @@ export default function TrilhaPage({
     direction="column"
     h="100vh"
   >
-
     <Flex
       h={36}
       p={8}
@@ -118,15 +117,20 @@ export default function TrilhaPage({
         md: 'row'
       }}
       p={8}
-      gap={16}
     >
-      {/* <Flex flex={1} direction="column" gap={4}>
-        <Heading fontSize="lg">Minhas anotações</Heading>
-        <Textarea flex={1} />
-      </Flex> */}
       <Flex m="auto" direction="column">
-        {ready && !isEnded && <ReactPlayer controls={true} url={aula.data.attributes.url ? aula.data.attributes.url : aula.data.attributes.video?.data.attributes.url as string} onEnded={onFinished} />}
-        {isEnded && <Center bg="green.500" p={36} borderRadius="lg" flexDirection="column" gap={4} m="auto">
+        {ready && !isEnded && <ReactPlayer
+          controls={true}
+          url={aula.data.attributes.url ? aula.data.attributes.url : aula.data.attributes.video?.data.attributes.url as string}
+          onEnded={onFinished}
+
+          width="100% important"
+        />
+        }
+        {isEnded && <Center bg="green.500" p={{
+          base: 8,
+          md: 36,
+        }} borderRadius="lg" flexDirection="column" gap={4} m="auto">
           <Heading>Aula finalizada</Heading>
           {
             aula.data.attributes.atividade?.data &&
