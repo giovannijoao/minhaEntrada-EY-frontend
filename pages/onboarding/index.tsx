@@ -176,6 +176,7 @@ export default function OnBoarding({
             <Tabs
               mt={4}
               index={tabIndex} onChange={handleTabsChange}
+              flexWrap="wrap"
             >
               <TabList>
                 {tabs.map(item => {
