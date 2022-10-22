@@ -176,9 +176,8 @@ export default function OnBoarding({
             <Tabs
               mt={4}
               index={tabIndex} onChange={handleTabsChange}
-              flexWrap="wrap"
             >
-              <TabList>
+              <TabList flexWrap="wrap">
                 {tabs.map(item => {
                   return <Tab key={item} sx={{
                     _selected: {
